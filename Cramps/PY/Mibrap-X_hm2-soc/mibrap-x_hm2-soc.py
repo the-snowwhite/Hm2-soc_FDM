@@ -37,21 +37,20 @@ numLights = c.find('FDM', 'NUM_LIGHTS')
 # Axis-of-motion Specific Configs (not the GUI)
 ve.velocity_extrusion(extruders=numExtruders, thread='servo-thread')
 # X [0] Axis
-base.setup_stepper(section='AXIS_0', axisIndex=0, stepgenIndex=0)
+base.setup_stepper(section='AXIS_0', axisIndex=0, stepgenIndex=6)
 # Y [1] Axis
-#base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=1)
-base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=1,
+base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=4,
               thread='servo-thread', gantry=True, gantryJoint=0)
-base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=2,
+base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=5,
             gantry=True, gantryJoint=1)
 # Z [2] Axis
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=3,
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=0,
               thread='servo-thread', gantry=True, gantryJoint=0)
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=4,
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=1,
             gantry=True, gantryJoint=1)
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=5,
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=2,
             gantry=True, gantryJoint=2)
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=6,
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=3,
             gantry=True, gantryJoint=3)
 # Extruder, velocity controlled
 for i in range(0, numExtruders):

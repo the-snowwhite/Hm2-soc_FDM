@@ -25,6 +25,7 @@ def init_hardware():
     hal.loadusr('hal_temp_atlas',
                 name='temp',
                 filter_size=20,
+                ref='y',
                 channels='00:%s,01:%s,02:%s,03:%s'
                 % (c.find('HBP', 'THERMISTOR', defaultThermistor),
                    c.find('EXTRUDER_0', 'THERMISTOR', defaultThermistor),
@@ -63,16 +64,16 @@ def setup_hardware(thread):
 
     # GPIO
     # Adjust as needed for your switch polarity
-#    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-0-home')   # X
+    hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-2-0-home')  # ZLF
+    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-2-1-home')  # ZRF
+    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-2-2-home')  # ZLB
+    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-2-3-home')  # ZRB
+    hal.Pin('hm2_5i25.0.gpio.028.in_not').link('limit-1-0-home')  # YL
+    hal.Pin('hm2_5i25.0.gpio.029.in_not').link('limit-1-1-home')  # YR
+    hal.Pin('hm2_5i25.0.gpio.030.in_not').link('limit-0-home')   # X
 #    hal.Pin('hm2_5i25.0.gpio.036.in_not').link('limit-0-max')    # X
 #    hal.Pin('hm2_5i25.0.gpio.026.in_not').link('limit-1-home')   # Y
-    hal.Pin('hm2_5i25.0.gpio.036.in').link('limit-0-home')   # X
-    hal.Pin('hm2_5i25.0.gpio.037.in_not').link('limit-1-0-home')    # YL
-    hal.Pin('hm2_5i25.0.gpio.038.in_not').link('limit-1-1-home')    # YR
-    hal.Pin('hm2_5i25.0.gpio.039.in').link('limit-2-0-home')  # ZLF
-    hal.Pin('hm2_5i25.0.gpio.040.in').link('limit-2-1-home')  # ZRF
-    hal.Pin('hm2_5i25.0.gpio.041.in').link('limit-2-2-home')  # ZLB
-    hal.Pin('hm2_5i25.0.gpio.042.in').link('limit-2-3-home')  # ZRB
+#    hal.Pin('hm2_5i25.0.gpio.036.in').link('limit-0-home')   # X
 
 #    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-0-max')    # X
 #    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-home')   # Y
@@ -87,6 +88,7 @@ def setup_hardware(thread):
     hal.Pin('hm2_5i25.0.nano_soc_adc.ch.1.out').link('temp.ch-01.input')
     hal.Pin('hm2_5i25.0.nano_soc_adc.ch.2.out').link('temp.ch-02.input')
     hal.Pin('hm2_5i25.0.nano_soc_adc.ch.3.out').link('temp.ch-03.input')
+    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.7.out').link('temp.voltage-ref')
 
     hal.Pin('temp.ch-00.value').link('hbp-temp-meas')
     hal.Pin('temp.ch-01.value').link('e0-temp-meas')
@@ -94,6 +96,7 @@ def setup_hardware(thread):
     hal.Pin('temp.ch-03.value').link('e2-temp-meas')
 
     # machine power
+    os.system('halcmd setp hm2_5i25.0.gpio.033.is_output true')
     hal.Pin('hm2_5i25.0.gpio.033.out').link('emcmot-0-enable')
 
     # Monitor estop input from hardware
