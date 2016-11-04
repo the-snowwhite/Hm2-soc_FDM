@@ -32,7 +32,7 @@ newinst lgantry gantry.z pincount=2
 
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
 # c = analog input channel and thermistor table
-loadusr -Wn Therm hal_temp_atlas -n Therm -c 04:[HBP]THERMISTOR,05:[EXTRUDER_0]THERMISTOR
+loadusr -Wn Th hal_temp_atlas -n Therm -c 00:[HBP]THERMISTOR,01:[EXTRUDER_0]THERMISTOR
 
 
 # other components
@@ -697,10 +697,10 @@ net home-offset-zl => gantry.z.joint.01.home-offset
 # Temperature Signals
 # ##################################################
 
-net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[0] => temp.ch-00.input
-net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[1] => temp.ch-01.input
-#net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[2] => temp.ch-02.input
-#net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[3] => temp.ch-03.input
+net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[0] => Therm.ch-00.input
+net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[1] => Therm.ch-01.input
+#net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[2] => Therm.ch-02.input
+#net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[3] => Therm.ch-03.input
 
 # Extruder 0 temperature control
 # --------------------------------------------------------------------------
@@ -726,7 +726,7 @@ newsig e0.temp.standby           float
 net e0.temp.measr  => lowpass.e0-temp.in
 net e0.temp.meas   <= lowpass.e0-temp.out
 setp lowpass.e0-temp.gain 0.003
-net e0.temp.measr   <= Therm.ch-04.value
+net e0.temp.measr   <= Therm.ch-00.value
 
 # PID
 net emcmot.00.enable  =>   pid.e0-temp.enable
@@ -846,7 +846,7 @@ newsig hbp.temp.standby          float
 net hbp.temp.measr  => lowpass.hbp-temp.in
 net hbp.temp.meas   <= lowpass.hbp-temp.out
 setp lowpass.hbp-temp.gain 0.003
-net hbp.temp.measr   <= Therm.ch-05.value
+net hbp.temp.measr   <= Therm.ch-01.value
 
 # PID
 net emcmot.00.enable => pid.hbp-temp.enable
