@@ -697,6 +697,11 @@ net home-offset-zl => gantry.z.joint.01.home-offset
 # Temperature Signals
 # ##################################################
 
+net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[0] => temp.ch-00.input
+net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[1] => temp.ch-01.input
+#net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[2] => temp.ch-02.input
+#net hm2_[HOSTMOT2](BOARD).0.nano_adc.sample[3] => temp.ch-03.input
+
 # Extruder 0 temperature control
 # --------------------------------------------------------------------------
 #newsig e0.temp.set               float
