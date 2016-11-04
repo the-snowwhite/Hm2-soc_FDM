@@ -24,7 +24,7 @@ loadrt hostmot2
 # load low-level driver
 newinst [HOSTMOT2](DRIVER) [HOSTMOT2]DEVNAME config=[HOSTMOT2](CONFIG)
 
-loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AXES  #tp=tp kins=trivkins
+loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[TRAJ]AXES num_aio=51 num_dio=21 #tp=tp kins=trivkins
 
 # Gantry component for Z Axis
 newinst lgantry gantry.z pincount=2
@@ -605,8 +605,7 @@ newsig estop-out bit
 net estop-user <= iocontrol.0.user-enable-out
 
 # Monitor estop input from hardware
-net estop-loop hm2_[HOSTMOT2](BOARD).0.gpio.034.in => iocontrol.0.emc-enable-in
-setp hm2_[HOSTMOT2](BOARD).0.gpio.034.invert 1
+net estop-loop hm2_[HOSTMOT2](BOARD).0.gpio.034.in_not => iocontrol.0.emc-enable-in
 
 # create signals for tool loading loopback
 net tool-prep-loop iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
@@ -614,7 +613,7 @@ net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
 
 # Axis enable signal (active low)
 #net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.gpio.029.out
-#setp hm2_[HOSTMOT2](BOARD).0.gpio.029.invert 1
+#setp hm2_[HOSTMOT2](BOARD).0.gpio.029.invert_output 1
 
 # Machine power
 # Use halui.machine.is-on instead?
@@ -638,20 +637,14 @@ newsig home-offset-zl   float
 
 newsig home-z           bit
 
+# Adjust as needed for your switch polarity
+
 net limit-x-min <= hm2_[HOSTMOT2](BOARD).0.gpio.010.in_not
 net limit-x-max <= hm2_[HOSTMOT2](BOARD).0.gpio.011.in_not
 net limit-y-min <= hm2_[HOSTMOT2](BOARD).0.gpio.012.in_not
 net limit-y-max <= hm2_[HOSTMOT2](BOARD).0.gpio.013.in_not
 net limit-z-min <= hm2_[HOSTMOT2](BOARD).0.gpio.014.in_not
 net limit-z-max <= hm2_[HOSTMOT2](BOARD).0.gpio.015.in_not
-
-# Adjust as needed for your switch polarity
-#setp hm2_[HOSTMOT2](BOARD).0.gpio.010.invert 1
-#setp hm2_[HOSTMOT2](BOARD).0.gpio.010.invert 1
-#setp hm2_[HOSTMOT2](BOARD).0.gpio.010.invert 1
-#setp hm2_[HOSTMOT2](BOARD).0.gpio.010.invert 1
-#setp hm2_[HOSTMOT2](BOARD).0.gpio.010.invert 1
-#setp hm2_[HOSTMOT2](BOARD).0.gpio.010.invert 1
 
 net home-z      <= gantry.z.home
 
@@ -890,7 +883,7 @@ net hbp.temp.in-range          => not.hbp-temp-range.in
 net hbp.temp.in-range_n        <= not.hbp-temp-range.out
 net hbp.temp.in-range_n        => thermistor-check.hbp.enable
 net hbp.heaterl                => thermistor-check.hbp.pid
-net hbp.heaterl                => hm2_[HOSTMOT2](BOARD).0.pwmgen.00.out.00.value
+net hbp.heaterl                => hm2_[HOSTMOT2](BOARD).0.pwmgen.00.value
 net hbp.therm-ok               <= thermistor-check.hbp.no-error
 
 # no error chain
@@ -1074,31 +1067,31 @@ newsig exp0.fan.enable bit
 # PWM
 # ##################################################
 
-setp hm2_[HOSTMOT2](BOARD).0.pwmgen.00.pwm_period       10000000
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.pwm_frequency      20000
 
 # Bed Heater FET 1
-setp hm2_[HOSTMOT2](BOARD).0.pwmgen.00.out.00.enable    1
-net hbp.heaterl                => hpg.pwmgen.00.out.00.value
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.00.enable    1
+net hbp.heaterl                => hm2_[HOSTMOT2](BOARD).0.pwmgen.00.value
 
 # E0 Heater FET 2
-setp hpg.pwmgen.00.out.01.enable    1
-net e0.heaterl                 => hpg.pwmgen.00.out.01.value
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.01.enable    1
+net e0.heater => hm2_[HOSTMOT2](BOARD).0.pwmgen.01.value
 
 # E1 Heater FET 3
-setp hpg.pwmgen.00.out.02.enable    1
-setp hpg.pwmgen.00.out.02.value     0.0
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.02.enable    1
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.02.value     0.0
 
 # E2 Heater FET 4
-setp hm2_[HOSTMOT2](BOARD).0.pwmgen.00.out.03.enable    1
-setp hpg.pwmgen.00.out.03.value     0.0
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.03.enable    1
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.03.value     0.0
 
 # FET 5 - Fan / LED
-setp hm2_[HOSTMOT2](BOARD).0.pwmgen.00.out.04.enable    1
-net f0.pwm => hpg.pwmgen.00.out.04.value
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.04.enable    1
+net f0.pwm => hm2_[HOSTMOT2](BOARD).0.pwmgen.04.value
 
 # FET 6 - Fan / LED
-setp hm2_[HOSTMOT2](BOARD).0.pwmgen.00.out.05.enable    1
-net f1.pwm  => hpg.pwmgen.00.out.05.value
+setp hm2_[HOSTMOT2](BOARD).0.pwmgen.05.enable    1
+net f1.pwm  => hm2_[HOSTMOT2](BOARD).0.pwmgen.05.value
 
 net e0.temp.set     => pid.e0-temp.command
 
@@ -1182,7 +1175,7 @@ net estop-out           <= estopchain.and
 
 # drive estop-sw
 net estop-out => hm2_[HOSTMOT2](BOARD).0.gpio.035.out
-setp hm2_[HOSTMOT2](BOARD).0.gpio.010.invert 1
+setp hm2_[HOSTMOT2](BOARD).0.gpio.010.invert_output 1
 
 # ##################################################
 # UI linking
