@@ -62,29 +62,27 @@ def setup_hardware(thread):
     # none
 
     # GPIO
+    # Adjust as needed for your switch polarity
+#    hal.Pin('hm2_5i25.0.gpio.046.in_not').link('limit-0-home')   # X
+#    hal.Pin('hm2_5i25.0.gpio.047.in_not').link('limit-0-max')    # X
+#    hal.Pin('hm2_5i25.0.gpio.048.in_not').link('limit-1-home')   # Y
+#    hal.Pin('hm2_5i25.0.gpio.049.in_not').link('limit-1-max')    # Y
+#    hal.Pin('hm2_5i25.0.gpio.050.in_not').link('limit-2-0-home')  # ZR
+#    hal.Pin('hm2_5i25.0.gpio.051.in_not').link('limit-2-1-home')  # ZL
     hal.Pin('hm2_5i25.0.gpio.046.in').link('limit-0-home')   # X
     hal.Pin('hm2_5i25.0.gpio.047.in').link('limit-0-max')    # X
     hal.Pin('hm2_5i25.0.gpio.048.in').link('limit-1-home')   # Y
     hal.Pin('hm2_5i25.0.gpio.049.in').link('limit-1-max')    # Y
-#    hal.Pin('bb_gpio.p9.in-13').link('limit-2-home')   # Z
-#    hal.Pin('bb_gpio.p9.in-11').link('limit-2-max')    # Z
     hal.Pin('hm2_5i25.0.gpio.050.in').link('limit-2-0-home')  # ZR
     hal.Pin('hm2_5i25.0.gpio.051.in').link('limit-2-1-home')  # ZL
+
     # probe ...
 
-    # Adjust as needed for your switch polarity
-    hal.Pin('hm2_5i25.0.gpio.046.in_not').set(True)
-    hal.Pin('hm2_5i25.0.gpio.047.in_not').set(True)
-    hal.Pin('hm2_5i25.0.gpio.048.in_not').set(True)
-    hal.Pin('hm2_5i25.0.gpio.049.in_not').set(True)
-    hal.Pin('hm2_5i25.0.gpio.050.in_not').set(True)
-    hal.Pin('hm2_5i25.0.gpio.051.in_not').set(True)
-
     # ADC
-    hal.Pin('hm2_5i25.0.nano_adc.sample[0]').link('temp.ch-00.input')
-    hal.Pin('hm2_5i25.0.nano_adc.sample[1]').link('temp.ch-01.input')
-    hal.Pin('hm2_5i25.0.nano_adc.sample[2]').link('temp.ch-02.input')
-    hal.Pin('hm2_5i25.0.nano_adc.sample[3]').link('temp.ch-03.input')
+    hal.Pin('hm2_5i25.0.nano_adc.ch.0.out').link('temp.ch-00.input')
+    hal.Pin('hm2_5i25.0.nano_adc.ch.1.out').link('temp.ch-01.input')
+    hal.Pin('hm2_5i25.0.nano_adc.ch.2.out').link('temp.ch-02.input')
+    hal.Pin('hm2_5i25.0.nano_adc.ch.3.out').link('temp.ch-03.input')
 
     hal.Pin('temp.ch-00.value').link('hbp-temp-meas')
     hal.Pin('temp.ch-01.value').link('e0-temp-meas')
@@ -93,24 +91,22 @@ def setup_hardware(thread):
 
     # machine power
     hal.Pin('hm2_5i25.0.gpio.033.out').link('emcmot-0-enable')
-    #hal.Pin('bb_gpio.p9.out-23.in_not').set(True)
+
     # Monitor estop input from hardware
-    hal.Pin('hm2_5i25.0.gpio.034.in').link('estop-in')
-    hal.Pin('hm2_5i25.0.gpio.034.in_not').set(True)
+    hal.Pin('hm2_5i25.0.gpio.034.in_not').link('estop-in')
     # drive estop-sw
     os.system('halcmd setp hm2_5i25.0.gpio.035.is_output true')
     os.system('halcmd setp hm2_5i25.0.gpio.035.invert_output true')
     hal.Pin('hm2_5i25.0.gpio.035.out').link('estop-out')
-#    hal.Pin('hm2_5i25.0.gpio.035.in_not').set(True)
 
     # Tie machine power signal to the Parport Cape LED
     # Feel free to tie any other signal you like to the LED
     hal.Pin('hm2_5i25.0.gpio.031.out').link('emcmot-0-enable')
-    # hal.Pin('bb_gpio.p9.out-25.in_not').set(True)
 
     # link emcmot.xx.enable to stepper driver enable signals
-    hal.Pin('hm2_5i25.0.gpio.029.out').link('emcmot-0-enable')
-    hal.Pin('hm2_5i25.0.gpio.029.in_not').set(True)
+    os.system('halcmd setp hm2_5i25.0.gpio.032.is_output true')
+    os.system('halcmd setp hm2_5i25.0.gpio.032.invert_output true')
+    hal.Pin('hm2_5i25.0.gpio.032.out').link('emcmot-0-enable')
 
 def setup_exp(name):
     hal.newsig('%s-pwm' % name, hal.HAL_FLOAT, init=0.0)
