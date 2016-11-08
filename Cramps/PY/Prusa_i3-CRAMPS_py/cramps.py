@@ -24,7 +24,7 @@ def init_hardware():
     defaultThermistor = 'semitec_103GT_2'
     hal.loadusr('hal_temp_atlas',
                 name='temp',
-                filter_size=1,
+                filter_size=10,
                 channels='00:%s,01:%s,02:%s,03:%s'
                 % (c.find('HBP', 'THERMISTOR', defaultThermistor),
                    c.find('EXTRUDER_0', 'THERMISTOR', defaultThermistor),
@@ -64,17 +64,18 @@ def setup_hardware(thread):
     # GPIO
     # Adjust as needed for your switch polarity
 #    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-0-home')   # X
-#    hal.Pin('hm2_5i25.0.gpio.025.in_not').link('limit-0-max')    # X
+    hal.Pin('hm2_5i25.0.gpio.025.in_not').link('limit-0-max')    # X
 #    hal.Pin('hm2_5i25.0.gpio.026.in_not').link('limit-1-home')   # Y
-#    hal.Pin('hm2_5i25.0.gpio.027.in_not').link('limit-1-max')    # Y
-#    hal.Pin('hm2_5i25.0.gpio.028.in_not').link('limit-2-0-home')  # ZR
-#    hal.Pin('hm2_5i25.0.gpio.029.in_not').link('limit-2-1-home')  # ZL
+    hal.Pin('hm2_5i25.0.gpio.027.in_not').link('limit-1-max')    # Y
+    hal.Pin('hm2_5i25.0.gpio.028.in_not').link('limit-2-0-home')  # ZR
+    hal.Pin('hm2_5i25.0.gpio.029.in_not').link('limit-2-1-home')  # ZL
+
     hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-0-home')   # X
-    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-0-max')    # X
+#    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-0-max')    # X
     hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-home')   # Y
-    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-1-max')    # Y
-    hal.Pin('hm2_5i25.0.gpio.028.in').link('limit-2-0-home')  # ZR
-    hal.Pin('hm2_5i25.0.gpio.029.in').link('limit-2-1-home')  # ZL
+#    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-1-max')    # Y
+#    hal.Pin('hm2_5i25.0.gpio.028.in').link('limit-2-0-home')  # ZR
+#    hal.Pin('hm2_5i25.0.gpio.029.in').link('limit-2-1-home')  # ZL
 
     # probe ...
 
@@ -95,8 +96,8 @@ def setup_hardware(thread):
     # Monitor estop input from hardware
     hal.Pin('hm2_5i25.0.gpio.034.in_not').link('estop-in')
     # drive estop-sw
-#    os.system('halcmd setp hm2_5i25.0.gpio.035.is_output true')
-#    os.system('halcmd setp hm2_5i25.0.gpio.035.invert_output true')
+    os.system('halcmd setp hm2_5i25.0.gpio.035.is_output true')
+    os.system('halcmd setp hm2_5i25.0.gpio.035.invert_output true')
     hal.Pin('hm2_5i25.0.gpio.035.out').link('estop-out')
 
     # Tie machine power signal to the Parport Cape LED
