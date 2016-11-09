@@ -24,7 +24,7 @@ def init_hardware():
     defaultThermistor = 'semitec_103GT_2'
     hal.loadusr('hal_temp_atlas',
                 name='temp',
-                filter_size=10,
+                filter_size=20,
                 channels='00:%s,01:%s,02:%s,03:%s'
                 % (c.find('HBP', 'THERMISTOR', defaultThermistor),
                    c.find('EXTRUDER_0', 'THERMISTOR', defaultThermistor),

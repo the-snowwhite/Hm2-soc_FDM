@@ -30,7 +30,7 @@ try:
     if not check_mklaucher():  # start mklauncher if not running to make things easier
         launcher.start_process('mklauncher .')
 
-    launcher.start_process("configserver -n Prusa-i3 ~/Machineface")
+    launcher.start_process("configserver -n Prusa-i3_hm2-soc ~/Machineface")
     launcher.start_process('machinekit prusa-i3.ini')
     while True:
         launcher.check_processes()
