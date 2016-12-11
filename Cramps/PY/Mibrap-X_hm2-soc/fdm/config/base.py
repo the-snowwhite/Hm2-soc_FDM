@@ -149,8 +149,7 @@ def setup_stepper(stepgenIndex, section, axisIndex=None,
             hal.Pin('gantry.%i.search-vel' % axisIndex).set(c.find(section, 'HOME_SEARCH_VEL'))
             hal.Pin('gantry.%i.homing' % axisIndex).link(axisHoming)
             hal.Pin('gantry.%i.home' % axisIndex).link(limitHome)
-    orComp = rt.newinst('orn', 'or%i.estop-error' % num, pincount=num)
-
+ 
             or2 = rt.newinst('orn', 'or2.limit-%i-min' % axisIndex, pincount=4)
             hal.addf(or2.name, thread)
             or2.pin('out').link(limitMin)
