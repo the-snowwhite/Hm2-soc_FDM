@@ -506,6 +506,14 @@ def init_gantry(axisIndex, joints=2, latching=True):
     rt.newinst(comp, 'gantry.%i' % axisIndex, pincount=joints)
     rcomps.create_gantry_rcomp(axisIndex=axisIndex)
 
+def init_gantry4(axisIndex, joints=4, latching=True):
+    if latching:
+        comp = 'lgantry'
+    else:
+        comp = 'gantry'
+    rt.newinst(comp, 'gantry.%i' % axisIndex, pincount=joints)
+    rcomps.create_gantry4_rcomp(axisIndex=axisIndex)
+
 
 def gantry_read(gantryAxis, thread):
     hal.addf('gantry.%i.read' % gantryAxis, thread)

@@ -22,7 +22,7 @@ storage.init_storage('storage.ini')
 
 # Gantry components for Y and Z Axis
 base.init_gantry(axisIndex=1)
-base.init_gantry(axisIndex=2, joints=4)
+base.init_gantry4(axisIndex=2, joints=4)
 
 # reading functions
 hardware.hardware_read()
