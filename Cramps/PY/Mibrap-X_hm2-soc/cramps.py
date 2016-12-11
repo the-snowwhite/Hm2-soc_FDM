@@ -83,10 +83,10 @@ def setup_hardware(thread):
     # probe ...
 
     # ADC
-    hal.Pin('hm2_5i25.0.nano_adc.ch.0.out').link('temp.ch-00.input')
-    hal.Pin('hm2_5i25.0.nano_adc.ch.1.out').link('temp.ch-01.input')
-    hal.Pin('hm2_5i25.0.nano_adc.ch.2.out').link('temp.ch-02.input')
-    hal.Pin('hm2_5i25.0.nano_adc.ch.3.out').link('temp.ch-03.input')
+    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.0.out').link('temp.ch-00.input')
+    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.1.out').link('temp.ch-01.input')
+    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.2.out').link('temp.ch-02.input')
+    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.3.out').link('temp.ch-03.input')
 
     hal.Pin('temp.ch-00.value').link('hbp-temp-meas')
     hal.Pin('temp.ch-01.value').link('e0-temp-meas')
