@@ -150,13 +150,13 @@ def setup_stepper(stepgenIndex, section, axisIndex=None,
             hal.Pin('gantry.%i.homing' % axisIndex).link(axisHoming)
             hal.Pin('gantry.%i.home' % axisIndex).link(limitHome)
 
-            or4 = rt.newinst('or4', 'or4.limit-%i-min' % axisIndex)
-            hal.addf(or4.name, thread)
-            or4.pin('out').link(limitMin)
+            or2 = rt.newinst('or2', 'pincount=4', 'or2.limit-%i-min' % axisIndex)
+            hal.addf(or2.name, thread)
+            or2.pin('out').link(limitMin)
 
-            or4 = rt.newinst('or4', 'or4.limit-%i-max' % axisIndex)
-            hal.addf(or4.name, thread)
-            or4.pin('out').link(limitMax)
+            or2 = rt.newinst('or2', 'or2.limit-%i-max' % axisIndex)
+            hal.addf(or2.name, thread)
+            or2.pin('out').link(limitMax)
 
         limitHome = hal.newsig('limit-%i-%i-home' % (axisIndex, gantryJoint),
                                hal.HAL_BIT)
@@ -167,8 +167,8 @@ def setup_stepper(stepgenIndex, section, axisIndex=None,
         homeOffset = hal.Signal('home-offset-%i-%i' % (axisIndex, gantryJoint),
                                 hal.HAL_FLOAT)
         limitHome.link('gantry.%i.joint.%02i.home' % (axisIndex, gantryJoint))
-        limitMin.link('or4.limit-%i-min.in%i' % (axisIndex, gantryJoint))
-        limitMax.link('or4.limit-%i-max.in%i' % (axisIndex, gantryJoint))
+        limitMin.link('or2.limit-%i-min.in%i' % (axisIndex, gantryJoint))
+        limitMax.link('or2.limit-%i-max.in%i' % (axisIndex, gantryJoint))
         homeOffset.link('gantry.%i.joint.%02i.home-offset' % (axisIndex, gantryJoint))
 
         storage.setup_gantry_storage(axisIndex, gantryJoint)
