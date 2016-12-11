@@ -64,15 +64,18 @@ def setup_hardware(thread):
     # GPIO
     # Adjust as needed for your switch polarity
 #    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-0-home')   # X
-    hal.Pin('hm2_5i25.0.gpio.025.in_not').link('limit-0-max')    # X
+#    hal.Pin('hm2_5i25.0.gpio.036.in_not').link('limit-0-max')    # X
 #    hal.Pin('hm2_5i25.0.gpio.026.in_not').link('limit-1-home')   # Y
-    hal.Pin('hm2_5i25.0.gpio.027.in_not').link('limit-1-max')    # Y
-    hal.Pin('hm2_5i25.0.gpio.028.in_not').link('limit-2-0-home')  # ZR
-    hal.Pin('hm2_5i25.0.gpio.029.in_not').link('limit-2-1-home')  # ZL
+    hal.Pin('hm2_5i25.0.gpio.037.in_not').link('limit-1-0-home')    # Y
+    hal.Pin('hm2_5i25.0.gpio.038.in_not').link('limit-1-1-home')    # Y
+    hal.Pin('hm2_5i25.0.gpio.039.in_not').link('limit-2-0-home')  # ZR
+    hal.Pin('hm2_5i25.0.gpio.040.in_not').link('limit-2-1-home')  # ZL
+    hal.Pin('hm2_5i25.0.gpio.041.in_not').link('limit-2-2-home')  # ZR
+    hal.Pin('hm2_5i25.0.gpio.042.in_not').link('limit-2-3-home')  # ZL
 
-    hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-0-home')   # X
+    hal.Pin('hm2_5i25.0.gpio.036.in').link('limit-0-home')   # X
 #    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-0-max')    # X
-    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-home')   # Y
+#    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-home')   # Y
 #    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-1-max')    # Y
 #    hal.Pin('hm2_5i25.0.gpio.028.in').link('limit-2-0-home')  # ZR
 #    hal.Pin('hm2_5i25.0.gpio.029.in').link('limit-2-1-home')  # ZL
