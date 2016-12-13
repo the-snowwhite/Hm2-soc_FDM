@@ -90,7 +90,7 @@ def create_ve_params_rcomp(timer=100):
 
 
 def create_gantry_rcomp(axisIndex, timer=100):
-    name = 'gantry-config'
+    name = 'gantry2-config'
     comp = hal.RemoteComponent(name, timer=timer)
     comp.newpin('offset-left', hal.HAL_FLOAT, hal.HAL_IO)
     comp.newpin('offset-right', hal.HAL_FLOAT, hal.HAL_IO)
@@ -108,10 +108,10 @@ def create_gantry4_rcomp(axisIndex, timer=100):
     comp.newpin('offset-right-back', hal.HAL_FLOAT, hal.HAL_IO)
     comp.ready()
 
-    comp.pin('offset-left-front').link('home4-offset-%i-0' % axisIndex)
-    comp.pin('offset-right-front').link('home4-offset-%i-1' % axisIndex)
-    comp.pin('offset-left-back').link('home4-offset-%i-2' % axisIndex)
-    comp.pin('offset-right-back').link('home4-offset-%i-3' % axisIndex)
+    comp.pin('offset-left-front').link('home-offset-%i-0' % axisIndex)
+    comp.pin('offset-right-front').link('home-offset-%i-1' % axisIndex)
+    comp.pin('offset-left-back').link('home-offset-%i-2' % axisIndex)
+    comp.pin('offset-right-back').link('home-offset-%i-3' % axisIndex)
 
 
 def create_pid_rcomp(name, timer=100):
