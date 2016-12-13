@@ -66,14 +66,14 @@ def setup_hardware(thread):
 #    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-0-home')   # X
 #    hal.Pin('hm2_5i25.0.gpio.036.in_not').link('limit-0-max')    # X
 #    hal.Pin('hm2_5i25.0.gpio.026.in_not').link('limit-1-home')   # Y
-    hal.Pin('hm2_5i25.0.gpio.037.in_not').link('limit-1-0-home')    # Y
-    hal.Pin('hm2_5i25.0.gpio.038.in_not').link('limit-1-1-home')    # Y
-    hal.Pin('hm2_5i25.0.gpio.039.in_not').link('limit-2-0-home')  # ZR
-    hal.Pin('hm2_5i25.0.gpio.040.in_not').link('limit-2-1-home')  # ZL
-    hal.Pin('hm2_5i25.0.gpio.041.in_not').link('limit-2-2-home')  # ZR
-    hal.Pin('hm2_5i25.0.gpio.042.in_not').link('limit-2-3-home')  # ZL
-
     hal.Pin('hm2_5i25.0.gpio.036.in').link('limit-0-home')   # X
+    hal.Pin('hm2_5i25.0.gpio.037.in_not').link('limit-1-0-home')    # YL
+    hal.Pin('hm2_5i25.0.gpio.038.in_not').link('limit-1-1-home')    # YR
+    hal.Pin('hm2_5i25.0.gpio.039.in').link('limit-2-0-home')  # ZLF
+    hal.Pin('hm2_5i25.0.gpio.040.in').link('limit-2-1-home')  # ZRF
+    hal.Pin('hm2_5i25.0.gpio.041.in').link('limit-2-2-home')  # ZLB
+    hal.Pin('hm2_5i25.0.gpio.042.in').link('limit-2-3-home')  # ZRB
+
 #    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-0-max')    # X
 #    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-home')   # Y
 #    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-1-max')    # Y
