@@ -9,7 +9,7 @@ def setup_motion(kinematics='trivkins'):
     rt.loadrt('hostmot2')
     rt.newinst(c.find('HOSTMOT2', 'DRIVER'),
         c.find('HOSTMOT2', 'DEVNAME'),
-        config=c.find('HOSTMOT2', 'CONFIG'))
+        descriptor=hm3-custom.bin config=c.find('HOSTMOT2', 'CONFIG'))
     # motion controller, get name and thread periods from ini file
     rt.loadrt(c.find('EMCMOT', 'EMCMOT'),
         servo_period_nsec=c.find('EMCMOT', 'SERVO_PERIOD'),
