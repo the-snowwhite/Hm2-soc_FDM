@@ -31,16 +31,16 @@ def usrcomp_status(compname, signame, thread, resetSignal='estop-reset'):
 def usrcomp_watchdog(comps, enableSignal, thread,
                      okSignal=None, errorSignal=None):
     count = len(comps)
-    watchdog = rt.loadrt('watchdog', num_inputs=count)
-    hal.addf('watchdog.set-timeouts', thread)
-    hal.addf('watchdog.process', thread)
+    watchdog = rt.newinst('watchdog', 'watchdog.usrcomp', pincount=count)
+    hal.addf('%s.set-timeouts' % watchdog.name, thread)
+    hal.addf('%s.process' % watchdog.name, thread)
     for n, comp in enumerate(comps):
         compname = comp[0]
         comptime = comp[1]
         sigIn = hal.newsig('%s-watchdog' % compname, hal.HAL_BIT)
         hal.Pin('%s.watchdog' % compname).link(sigIn)
-        watchdog.pin('input-%i' % n).link(sigIn)
-        watchdog.pin('timeout-%i' % n).set(comptime)
+        watchdog.pin('input-%02i' % n).link(sigIn)
+        watchdog.pin('timeout-%02i' % n).set(comptime)
     watchdog.pin('enable-in').link(enableSignal)
 
     if not okSignal:
@@ -150,11 +150,11 @@ def setup_stepper(stepgenIndex, section, axisIndex=None,
             hal.Pin('gantry.%i.homing' % axisIndex).link(axisHoming)
             hal.Pin('gantry.%i.home' % axisIndex).link(limitHome)
 
-            or2 = rt.newinst('or2', 'or2.limit-%i-min' % axisIndex)
+            or2 = rt.newinst('orn', 'or2.limit-%i-min' % axisIndex, pincount=4)
             hal.addf(or2.name, thread)
             or2.pin('out').link(limitMin)
 
-            or2 = rt.newinst('or2', 'or2.limit-%i-max' % axisIndex)
+            or2 = rt.newinst('orn', 'or2.limit-%i-max' % axisIndex, pincount=4)
             hal.addf(or2.name, thread)
             or2.pin('out').link(limitMax)
 
@@ -467,16 +467,17 @@ def setup_estop(errorSignals, thread):
     estopError = hal.Signal('estop-error', hal.HAL_BIT)
 
     num = len(errorSignals)
-    orComp = rt.newinst('orn', 'or%i.estop-error' % num, pincount=num)
-    hal.addf(orComp.name, thread)
-    for n, sig in enumerate(errorSignals):
-        orComp.pin('in%i' % n).link(sig)
-    orComp.pin('out').link(estopError)
+    if num:
+        orComp = rt.newinst('orn', 'or%i.estop-error' % num, pincount=num)
+        hal.addf(orComp.name, thread)
+        for n, sig in enumerate(errorSignals):
+            orComp.pin('in%i' % n).link(sig)
+        orComp.pin('out').link(estopError)
 
     estopLatch = rt.newinst('estop_latch', 'estop-latch')
     hal.addf(estopLatch.name, thread)
     estopLatch.pin('ok-in').link(estopUser)
-    estopLatch.pin('fault-in').link(estopError)
+    estopLatch.pin('fault-in').set(0)
     estopLatch.pin('reset').link(estopReset)
     estopLatch.pin('ok-out').link(estopOut)
 
@@ -505,6 +506,14 @@ def init_gantry(axisIndex, joints=2, latching=True):
         comp = 'gantry'
     rt.newinst(comp, 'gantry.%i' % axisIndex, pincount=joints)
     rcomps.create_gantry_rcomp(axisIndex=axisIndex)
+
+def init_gantry4(axisIndex, joints=4, latching=True):
+    if latching:
+        comp = 'lgantry'
+    else:
+        comp = 'gantry'
+    rt.newinst(comp, 'gantry.%i' % axisIndex, pincount=joints)
+    rcomps.create_gantry4_rcomp(axisIndex=axisIndex)
 
 
 def gantry_read(gantryAxis, thread):

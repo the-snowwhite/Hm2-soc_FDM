@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+    
 import sys
 import os
 import subprocess
@@ -24,7 +24,7 @@ try:
     # launcher.install_comp('gantry.comp')  # install a comp HAL component if not already installed
 #    launcher.install_comp('lineardeltajointscartesian.comp') 
     launcher.start_process("configserver  ~/Machineface ~/Cetus/")  # start the configserver with Machineface an Cetus user interfaces
-    launcher.start_process('linuxcnc prusa-i3.ini')  # start linuxcnc
+    launcher.start_process('linuxcnc mibrap-x_fdm.ini')  # start linuxcnc
 except subprocess.CalledProcessError:
     launcher.end_session()
     sys.exit(1)

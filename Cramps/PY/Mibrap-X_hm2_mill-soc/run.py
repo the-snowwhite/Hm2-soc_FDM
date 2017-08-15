@@ -28,10 +28,10 @@ try:
         os.mkdir(nc_path)
 
     if not check_mklaucher():  # start mklauncher if not running to make things easier
-        launcher.start_process('mklauncher ~/Hm2-soc_FDM')
+        launcher.start_process('mklauncher ~/Hm2-soc_FDM/Cramps/PY/Mibrap-X_hm2_mill-soc')
 
-    launcher.start_process("configserver -n mibrap-x_hm2-soc ~/Machineface")
-    launcher.start_process('machinekit mibrap-x.ini')
+    launcher.start_process("configserver -n mibrap-x_hm2-soc-mill ~/Cetus/")
+    launcher.start_process('machinekit mibrap-x_mill.ini')
     while True:
         launcher.check_processes()
         time.sleep(1)

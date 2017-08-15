@@ -1,6 +1,7 @@
 from machinekit import hal
 from machinekit import rtapi as rt
 from machinekit import config as c
+
 from fdm.config import base
 
 import os
@@ -24,13 +25,14 @@ def init_hardware():
     defaultThermistor = 'semitec_103GT_2'
     hal.loadusr('hal_temp_atlas',
                 name='temp',
-
-                filter_size=20,
-                channels='00:%s,01:%s,02:%s,03:%s'
+                filter_size=1,
+                ref='y',
+#                channels='00:%s,01:%s,02:%s,03:%s'
+                channels='00:%s,01:%s'
                 % (c.find('HBP', 'THERMISTOR', defaultThermistor),
-                   c.find('EXTRUDER_0', 'THERMISTOR', defaultThermistor),
-                   c.find('EXTRUDER_1', 'THERMISTOR', defaultThermistor),
-                   c.find('EXTRUDER_2', 'THERMISTOR', defaultThermistor)),
+                   c.find('EXTRUDER_0', 'THERMISTOR', defaultThermistor)),
+#                   c.find('EXTRUDER_1', 'THERMISTOR', defaultThermistor),
+#                   c.find('EXTRUDER_2', 'THERMISTOR', defaultThermistor)),
                 wait_name='temp')
     watchList.append(['temp', 0.1])
 
@@ -44,54 +46,23 @@ def setup_hardware(thread):
     #hal.Pin('hm2_5i25.0.pwmgen.00.pwm_frequency').set(20000)  # 100Hz
     # HBP
 #    hal.Pin('hm2_5i25.0.pwmgen.00.enable').set(True)
-#    hal.Pin('hm2_5i25.0.pwmgen.00.value').link('hbp-temp-pwm')
-    # Spindle
-    spindlespeed = hal.newsig('spindle-speed', hal.HAL_FLOAT)
-    spindleon = hal.newsig('spindle-on', hal.HAL_BIT)
-    spindlespeed20 = hal.newsig('spindle-speed-20', hal.HAL_FLOAT)
-    spindlepwmspeed = hal.newsig('spindle-pwm-speed', hal.HAL_FLOAT)
-    spindlepwmspeedlimited = hal.newsig('spindle-pwm-speed-limited', hal.HAL_FLOAT)
-
-    spindlespeed.link('motion.spindle-speed-out-rps')
-    spindleon.link('motion.spindle-on')
-
-#    hal.Pin('hm2_5i25.0.pwmgen.02.enable').set(True)
-    hal.Pin('hm2_5i25.0.pwmgen.02.enable').link(spindleon)
-    sum2 = rt.newinst('sum2', 'sum2.spindle-speed-add20')
-    hal.addf(sum2.name, 'servo-thread')
-    sum2.pin('in0').set(20)
-    sum2.pin('in1').link(spindlespeed)
-    sum2.pin('out').link(spindlespeed20)
-
-    div2 = rt.newinst('div2', 'div2.spindlespeed20-divfac')
-    hal.addf(div2.name, 'servo-thread')
-    div2.pin('in0').link(spindlespeed20)
-    div2.pin('in1').set(c.find('SPINDLE', 'FACTOR'))
-    div2.pin('out').link(spindlepwmspeed)
-
-    limit1 = rt.newinst('limit1', 'limit1.spindle-pwm-speed-limited')
-    hal.addf(limit1.name, thread)
-    limit1.pin('in').link(spindlepwmspeed)
-    limit1.pin('out').link(spindlepwmspeedlimited)
-    limit1.pin('min').set(0.05)  # prevent users from setting 0 as jog velocity
-    limit1.pin('max').set(c.find('SPINDLE', 'LIMIT'))
-
-    hal.Pin('hm2_5i25.0.pwmgen.02.value').link(spindlepwmspeedlimited)
-
+    os.system('halcmd setp hm2_5i25.0.pwmgen.00.enable true')
+    hal.Pin('hm2_5i25.0.pwmgen.00.value').link('hbp-temp-pwm')
     # configure extruders
-#    for n in range(0, 1):
+    for n in range(0, 1):
 #        hal.Pin('hm2_5i25.0.pwmgen.%02i.enable' % (n + 1)).set(True)
-#        hal.Pin('hm2_5i25.0.pwmgen.%02i.value' % (n + 1)).link('e%i-temp-pwm' % n)
+        os.system('halcmd setp hm2_5i25.0.pwmgen.%02i.enable true' % (n + 1))
+        hal.Pin('hm2_5i25.0.pwmgen.%02i.value' % (n + 1)).link('e%i-temp-pwm' % n)
     # configure fans
-    for n in range(0, 2):
-        hal.Pin('hm2_5i25.0.pwmgen.%02i.enable' % (n + 3)).link('f%i-pwm-enable' % n)
-        hal.Pin('hm2_5i25.0.pwmgen.%02i.value' % (n + 3)).link('f%i-pwm' % n)
+    for n in range(0, 1):
+        hal.Pin('hm2_5i25.0.pwmgen.%02i.enable' % (n + 4)).link('f%i-pwm-enable' % n)
+        hal.Pin('hm2_5i25.0.pwmgen.%02i.value' % (n + 4)).link('f%i-pwm' % n)
         hal.Signal('f%i-pwm-enable' % n).set(True)
     # configure exps
-#    for n in range(0, 1):
-#        hal.Pin('hm2_5i25.0.pwmgen.%02i.enable' % (n + 5)).link('exp%i-pwm-enable' % n)
-#        hal.Pin('hm2_5i25.0.pwmgen.%02i.value' % (n + 5)).link('exp%i-pwm' % n)
-#        hal.Signal('exp%i-pwm' % n).set(1.0)
+    for n in range(0, 1):
+        hal.Pin('hm2_5i25.0.pwmgen.%02i.enable' % (n + 5)).link('exp%i-pwm-enable' % n)
+        hal.Pin('hm2_5i25.0.pwmgen.%02i.value' % (n + 5)).link('exp%i-pwm' % n)
+        hal.Signal('exp%i-pwm' % n).set(1.0)
     # configure leds
     # none
 
@@ -100,13 +71,18 @@ def setup_hardware(thread):
 #    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-0-home')   # X
 #    hal.Pin('hm2_5i25.0.gpio.036.in_not').link('limit-0-max')    # X
 #    hal.Pin('hm2_5i25.0.gpio.026.in_not').link('limit-1-home')   # Y
-    hal.Pin('hm2_5i25.0.gpio.030.in_not').link('limit-0-home')   # X
+#    hal.Pin('hm2_5i25.0.gpio.030.in_not').link('limit-0-home')   # X
+    hal.Pin('hm2_5i25.0.gpio.071.in_not').link('limit-0-home')   # X
     hal.Pin('hm2_5i25.0.gpio.028.in_not').link('limit-1-0-home')    # YL
     hal.Pin('hm2_5i25.0.gpio.029.in_not').link('limit-1-1-home')    # YR
-    hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-2-0-home')  # ZLF
-    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-2-1-home')  # ZRF
-    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-2-2-home')  # ZLB
-    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-2-3-home')  # ZRB
+#    hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-2-0-home')  # ZLF
+#    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-2-1-home')  # ZRF
+#    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-2-2-home')  # ZLB
+#    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-2-3-home')  # ZRB
+    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-2-0-home')  # ZLF
+    hal.Pin('hm2_5i25.0.gpio.025.in_not').link('limit-2-1-home')  # ZRF
+    hal.Pin('hm2_5i25.0.gpio.026.in_not').link('limit-2-2-home')  # ZLB
+    hal.Pin('hm2_5i25.0.gpio.027.in_not').link('limit-2-3-home')  # ZRB
 
 #    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-0-max')    # X
 #    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-home')   # Y
@@ -114,16 +90,19 @@ def setup_hardware(thread):
 #    hal.Pin('hm2_5i25.0.gpio.028.in').link('limit-2-0-home')  # ZR
 #    hal.Pin('hm2_5i25.0.gpio.029.in').link('limit-2-1-home')  # ZL
 
-    # probe ...
+    # probe ... 74CBTD3861 
+
+#    hal.Pin('hm2_5i25.0.capsense.00.trigged').link('probe-signal')  #
 
     # ADC
-#    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.0.out').link('temp.ch-00.input')
-#    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.1.out').link('temp.ch-01.input')
+    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.0.out').link('temp.ch-00.input')
+    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.1.out').link('temp.ch-01.input')
 #    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.2.out').link('temp.ch-02.input')
 #    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.3.out').link('temp.ch-03.input')
+    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.7.out').link('temp.voltage-ref')
 
-#    hal.Pin('temp.ch-00.value').link('hbp-temp-meas')
-#    hal.Pin('temp.ch-01.value').link('e0-temp-meas')
+    hal.Pin('temp.ch-00.value').link('hbp-temp-meas')
+    hal.Pin('temp.ch-01.value').link('e0-temp-meas')
 #    hal.Pin('temp.ch-02.value').link('e1-temp-meas')
 #    hal.Pin('temp.ch-03.value').link('e2-temp-meas')
 

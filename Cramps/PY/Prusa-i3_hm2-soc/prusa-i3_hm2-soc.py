@@ -30,7 +30,7 @@ hal.addf('motion-command-handler', 'servo-thread')
 
 numFans = c.find('FDM', 'NUM_FANS')
 numExtruders = c.find('FDM', 'NUM_EXTRUDERS')
-numLights = c.find('FDM', 'NUM_LIGHTS')
+#numLights = c.find('FDM', 'NUM_LIGHTS')
 
 # Axis-of-motion Specific Configs (not the GUI)
 ve.velocity_extrusion(extruders=numExtruders, thread='servo-thread')
@@ -59,7 +59,6 @@ base.setup_stepper_multiplexer(stepgenIndex=4, sections=multiplexSections,
                                selSignal='extruder-sel', thread='servo-thread')
 
 # Fans
-#for i in range(0, numFans):
 for i in range(0, numFans):
     base.setup_fan('f%i' % i, thread='servo-thread')
 for i in range(0, numExtruders):
@@ -76,17 +75,18 @@ for i in range(0, numExtruders):
                                     thread='servo-thread')
 
 # LEDs
-for i in range(0, numLights):
-    base.setup_light('l%i' % i, thread='servo-thread')
+#for i in range(0, numLights):
+#    base.setup_light('l%i' % i, thread='servo-thread')
 
 # Standard I/O - EStop, Enables, Limit Switches, Etc
+#errorSignals = []
 errorSignals = ['temp-hw-error', 'watchdog-error', 'hbp-error']
 for i in range(0, numExtruders):
     errorSignals.append('e%i-error' % i)
 base.setup_estop(errorSignals, thread='servo-thread')
 base.setup_tool_loopback()
 # Probe
-base.setup_probe(thread='servo-thread')
+#base.setup_probe(thread='servo-thread')
 # Setup Hardware
 hardware.setup_hardware(thread='servo-thread')
 

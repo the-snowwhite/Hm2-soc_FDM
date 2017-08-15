@@ -99,6 +99,20 @@ def create_gantry_rcomp(axisIndex, timer=100):
     comp.pin('offset-left').link('home-offset-%i-0' % axisIndex)
     comp.pin('offset-right').link('home-offset-%i-1' % axisIndex)
 
+def create_gantry4_rcomp(axisIndex, timer=100):
+    name = 'gantry4-config'
+    comp = hal.RemoteComponent(name, timer=timer)
+    comp.newpin('offset-left-front', hal.HAL_FLOAT, hal.HAL_IO)
+    comp.newpin('offset-right-front', hal.HAL_FLOAT, hal.HAL_IO)
+    comp.newpin('offset-left-back', hal.HAL_FLOAT, hal.HAL_IO)
+    comp.newpin('offset-right-back', hal.HAL_FLOAT, hal.HAL_IO)
+    comp.ready()
+
+    comp.pin('offset-left-front').link('home-offset-%i-0' % axisIndex)
+    comp.pin('offset-right-front').link('home-offset-%i-1' % axisIndex)
+    comp.pin('offset-left-back').link('home-offset-%i-2' % axisIndex)
+    comp.pin('offset-right-back').link('home-offset-%i-3' % axisIndex)
+
 
 def create_pid_rcomp(name, timer=100):
     comp = hal.RemoteComponent(name, timer=timer)

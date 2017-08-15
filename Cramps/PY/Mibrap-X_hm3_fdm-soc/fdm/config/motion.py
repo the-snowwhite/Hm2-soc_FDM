@@ -1,15 +1,19 @@
 from machinekit import hal
 from machinekit import rtapi as rt
 from machinekit import config as c
+import os
 
 
 def setup_motion(kinematics='trivkins'):
     rt.loadrt(kinematics)
     rt.loadrt('tp')
     rt.loadrt('hostmot2')
-    rt.newinst(c.find('HOSTMOT2', 'DRIVER'),
-        c.find('HOSTMOT2', 'DEVNAME'),
-        descriptor=hm3-custom.bin config=c.find('HOSTMOT2', 'CONFIG'))
+
+#    rt.newinst(c.find('HOSTMOT2', 'DRIVER'),
+#        c.find('HOSTMOT2', 'DEVNAME'),
+#        c.find('HOSTMOT2', 'CONFIG'))
+    os.system('halcmd newinst hm2_soc_ol hm2-socfpga0 -- config="firmware=socfpga/dtbo/DE0_Nano_SoC_Cramps.3x24.dtbo num_pwmgens=6 num_stepgens=8 enable_adc=1" debug=1')
+
     # motion controller, get name and thread periods from ini file
     rt.loadrt(c.find('EMCMOT', 'EMCMOT'),
         servo_period_nsec=c.find('EMCMOT', 'SERVO_PERIOD'),
