@@ -1,6 +1,7 @@
 from machinekit import hal
 from machinekit import rtapi as rt
 from machinekit import config as c
+
 from fdm.config import base
 
 import os
@@ -24,7 +25,7 @@ def init_hardware():
     defaultThermistor = 'semitec_103GT_2'
     hal.loadusr('hal_temp_atlas',
                 name='temp',
-                filter_size=20,
+                filter_size=1,
                 ref='y',
 #                channels='00:%s,01:%s,02:%s,03:%s'
                 channels='00:%s,01:%s'
@@ -67,15 +68,29 @@ def setup_hardware(thread):
 
     # GPIO
     # Adjust as needed for your switch polarity
-    hal.Pin('hm2_5i25.0.gpio.025.in_not').link('limit-0-max')    # X
-    hal.Pin('hm2_5i25.0.gpio.027.in_not').link('limit-1-max')    # Y
-    hal.Pin('hm2_5i25.0.gpio.028.in_not').link('limit-2-0-home')  # ZR
-    hal.Pin('hm2_5i25.0.gpio.029.in_not').link('limit-2-1-home')  # ZL
+#    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-0-home')   # X
+#    hal.Pin('hm2_5i25.0.gpio.036.in_not').link('limit-0-max')    # X
+#    hal.Pin('hm2_5i25.0.gpio.026.in_not').link('limit-1-home')   # Y
+#    hal.Pin('hm2_5i25.0.gpio.030.in_not').link('limit-0-home')   # X
+    hal.Pin('hm2_5i25.0.gpio.071.in_not').link('limit-0-home')   # X
+    hal.Pin('hm2_5i25.0.gpio.028.in_not').link('limit-1-0-home')    # YL
+    hal.Pin('hm2_5i25.0.gpio.029.in_not').link('limit-1-1-home')    # YR
+#    hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-2-0-home')  # ZLF
+#    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-2-1-home')  # ZRF
+#    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-2-2-home')  # ZLB
+#    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-2-3-home')  # ZRB
+    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-2-0-home')  # ZLF
+    hal.Pin('hm2_5i25.0.gpio.025.in_not').link('limit-2-1-home')  # ZRF
+    hal.Pin('hm2_5i25.0.gpio.026.in_not').link('limit-2-2-home')  # ZLB
+    hal.Pin('hm2_5i25.0.gpio.027.in_not').link('limit-2-3-home')  # ZRB
 
-    hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-0-home')   # X
-    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-home')   # Y
+#    hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-0-max')    # X
+#    hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-home')   # Y
+#    hal.Pin('hm2_5i25.0.gpio.027.in').link('limit-1-max')    # Y
+#    hal.Pin('hm2_5i25.0.gpio.028.in').link('limit-2-0-home')  # ZR
+#    hal.Pin('hm2_5i25.0.gpio.029.in').link('limit-2-1-home')  # ZL
 
-# probe ...  
+    # probe ... 74CBTD3861 
 
 #    hal.Pin('hm2_5i25.0.capsense.00.trigged').link('probe-signal')  #
 

@@ -1,4 +1,4 @@
-# HAL file for BeagleBone + Cramps cape with 5 steppers and 3D printer board
+# HAL file for mksocfpga and 3D printer board
 import os
 
 from machinekit import rtapi as rt
@@ -20,11 +20,13 @@ motion.setup_motion()
 hardware.init_hardware()
 storage.init_storage('storage.ini')
 
-# Gantry component for Z Axis
-base.init_gantry(axisIndex=2)
+# Gantry components for Y and Z Axis
+base.init_gantry(axisIndex=1)
+base.init_gantry4(axisIndex=2, joints=4)
 
 # reading functions
 hardware.hardware_read()
+base.gantry_read(gantryAxis=1, thread='servo-thread')
 base.gantry_read(gantryAxis=2, thread='servo-thread')
 hal.addf('motion-command-handler', 'servo-thread')
 
@@ -35,17 +37,24 @@ numExtruders = c.find('FDM', 'NUM_EXTRUDERS')
 # Axis-of-motion Specific Configs (not the GUI)
 ve.velocity_extrusion(extruders=numExtruders, thread='servo-thread')
 # X [0] Axis
-base.setup_stepper(section='AXIS_0', axisIndex=0, stepgenIndex=0)
+base.setup_stepper(section='AXIS_0', axisIndex=0, stepgenIndex=6)
 # Y [1] Axis
-base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=1)
-# Z [2] Axis
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=2,
+base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=4,
               thread='servo-thread', gantry=True, gantryJoint=0)
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=3,
+base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=5,
             gantry=True, gantryJoint=1)
+# Z [2] Axis
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=0,
+              thread='servo-thread', gantry=True, gantryJoint=0)
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=1,
+            gantry=True, gantryJoint=1)
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=2,
+            gantry=True, gantryJoint=2)
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=3,
+            gantry=True, gantryJoint=3)
 # Extruder, velocity controlled
 for i in range(0, numExtruders):
-    base.setup_stepper(section='EXTRUDER_%i' % i, stepgenIndex=4,
+    base.setup_stepper(section='EXTRUDER_%i' % i, stepgenIndex=7,
                        velocitySignal='ve-extrude-vel')
 
 # Extruder Multiplexer
@@ -55,7 +64,7 @@ base.setup_extruder_multiplexer(extruders=numExtruders, thread='servo-thread')
 multiplexSections = []
 for i in range(0, numExtruders):
     multiplexSections.append('EXTRUDER_%i' % i)
-base.setup_stepper_multiplexer(stepgenIndex=4, sections=multiplexSections,
+base.setup_stepper_multiplexer(stepgenIndex=7, sections=multiplexSections,
                                selSignal='extruder-sel', thread='servo-thread')
 
 # Fans
@@ -92,6 +101,7 @@ hardware.setup_hardware(thread='servo-thread')
 
 # write out functions
 hal.addf('motion-controller', 'servo-thread')
+base.gantry_write(gantryAxis=1, thread='servo-thread')
 base.gantry_write(gantryAxis=2, thread='servo-thread')
 hardware.hardware_write()
 
