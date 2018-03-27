@@ -55,6 +55,9 @@ def setup_hardware(thread):
 
     spindlespeed.link('motion.spindle-speed-out-rps')
     spindleon.link('motion.spindle-on')
+    os.system('halcmd setp hm2_5i25.0.gpio.071.is_output true')
+    os.system('halcmd setp hm2_5i25.0.gpio.071.invert_output true')
+    hal.Pin('hm2_5i25.0.gpio.071.out').link(spindleon)
 
 #    hal.Pin('hm2_5i25.0.pwmgen.02.enable').set(True)
     hal.Pin('hm2_5i25.0.pwmgen.00.enable').link(spindleon)
