@@ -12,7 +12,7 @@ def setup_motion(kinematics='trivkins'):
 #    rt.newinst(c.find('HOSTMOT2', 'DRIVER'),
 #        c.find('HOSTMOT2', 'DEVNAME'),
 #        c.find('HOSTMOT2', 'CONFIG'))
-    os.system('halcmd newinst hm2_soc_ol hm2-socfpga0 -- config="firmware=socfpga/dtbo/DE10_Nano_FB_Cramps.3x24_cap.dtbo num_pwmgens=1 num_stepgens=4" debug=1')
+    os.system('halcmd newinst hm2_soc_ol hm2-socfpga0 -- config="firmware=socfpga/dtbo/DE0_Nano_SoC_Cramps.3x24_cap.dtbo num_pwmgens=1 num_stepgens=4" debug=1')
 
     # motion controller, get name and thread periods from ini file
     rt.loadrt(c.find('EMCMOT', 'EMCMOT'),
