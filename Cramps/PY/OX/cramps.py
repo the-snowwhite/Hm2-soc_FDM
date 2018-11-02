@@ -101,7 +101,7 @@ def setup_hardware(thread):
 
     # GPIO
     # Adjust as needed for your switch polarity
-    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-0-home')   # X
+    hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-0-home')   # X
     hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-1-0-home')    # YL
     hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-1-home')    # YR
     hal.Pin('hm2_5i25.0.gpio.027.in_not').link('limit-2-home')    # Z
