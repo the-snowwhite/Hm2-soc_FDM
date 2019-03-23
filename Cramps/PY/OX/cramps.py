@@ -43,6 +43,7 @@ def init_hardware():
 def setup_hardware(thread):
     # PWM
     #hal.Pin('hm2_5i25.0.pwmgen.00.pwm_frequency').set(20000)  # 100Hz
+#    os.system('halcmd setp hm2_5i25.0.pwmgen.00.pwm_frequency 20000')
     # HBP
 #    hal.Pin('hm2_5i25.0.pwmgen.00.enable').set(True)
 #    hal.Pin('hm2_5i25.0.pwmgen.00.value').link('hbp-temp-pwm')
@@ -56,7 +57,7 @@ def setup_hardware(thread):
     spindlespeed.link('motion.spindle-speed-out-rps')
     spindleon.link('motion.spindle-on')
     os.system('halcmd setp hm2_5i25.0.gpio.071.is_output true')
-    os.system('halcmd setp hm2_5i25.0.gpio.071.invert_output true')
+#    os.system('halcmd setp hm2_5i25.0.gpio.071.invert_output true')
     hal.Pin('hm2_5i25.0.gpio.071.out').link(spindleon)
 
 #    hal.Pin('hm2_5i25.0.pwmgen.02.enable').set(True)
@@ -101,7 +102,7 @@ def setup_hardware(thread):
 
     # GPIO
     # Adjust as needed for your switch polarity
-    hal.Pin('hm2_5i25.0.gpio.024.in').link('limit-0-home')   # X
+    hal.Pin('hm2_5i25.0.gpio.024.in_not').link('limit-0-home')   # X
     hal.Pin('hm2_5i25.0.gpio.025.in').link('limit-1-0-home')    # YL
     hal.Pin('hm2_5i25.0.gpio.026.in').link('limit-1-1-home')    # YR
     hal.Pin('hm2_5i25.0.gpio.027.in_not').link('limit-2-home')    # Z
@@ -123,9 +124,15 @@ def setup_hardware(thread):
 #    hal.Pin('hm2_5i25.0.gpio.028.in').link('limit-2-0-home')  # ZR
 #    hal.Pin('hm2_5i25.0.gpio.029.in').link('limit-2-1-home')  # ZL
 
-    # probe ... 74CBTD3861 
+    # probe ... 74CBTD3861
 
     hal.Pin('hm2_5i25.0.capsense.00.trigged').link('probe-signal')  #
+    os.system('halcmd setp hm2_5i25.0.capsense.00.hysteresis 0x44444444')
+#    hm2_5i25.0.pin('capsense.00.hysteresis').set(c.find('PROBE', 'HYSTERESIS'))
+#    hm2_5i25.0.pin('capsense.00.hysteresis').set(0x44444444))
+#    hm2_5i25.0.pin('hysteresis').set(c.find('PROBE', 'HYSTERESIS'))
+#    hm2_5i25.0.pin('hysteresis').set(17476)
+#    hal.pin('hm2_5i25.0.capsense.00.hysteresis').set(1000))
 
     # ADC
 #    hal.Pin('hm2_5i25.0.nano_soc_adc.ch.0.out').link('temp.ch-00.input')
