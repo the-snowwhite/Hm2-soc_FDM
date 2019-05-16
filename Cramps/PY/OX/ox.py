@@ -33,14 +33,14 @@ hal.addf('motion-command-handler', 'servo-thread')
 # Axis-of-motion Specific Configs (not the GUI)
 
 # X [0] Axis
-base.setup_stepper(section='AXIS_0', axisIndex=0, stepgenIndex=0)
+base.setup_stepper(section='AXIS_0', axisIndex=0, stepgenIndex=0, stepgenType='hm2_5i25.0.stepgen')
 # Y [1] Axis
-base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=1,
+base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=1, stepgenType='hm2_5i25.0.stepgen',
               thread='servo-thread', gantry=True, gantryJoint=0)
-base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=2,
+base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=2, stepgenType='hm2_5i25.0.stepgen',
             gantry=True, gantryJoint=1)
 # Z [2] Axis
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=3)
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=3, stepgenType='hm2_5i25.0.stepgen')
 
 # Fans
 #for i in range(0, numFans):
