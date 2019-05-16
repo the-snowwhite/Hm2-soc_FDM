@@ -7,7 +7,7 @@ from machinekit import config as c
 
 from fdm.config import base
 from fdm.config import storage
-from fdm.config import motion
+from fdm_local.config import motion
 import cramps as hardware
 
 # initialize the RTAPI command client
