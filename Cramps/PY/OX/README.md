@@ -18,4 +18,4 @@ With individual Left/Right Z-axis offset-adjustment in machinekit-client
 
 
 
-![](./images/Prusa-i3_dev.jpg)
+![](./images/Odroid-ox.jpg)
