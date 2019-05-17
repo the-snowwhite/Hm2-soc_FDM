@@ -8,7 +8,7 @@ from machinekit import config as c
 from fdm.config import velocity_extrusion as ve
 from fdm.config import base
 from fdm.config import storage
-from fdm.config import motion
+from fdm_local.config import motion
 import cramps as hardware
 
 # initialize the RTAPI command client
@@ -35,17 +35,17 @@ numExtruders = c.find('FDM', 'NUM_EXTRUDERS')
 # Axis-of-motion Specific Configs (not the GUI)
 ve.velocity_extrusion(extruders=numExtruders, thread='servo-thread')
 # X [0] Axis
-base.setup_stepper(section='AXIS_0', axisIndex=0, stepgenIndex=0)
+base.setup_stepper(section='AXIS_0', axisIndex=0, stepgenIndex=0, stepgenType='hm2_5i25.0.stepgen')
 # Y [1] Axis
-base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=1)
+base.setup_stepper(section='AXIS_1', axisIndex=1, stepgenIndex=1, stepgenType='hm2_5i25.0.stepgen')
 # Z [2] Axis
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=2,
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=2, stepgenType='hm2_5i25.0.stepgen',
               thread='servo-thread', gantry=True, gantryJoint=0)
-base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=3,
+base.setup_stepper(section='AXIS_2', axisIndex=2, stepgenIndex=3, stepgenType='hm2_5i25.0.stepgen',
             gantry=True, gantryJoint=1)
 # Extruder, velocity controlled
 for i in range(0, numExtruders):
-    base.setup_stepper(section='EXTRUDER_%i' % i, stepgenIndex=4,
+    base.setup_stepper(section='EXTRUDER_%i' % i, stepgenIndex=4, stepgenType='hm2_5i25.0.stepgen',
                        velocitySignal='ve-extrude-vel')
 
 # Extruder Multiplexer
