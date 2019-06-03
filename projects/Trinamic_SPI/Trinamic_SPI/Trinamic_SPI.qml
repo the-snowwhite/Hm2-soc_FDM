@@ -36,7 +36,6 @@ import "./StatusBar"
 //HalApplicationWindow {
 ServiceWindow {
     id: window
-    property bool wasConnected: false
 
 //    name: "TrinamicSPI"
 //    title: qsTr("Trinamic SPI Test")
@@ -73,6 +72,7 @@ ServiceWindow {
         }
 
 //        property string labelName: "Gantry Configuration"
+        property bool wasConnected: false
 
         visible: halRemoteComponent.ready || wasConnected
         enabled:  halRemoteComponent.connected
@@ -242,24 +242,64 @@ ServiceWindow {
             wrapMode: Text.WordWrap
         }
 
+        HalGauge {
+            id: tempGauge
+            Layout.fillWidth: true
+            name: "temp.meas"
+            suffix: ""
+            decimals: 0
+            valueVisible: !errorLed.value
+            minimumValueVisible: false
+            maximumValueVisible: false
+//            minimumValue: root.gaugeMinimumValue
+//            maximumValue: root.gaugeMaximumValue
+            minimumValue: -128
+            maximumValue: 128
+            z0BorderValue: root.gaugeZ0BorderValue
+//            z1BorderValue: root.gaugeZ1BorderValue
+            z1BorderValue: 90
+            z0Color: valueVisible ? "green" : "white"
+            z1Color: valueVisible ? "yellow" : "white"
+            z2Color: valueVisible ? "red" : "white"
+
+            Label {
+                anchors.centerIn: parent
+                text: qsTr("N/A")
+                visible: !tempGauge.valueVisible
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onDoubleClicked: tempChart.visible = !tempChart.visible
+                onClicked: control.visible = !control.visible
+                cursorShape: "PointingHandCursor"
+            }
+        }
+
         LogChart {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            name: logChart
-            updateInterval: 1
+            id: tempChart
             Layout.fillHeight: true
-            autoUpdate: true
-            autoSampling: true
-            changeGraphScale: 1
-            scrollZoomFactor: 1
-            sampleInterval: 1
-            minimumValue: -100
+            visible: true
+            value: tempGauge.value
+            minimumValue: tempGauge.minimumValue
+            maximumValue: tempGauge.maximumValue
+            leftTextVisible: false
+            rightTextVisible: false
+            autoSampling: (tempGauge.halPin.synced) && visible
+            autoUpdate: autoSampling
+            updateInterval: 500
+            timeSpan: 120000
+//            changeGraphScale: 1
+//            scrollZoomFactor: 1
+//            sampleInterval: 1
+//            minimumValue: -100
             Layout.maximumHeight: 512
             Layout.maximumWidth: 256
             gridColor: qsTr("#eeeeee")
             backgroundColor: qsTr("#ffffff")
-            maximumValue: 100
-//            value: 10
-            targetValue: 0
+//            maximumValue: 100
+//            targetValue: 0
         }
 
         Item {

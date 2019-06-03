@@ -8,6 +8,8 @@ from fdm_local.config import motion
 from fdm.config import base
 import cramps as hardware
 
+hal.epsilon[1] = 0.1
+
 # initialize the RTAPI command client
 rt.init_RTAPI()
 # loads the ini file passed by linuxcnc
@@ -44,9 +46,9 @@ hardware.hardware_write()
 
 
 rt.loadrt('trinamic_dbspi', dbspi_chans='hm2_5i25.0.dbspi.0')
-#i2c_dbspi = hal.Component('i2c_dbspi.0')
-#sgval = hal.newsig('sg-val-signed', hal.HAL_S32)
-#i2c_dbspi.pin('sg.val').link(sgval)
+trinamicdbspi = hal.Component('trinamic-dbspi.0')
+sgval = hal.newsig('sg-val-signed', hal.HAL_FLOAT)
+trinamicdbspi.pin('sg.val').link(sgval)
 
 # we need a thread to execute the component functions
 #rt.newthread('main-thread', 1000000, fp=False)
@@ -68,14 +70,14 @@ rcomp = hal.RemoteComponent('TrinamicSPI', timer=100)
 rcomp.newpin('button0', hal.HAL_BIT, hal.HAL_OUT)
 rcomp.newpin('button1', hal.HAL_BIT, hal.HAL_OUT)
 rcomp.newpin('led', hal.HAL_BIT, hal.HAL_IN)
-#rcomp.newpin('logChart', hal.HAL_S32, hal.HAL_IN)
+rcomp.newpin('temp.meas', hal.HAL_FLOAT, hal.HAL_IN, eps=1)
 rcomp.ready()
 
 # link remote component pins
 rcomp.pin('button0').link(input0)
 rcomp.pin('button1').link(input1)
 rcomp.pin('led').link(output)
-#rcomp.pin('logChart').link(value)
+rcomp.pin('temp.meas').link(sgval)
 
 # ready to start the threads
 hal.start_threads()
