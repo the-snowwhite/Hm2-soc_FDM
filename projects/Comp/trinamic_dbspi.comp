@@ -1,0 +1,183 @@
+component trinamic_dbspi "Support for the Trinamic 26xx spi";
+
+description """The component takes parameters in the form of a comma-separated
+list of dbspi (buffered SPI) instance names, for example:
+
+\\fB loadrt mesa_5i25 dbspi_chans=hm2_5i25.0.dbspi.0, hm2_5i25.0.dbspi.1\\fR
+
+The DBSPI instances are printed to the dmesg buffer during the Hostmot2 setup
+sequence, one for each dbspi instance included in the bitfile loaded to each
+installed card during the Hostmot2 setup sequence. Type "dmesg" at the terminal
+prompt to view the output.""";
+pin in bit  seimin.in "Minimum coolStep current: 0: 1⁄2 CS current setting 1: 1⁄4 CS current setting";
+pin in u32  sedn.in "Current decrement speed";
+pin in u32  semax.in "Upper coolStep threshold as an offset from the lower threshold";
+pin in u32  seup.in "Current increment size";
+pin in u32  semin.in "Lower coolStep threshold/coolStep disable";
+pin in bit  sfilt.in "stallGuard2 filter enable";
+pin io float sgt.set "stallGuard2 threshold value(7-bit signed)";
+pin in u32  cs.in "Current scale value (5-bit unsigned)";
+pin out u32 full.val "Full response data";
+pin out float sg.val "Stall gaurd value";
+pin out bit stst.status "Standstill indicator";
+pin out bit olb.status "Open load indicator";
+pin out bit ola.status "Open load indicator";
+pin out bit s2gb.status "Short to GND detection bits on high-side transistors";
+pin out bit s2ga.status "Short to GND detection bits on high-side transistors";
+pin out bit otpw.status "Overtemperature warning";
+pin out bit ot.status "Overtemperature shutdown";
+pin out bit sg.status "stallGuard2 status";
+
+option extra_setup yes;
+
+variable u32 *buf_write_0;
+variable u32 *buf_read_0;
+variable s32 sg_meas;
+variable u32 seimin;
+variable u32 sedn;
+variable u32 semax;
+variable u32 seup;
+variable u32 semin;
+variable bool sfilt;
+variable s8 sgt;
+variable u8 cs;
+variable u32 firstrun;
+
+
+license "GPL";
+author "Andy Pugh / Cliff Blackburn / Michael Brown";
+
+include "hostmot2.h";
+include "TMC2660_Fields.h";
+;;
+// registers:
+#define TMC2660_DRVCTRL 	0x00000000 	// (Address: 0)
+#define TMC2660_CHOPCONF 	0x00080000 	// (Address: 1)
+#define TMC2660_SMARTEN 	0x000A0000 	// (Address: 2)
+#define TMC2660_SGCSCONF 	0x000D0000 	// (Address: 3)
+#define TMC2660_DRVCONF 	0x000E0000 	// (Address: 4)
+#define TMC2660_DRVCTRL_CONF 	0x00000000
+#define TMC2660_CHOPCONF_CONF 	0x000901B8
+#define TMC2660_SMARTEN_CONF	0x000AC540
+#define TMC2660_SGCSCONF_CONF	0x000D0016
+#define TMC2660_DRVCONF_CONF	0x000E0050
+
+// to parse the modparam
+char *dbspi_chans[16] = {0,};
+RTAPI_MP_ARRAY_STRING(dbspi_chans, 16, "DBSPI Channel names");
+
+static int read(struct __comp_state *__comp_inst){
+    int i;
+
+    // Setup DAC, watchdog will have reset it if done in setup
+    if(firstrun) {
+        seimin =  ((TMC2660_SMARTEN_CONF & TMC2660_SEIMIN_MASK) >> TMC2660_SEIMIN_SHIFT);
+        sedn =    ((TMC2660_SMARTEN_CONF & TMC2660_SEDN_MASK)   >> TMC2660_SEDN_SHIFT);
+        semax =   ((TMC2660_SMARTEN_CONF & TMC2660_SEMAX_MASK)  >> TMC2660_SEMAX_SHIFT);
+        seup =    ((TMC2660_SMARTEN_CONF & TMC2660_SEUP_MASK)   >> TMC2660_SEUP_SHIFT);
+        semin =   ((TMC2660_SMARTEN_CONF & TMC2660_SEMIN_MASK)  >> TMC2660_SEMIN_SHIFT);
+        sfilt =   ((TMC2660_SGCSCONF_CONF & TMC2660_SFILT_MASK) >> TMC2660_SFILT_SHIFT);
+        sgt =     ((TMC2660_SGCSCONF_CONF & TMC2660_SGT_MASK)   >> TMC2660_SGT_SHIFT);
+        cs  =     ((TMC2660_SGCSCONF_CONF & TMC2660_CS_MASK)    >> TMC2660_CS_SHIFT);
+
+        firstrun = false;
+    } else {
+        if (seimin_in) {
+            seimin = seimin_in;
+        }
+        if (sedn_in) {
+            sedn = sedn_in;
+        }
+        if (semax_in) {
+            semax = semax_in;
+        }
+        if (seup_in) {
+            seup = seup_in;
+        }
+        if (semin_in) {
+            semin = semin_in;
+        }
+        if (sfilt_in) {
+            sfilt = sfilt_in;
+        }
+        if (sgt_set) {
+            sgt = (u8)(sgt_set);
+        }
+        if (cs_in) {
+            cs = cs_in;
+        }
+    }
+
+    // Read Values's into Pins
+//    for(i=0; i < 1; i++) {
+        full_val = (u32)(*buf_read_0);
+        sg_meas = (s32)(((*buf_read_0) & 0xFF300) >> 10);
+        sg_val = (float)(sg_meas);
+        stst_status = ((*buf_read_0) & 0x80) ? 1:0 ;
+        olb_status  = ((*buf_read_0) & 0x40) ? 1:0 ;
+        ola_status  = ((*buf_read_0) & 0x20) ? 1:0 ;
+        s2gb_status = ((*buf_read_0) & 0x10) ? 1:0 ;
+        s2ga_status = ((*buf_read_0) & 0x08) ? 1:0 ;
+        otpw_status = ((*buf_read_0) & 0x04) ? 1:0 ;
+        ot_status   = ((*buf_read_0) & 0x02) ? 1:0 ;
+        sg_status   = ((*buf_read_0) & 0x01) ? 1:0 ;
+//    }
+
+    // Set write buff
+    *buf_write_0 = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) | (sgt & 0x3F)) << TMC2660_SGT_SHIFT) | (cs & 0x1F));
+
+    return 0;
+}
+
+EXTRA_SETUP(){
+    int i, r;
+    char *name = dbspi_chans[extra_arg]; // This is the string which identifies board and instance
+
+    firstrun = true;
+    // Set up channel descriptors
+    //hm2_dbspi_setup_chan(name, chan, cs, bits, mhz, delay(ns), cpol, cpha, noclear, noecho, samplelate)
+    r = hm2_dbspi_setup_chan(name, 0, 0, 20, 3, 15, 1, 0, 0, 0, 0);
+
+    if (r < 0) {
+        HM2_ERR_NO_LL("There have been %i errors during channel setup, "
+                      "quitting\n", -r);
+        return -EINVAL;
+    }
+
+    // Setup ADC
+        // ADC, chans 0-3 +/-10V
+    r += hm2_dbspi_write_chan(name, 0, (TMC2660_DRVCTRL | TMC2660_DRVCTRL_CONF));
+    r += hm2_dbspi_write_chan(name, 0, (TMC2660_CHOPCONF | TMC2660_CHOPCONF_CONF));
+    r += hm2_dbspi_write_chan(name, 0, (TMC2660_SMARTEN | TMC2660_SMARTEN_CONF));
+    r += hm2_dbspi_write_chan(name, 0, (TMC2660_SGCSCONF | TMC2660_SGCSCONF_CONF));
+    r += hm2_dbspi_write_chan(name, 0, (TMC2660_DRVCONF | TMC2660_DRVCONF_CONF));
+
+    if (r < 0) {
+        HM2_ERR_NO_LL("There have been %i errors during ADC setup, "
+                      "quitting\n", -r);
+        return -EINVAL;
+    }
+
+//    for(i = 0; i < 1; i++) {
+        r += hm2_tram_add_dbspi_frame(name, 0, &buf_write_0,
+                                &buf_read_0);
+//    }
+
+//    r += hm2_tram_add_dbspi_frame(name, 0, &TMC2660_CHOPCONF,0);
+
+    // This is required, or nothing happens.
+    r = hm2_allocate_dbspi_tram(name);
+
+    // Tell the dbspi driver which function to call
+    r += hm2_dbspi_set_read_function(name, (int (*)(void *))&read, __comp_inst);
+
+    // no separate write function in this example, but it would be:
+    // r += hm2_dbspi_set_write_function(name, &write, __comp_inst);
+
+    if (r < 0) {
+        HM2_ERR_NO_LL("There have been %i errors during TRAM allocation setup, "
+                      "quitting\n", -r);
+        return -EINVAL;
+    }
+    return 0;
+}
