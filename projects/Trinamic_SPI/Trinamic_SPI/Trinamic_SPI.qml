@@ -34,6 +34,8 @@ import "./ManualTab"
 import "./StatusBar"
 
 //HalApplicationWindow {
+
+
 ServiceWindow {
     id: root
 
@@ -50,7 +52,17 @@ ServiceWindow {
     property double gaugeMaximumValue: 512
     property double gaugeZ1BorderValue: gaugeMaximumValue * 0.9
     property double lastSgtValue
-
+    property int drvctrlReg:  drvctrlRegPin.value
+    property int chopconfReg: chopconfRegPin.value
+    property int smartenReg:  smartenRegPin.value
+    property int sgcsconfReg: sgcsconfRegPin.value
+    property int drvconfReg:  drvconfRegPin.value
+    property string regValues: "DRVCTRL; \t  0x000" + drvctrlReg.toString(16).toUpperCase() + "\n" +
+                               "CHOPCONF;\t  0x000" + chopconfReg.toString(16).toUpperCase() + "\n" +
+                               "SMARTEN;\t  0x000" + smartenReg.toString(16).toUpperCase() + "\n" +
+                               "SGCSCONF;\t  0x000" + sgcsconfReg.toString(16).toUpperCase() + "\n" +
+                               "DRVCONF;\t  0x000" + drvconfReg.toString(16).toUpperCase()
+// + string( " %1" ).arg( 15, 1, 16 ).toUpper()
 //    name: "TrinamicSPI"
 //    title: qsTr("Trinamic SPI Test")
     title: applicationCore.applicationName + (d.machineName === "" ? "" :" - " +  d.machineName)
@@ -59,9 +71,12 @@ ServiceWindow {
     toolBar: applicationToolBar
 //    menuBar: applicationMenuBar
 
+
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10
+
 
         Loader {
                 id: applicationToolBar
@@ -103,8 +118,8 @@ ServiceWindow {
 
         RowLayout {
                 ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
+//                    anchors.fill: parent
+//                    anchors.margins: 10
                 Label {
                     id: sgtSetLabel
                     font.bold: true
@@ -196,6 +211,7 @@ ServiceWindow {
                 Label {
                     text: qsTr("Jog Velocity")
                 }
+
                 Item {
                     Layout.fillWidth: true
                 }
@@ -218,14 +234,83 @@ ServiceWindow {
 //            anchors.fill: parent
             anchors.margins: 10
             Layout.fillHeight: true
-//            Layout.fillWidth: true
+            Layout.fillWidth: true
 
-            Label {
-                Layout.fillWidth: true
-                text: "This is for showing the Trinamic SPI registers\n" +
-                    "The Chart represents the output of SG threshold"
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
+            Column {
+                spacing: 10
+//                Layout.fillWidth: true
+//                 Label {
+//
+//                     text: "This is for showing the Trinamic SPI registers\n" +
+//                         "The Chart represents the output of SG threshold"
+//                     horizontalAlignment: Text.AlignHCenter
+//                     wrapMode: Text.WordWrap
+//                 }
+
+                Text {
+                    text: "This shows the Trinamic SPI registers"
+                    // color can be set on the entire element with this property
+                    color: "black"
+
+                }
+
+                Rectangle {
+                    // button
+                    height: 120; width: parent.width
+                    color: mouseArea2.pressed ? "black" : "gray"
+                    Text {
+                        id: regTxt
+                         text: root.regValues
+//                         text: "This is for showing the Trinamic SPI registers\n" +
+//                               'I am the very model of a modern major general!'
+
+                        // color can be set on the entire element with this property
+                        color: "black"
+
+                    }
+                }
+
+
+                Item {
+                    Layout.fillHeight: true
+                    height: 50; width: parent.width
+                }
+
+            }
+
+            HalPin {
+                id: drvctrlRegPin
+                name: "drvctrl.reg"
+                direction: HalPin.In
+                type: HalPin.U32
+            }
+
+            HalPin {
+                id: chopconfRegPin
+                name: "chopconf.reg"
+                direction: HalPin.In
+                type: HalPin.U32
+            }
+
+            HalPin {
+                id: smartenRegPin
+                name: "smarten.reg"
+                direction: HalPin.In
+                type: HalPin.U32
+            }
+
+            HalPin {
+                id: sgcsconfRegPin
+                name: "sgcsconf.reg"
+                direction: HalPin.In
+                type: HalPin.U32
+            }
+
+            HalPin {
+                id: drvconfRegPin
+                name: "drvconf.reg"
+                direction: HalPin.In
+                type: HalPin.U32
             }
 
             ColumnLayout {
@@ -311,16 +396,16 @@ ServiceWindow {
                             sgtSetSpin.value = root.lastSgtValue
                         }
                     }
-                        else {
-                            root.lastSgtValue = sgtSetSpin.value
-                            sgtSetSpin.value = 0
-                        }
+                    else {
+                        root.lastSgtValue = sgtSetSpin.value
+                        sgtSetSpin.value = 0
+                    }
                 }
 
                 Binding {
                     target: onOffSwitch
                     property: "checked"
-                    value: sgtSetSpin.value > 0.0
+                    value: sgtSetSpin.value  > 0.0
                 }
             }
         }
