@@ -35,7 +35,21 @@ import "./StatusBar"
 
 //HalApplicationWindow {
 ServiceWindow {
-    id: window
+    id: root
+
+    property bool wasConnected: false
+    property string labelName: "SG"
+    property double gaugeZ0BorderValue: 50.0
+//     property double spinMinimumValue: minTemperaturePin.value
+//     property double spinMaximumValue: maxTemperaturePin.value
+    property double spinMinimumValue: -64
+    property double spinMaximumValue: 63
+//    property double gaugeMinimumValue: spinMinimumValue
+//    property double gaugeMaximumValue: spinMaximumValue * 1.1
+    property double gaugeMinimumValue: -512
+    property double gaugeMaximumValue: 512
+    property double gaugeZ1BorderValue: gaugeMaximumValue * 0.9
+    property double lastSgtValue
 
 //    name: "TrinamicSPI"
 //    title: qsTr("Trinamic SPI Test")
@@ -50,9 +64,9 @@ ServiceWindow {
         anchors.margins: 10
 
         Loader {
-            id: applicationToolBar
-            source: "ApplicationToolBar.qml"
-            active: true
+                id: applicationToolBar
+                source: "ApplicationToolBar.qml"
+                active: true
         }
 
         Service {
@@ -71,8 +85,6 @@ ServiceWindow {
             applicationName: "Trinamic-SPI"
         }
 
-//        property string labelName: "Gantry Configuration"
-        property bool wasConnected: false
 
         visible: halRemoteComponent.ready || wasConnected
         enabled:  halRemoteComponent.connected
@@ -83,10 +95,34 @@ ServiceWindow {
             halrcompUri: halrcompService.uri
             ready: (halrcmdService.ready && halrcompService.ready) || connected
             name: "TrinamicSPI"
-            containerItem: window
+            containerItem: root
             create: false
             onErrorStringChanged: console.log(errorString)
-            onConnectedChanged: window.wasConnected = true
+            onConnectedChanged: root.wasConnected = true
+        }
+
+        RowLayout {
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                Label {
+                    id: sgtSetLabel
+                    font.bold: true
+                    text: root.labelName
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                HalLed {
+                    id: errorLed
+                    name: "error"
+                    onColor: "red"
+                    Layout.preferredHeight: sgtSetLabel.height * 0.9
+                    Layout.preferredWidth: sgtSetLabel.height * 0.9
+                }
+            }
         }
 
         ColumnLayout {
@@ -121,6 +157,7 @@ ServiceWindow {
                     direction: -1
                     distance: jogCombo.distance
                     axis: axisRadioGroup.axis
+                    checkable: true
                 }
 
                 JogButton {
@@ -129,6 +166,7 @@ ServiceWindow {
                     direction: 1
                     distance: jogCombo.distance
                     axis: axisRadioGroup.axis
+                    checkable: true
                 }
 
                 JogDistanceComboBox {
@@ -137,52 +175,19 @@ ServiceWindow {
                     axis: axisRadioGroup.axis
                 }
 
-//                 KeyboardJogControl {
-//                     id: keyboardJogControl
-//                     enabled: jogCombo.distance !== 0.0
-//                     onSelectAxis: axisRadioGroup.axis = axis
-//                     onIncrement: incrementButton._toggle(enabled)
-//                     onDecrement: decrementButton._toggle(enabled)
-//                     onSelectIncrement: {
-//                         if (jogCombo.currentIndex == 0) {
-//                             jogCombo.currentIndex = index;
-//                         }
-//                     }
-//                }
+                KeyboardJogControl {
+                    id: keyboardJogControl
+                    enabled: jogCombo.distance !== 0.0
+                    onSelectAxis: axisRadioGroup.axis = axis
+                    onIncrement: incrementButton._toggle(enabled)
+                    onDecrement: decrementButton._toggle(enabled)
+                    onSelectIncrement: {
+                        if (jogCombo.currentIndex == 0) {
+                            jogCombo.currentIndex = index;
+                        }
+                    }
+                }
             }
-
-//            RowLayout {
-//                Layout.fillWidth: true
-
-////                Button {
-////                    id: homeAllAxesButton
-////                    Layout.fillWidth: false
-////                    action: HomeAxisAction { id: homeAxisAction; axis: -1 }
-////                    visible: homeAxisAction.homeAllAxesHelper.homingOrderDefined
-////                }
-
-////                Button {
-////                    id: homeAxisButton
-////                    Layout.fillWidth: false
-////                    action: HomeAxisAction { axis: axisRadioGroup.axis }
-////                    visible: !homeAllAxesButton.visible
-////                }
-
-////                Button {
-////                    Layout.fillWidth: false
-////                    action: TouchOffAction { touchOffDialog: touchOffDialog }
-////                }
-
-//                Item {
-//                    Layout.fillWidth: true
-//                }
-
-////                TouchOffDialog {
-////                    id: touchOffDialog
-////                    axis: axisRadioGroup.axis
-////                    height: window.height * 0.2
-////                }
-//            }
 
             RowLayout {
                 Layout.fillWidth: true
@@ -196,7 +201,8 @@ ServiceWindow {
                 }
 
                 Label {
-                    text: jogVelocitySlider.displayValue.toFixed(1) + " " + jogVelocitySlider.units
+//                        text: jogVelocitySlider.displayValue.toFixed(1) + " " + jogVelocitySlider.units
+                    text: jogVelocitySlider.displayValue.toFixed(1) + " " + "rev/min"
                 }
             }
 
@@ -204,60 +210,134 @@ ServiceWindow {
                 id: jogVelocitySlider
                 Layout.fillWidth: true
                 axis: axisRadioGroup.axis
-                proportional: true
+                proportional: false
             }
         }
 
-        Label {
+        RowLayout {
+//            anchors.fill: parent
+            anchors.margins: 10
+            Layout.fillHeight: true
+//            Layout.fillWidth: true
+
+            Label {
+                Layout.fillWidth: true
+                text: "This is for showing the Trinamic SPI registers\n" +
+                    "The Chart represents the output of SG threshold"
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: false
+            Label {
+                    Layout.fillWidth: true
+                    text: "This is for setting up Trinamic SPI parameters\n" +
+                        "The Chart represents the output of SG threshold"
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                }
+
+                HalButton {
+                    Layout.alignment: Layout.Center
+                    name: "button0"
+                    text: "Button 0"
+                    checkable: true
+                }
+
+                HalButton {
+                    Layout.alignment: Layout.Center
+                    name: "button1"
+                    text: qsTr("Button 1")
+                }
+
+                HalLed {
+                    Layout.alignment: Layout.Center
+                    name: "led"
+                }
+
+                Label {
+                    Layout.fillWidth: true
+                    text: "The buttons are connected using the 'and2' component in HAL.\n" +
+                        "The LED represents the output of the 'and2' component."
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                }
+            }
+
+            Label {
+                Layout.fillWidth: true
+                text: "This is for setting up Trinamic SPI parameters\n" +
+                    "The Chart represents the output of SG threshold"
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+            }
+        }
+
+        RowLayout {
             Layout.fillWidth: true
-            text: "This is for setting up Trinamic SPI parameters\n" +
-                  "The Chart represents the output of SG threshold"
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-        }
+            id: control
+            visible: true
+            Label {
+                id: sgtValsetLabel
+                font.bold: true
+                text: "sgt set:"
+            }
 
-        HalButton {
-            Layout.alignment: Layout.Center
-            name: "button0"
-            text: "Button 0"
-            checkable: true
-        }
+            HalSpinBox {
+                Layout.fillWidth: true
+                id: sgtSetSpin
+                enabled: errorLed.value === false
+                name: "sgt.set"
+                halPin.direction: HalPin.IO
+                minimumValue: root.spinMinimumValue
+                maximumValue: root.spinMaximumValue
+                decimals: 0
+                suffix: ""
 
-        HalButton {
-            Layout.alignment: Layout.Center
-            name: "button1"
-            text: qsTr("Button 1")
-        }
+                onEditingFinished: {            // remove the focus from this control
+                    parent.forceActiveFocus()
+                    parent.focus = true
+                }
+            }
 
-        HalLed {
-            Layout.alignment: Layout.Center
-            name: "led"
-        }
+            Switch {
+                id: onOffSwitch
+                enabled: errorLed.value === false
+                onCheckedChanged: {
+                    if (checked) {
+                        if (sgtSetSpin.value == 0) {
+                            sgtSetSpin.value = root.lastSgtValue
+                        }
+                    }
+                        else {
+                            root.lastSgtValue = sgtSetSpin.value
+                            sgtSetSpin.value = 0
+                        }
+                }
 
-        Label {
-            Layout.fillWidth: true
-            text: "The buttons are connected using the 'and2' component in HAL.\n" +
-                  "The LED represents the output of the 'and2' component."
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
+                Binding {
+                    target: onOffSwitch
+                    property: "checked"
+                    value: sgtSetSpin.value > 0.0
+                }
+            }
         }
 
         HalGauge {
-            id: tempGauge
+            id: sgGauge
             Layout.fillWidth: true
-            name: "temp.meas"
+            name: "sg.meas"
             suffix: ""
             decimals: 0
             valueVisible: !errorLed.value
             minimumValueVisible: false
             maximumValueVisible: false
-//            minimumValue: root.gaugeMinimumValue
-//            maximumValue: root.gaugeMaximumValue
-            minimumValue: -128
-            maximumValue: 128
+            minimumValue: root.gaugeMinimumValue
+            maximumValue: root.gaugeMaximumValue
             z0BorderValue: root.gaugeZ0BorderValue
-//            z1BorderValue: root.gaugeZ1BorderValue
-            z1BorderValue: 90
+            z1BorderValue: root.gaugeZ1BorderValue
             z0Color: valueVisible ? "green" : "white"
             z1Color: valueVisible ? "yellow" : "white"
             z2Color: valueVisible ? "red" : "white"
@@ -265,28 +345,30 @@ ServiceWindow {
             Label {
                 anchors.centerIn: parent
                 text: qsTr("N/A")
-                visible: !tempGauge.valueVisible
+                visible: !sgGauge.valueVisible
             }
 
             MouseArea {
                 anchors.fill: parent
-                onDoubleClicked: tempChart.visible = !tempChart.visible
-                onClicked: control.visible = !control.visible
+//                 onDoubleClicked: sgChart.visible = !sgChart.visible
+//                 onClicked: control.visible = !control.visible
+                onDoubleClicked: control.visible = !control.visible
+                onClicked: sgChart.visible = !sgChart.visible
                 cursorShape: "PointingHandCursor"
             }
         }
 
         LogChart {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            id: tempChart
+            id: sgChart
             Layout.fillHeight: true
-            visible: true
-            value: tempGauge.value
-            minimumValue: tempGauge.minimumValue
-            maximumValue: tempGauge.maximumValue
+            visible: false
+            value: sgGauge.value
+            minimumValue: sgGauge.minimumValue
+            maximumValue: sgGauge.maximumValue
             leftTextVisible: false
             rightTextVisible: false
-            autoSampling: (tempGauge.halPin.synced) && visible
+            autoSampling: (sgGauge.halPin.synced) && visible
             autoUpdate: autoSampling
             updateInterval: 500
             timeSpan: 120000
@@ -294,7 +376,7 @@ ServiceWindow {
 //            scrollZoomFactor: 1
 //            sampleInterval: 1
 //            minimumValue: -100
-            Layout.maximumHeight: 512
+            Layout.maximumHeight: 256
             Layout.maximumWidth: 256
             gridColor: qsTr("#eeeeee")
             backgroundColor: qsTr("#ffffff")
@@ -305,7 +387,6 @@ ServiceWindow {
         Item {
             Layout.fillHeight: true
         }
-
     }
 
 //     DisplayPanel {
@@ -314,14 +395,6 @@ ServiceWindow {
 //         anchors.top: parent.top
 //         anchors.bottom: applicationProgressBar.top
 //         width: parent.width * 0.20
-//         anchors.margins: Screen.pixelDensity
-//     }
-//
-//     ApplicationProgressBar {
-//         id: applicationProgressBar
-//         anchors.right: parent.right
-//         anchors.bottom: parent.bottom
-//         width: displayPanel.width
 //         anchors.margins: Screen.pixelDensity
 //     }
 

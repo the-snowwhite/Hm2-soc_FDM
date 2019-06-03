@@ -19,14 +19,14 @@ ApplicationItem {
         id: d
         function activateIncrement(axis) {
             root.selectAxis(axis);
-            root.selectIncrement(1);
+            root.selectIncrement(2);
             root.increment(true);
             root.increment(false);
         }
 
         function activateDecrement(axis) {
             root.selectAxis(axis);
-            root.selectIncrement(1);
+            root.selectIncrement(2);
             root.decrement(true);
             root.decrement(false);
         }
