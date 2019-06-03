@@ -28,9 +28,9 @@ try:
         os.mkdir(nc_path)
 
     if not check_mklaucher():  # start mklauncher if not running to make things easier
-        launcher.start_process('mklauncher ~/projects')
+        launcher.start_process('mklauncher ~/Hm2-soc_FDM/projects')
 
-    launcher.start_process("configserver -n Trinamic Spi configurator ~/projects/")
+    launcher.start_process("configserver -n Trinamic Spi configurator ~/Hm2-soc_FDM/projects/")
     launcher.start_process('machinekit trinamic_spi.ini')
     while True:
         launcher.check_processes()
