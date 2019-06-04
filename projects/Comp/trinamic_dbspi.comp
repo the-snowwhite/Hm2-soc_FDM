@@ -30,6 +30,9 @@ pin out bit ot.status "Overtemperature shutdown";
 pin out bit sg.status "stallGuard2 status";
 
 // settings:
+pin io bit  intpol.set "Enable STEP interpolation";
+pin io bit  dedge.set "Enable double edge STEP pulses";
+pin io float  mres.set "Microstep resolution for STEP/DIR mode";
 pin in bit  seimin.set "Minimum coolStep current: 0: 1⁄2 CS current setting 1: 1⁄4 CS current setting";
 pin in u32  sedn.set "Current decrement speed";
 pin in u32  semax.set "Upper coolStep threshold as an offset from the lower threshold";
@@ -45,8 +48,11 @@ variable u32 chopconf;
 variable u32 smarten;
 variable u32 sgcsconf;
 variable u32 drvconf;
-variable u32 *buf_write_0;
-variable u32 *buf_read_0;
+variable u32 *buf_write[2];
+variable u32 *buf_read[2];
+variable bool intpol;
+variable bool dedge;
+variable u8 mres;
 variable s32 sg_meas;
 variable u32 seimin;
 variable u32 sedn;
@@ -86,17 +92,29 @@ static int read(struct __comp_state *__comp_setst){
 
     // Setup DAC, watchdog will have reset it if done in setup
     if(firstrun) {
+        intpol =  ((TMC2660_DRVCTRL_CONF & TMC2660_INTPOL_MASK) >> TMC2660_INTPOL_SHIFT);
+        dedge  =  ((TMC2660_DRVCTRL_CONF & TMC2660_DEDGE_MASK)  >> TMC2660_DEDGE_SHIFT);
+        mres   =  ((TMC2660_DRVCTRL_CONF & TMC2660_MRES_MASK)   >> TMC2660_MRES_SHIFT);
         seimin =  ((TMC2660_SMARTEN_CONF & TMC2660_SEIMIN_MASK) >> TMC2660_SEIMIN_SHIFT);
-        sedn =    ((TMC2660_SMARTEN_CONF & TMC2660_SEDN_MASK)   >> TMC2660_SEDN_SHIFT);
-        semax =   ((TMC2660_SMARTEN_CONF & TMC2660_SEMAX_MASK)  >> TMC2660_SEMAX_SHIFT);
-        seup =    ((TMC2660_SMARTEN_CONF & TMC2660_SEUP_MASK)   >> TMC2660_SEUP_SHIFT);
-        semin =   ((TMC2660_SMARTEN_CONF & TMC2660_SEMIN_MASK)  >> TMC2660_SEMIN_SHIFT);
-        sfilt =   ((TMC2660_SGCSCONF_CONF & TMC2660_SFILT_MASK) >> TMC2660_SFILT_SHIFT);
-        sgt =     ((TMC2660_SGCSCONF_CONF & TMC2660_SGT_MASK)   >> TMC2660_SGT_SHIFT);
-        cs  =     ((TMC2660_SGCSCONF_CONF & TMC2660_CS_MASK)    >> TMC2660_CS_SHIFT);
+        sedn   =  ((TMC2660_SMARTEN_CONF & TMC2660_SEDN_MASK)   >> TMC2660_SEDN_SHIFT);
+        semax  =  ((TMC2660_SMARTEN_CONF & TMC2660_SEMAX_MASK)  >> TMC2660_SEMAX_SHIFT);
+        seup   =  ((TMC2660_SMARTEN_CONF & TMC2660_SEUP_MASK)   >> TMC2660_SEUP_SHIFT);
+        semin  =  ((TMC2660_SMARTEN_CONF & TMC2660_SEMIN_MASK)  >> TMC2660_SEMIN_SHIFT);
+        sfilt  =  ((TMC2660_SGCSCONF_CONF & TMC2660_SFILT_MASK) >> TMC2660_SFILT_SHIFT);
+        sgt    =  ((TMC2660_SGCSCONF_CONF & TMC2660_SGT_MASK)   >> TMC2660_SGT_SHIFT);
+        cs     =  ((TMC2660_SGCSCONF_CONF & TMC2660_CS_MASK)    >> TMC2660_CS_SHIFT);
+
+        // Read Initial  Values's onto Pins
+        intpol_set = intpol;
+        dedge_set  = dedge;
+        mres_set   = (float)(mres);
 
         firstrun = false;
     } else {
+        intpol = intpol_set;
+        dedge  = dedge_set;
+        mres   = (s8)(mres_set);
+
         if (seimin_set) {
             seimin = seimin_set;
         }
@@ -124,21 +142,25 @@ static int read(struct __comp_state *__comp_setst){
     }
 
     // Set write data
-    sgcsconf  = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) | (sgt & 0x3F)) << TMC2660_SGT_SHIFT) | (cs & 0x1F));
+    drvctrl   = ( TMC2660_DRVCTRL | ( intpol << TMC2660_INTPOL_SHIFT) | ( dedge << TMC2660_DEDGE_SHIFT ) |
+                ( mres & TMC2660_MRES_MASK ) << TMC2660_MRES_SHIFT );
 
-    // Read Values's into Pins
+    sgcsconf  = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) |
+                (sgt & 0x3F)) << TMC2660_SGT_SHIFT) | ((cs & 0x1F) << TMC2660_CS_SHIFT ));
+
+    // Read read response Values's into Pins
 //    for(i=0; i < 1; i++) {
-        full_val = (u32)(*buf_read_0);
-        sg_meas = (s32)(((*buf_read_0) & 0xFF300) >> 10);
+        full_val = (u32)(*buf_read[0]);
+        sg_meas = (s32)(((*buf_read[0]) & 0xFF300) >> 10);
         sg_val = (float)(sg_meas);
-        stst_status = ((*buf_read_0) & 0x80) ? 1:0 ;
-        olb_status  = ((*buf_read_0) & 0x40) ? 1:0 ;
-        ola_status  = ((*buf_read_0) & 0x20) ? 1:0 ;
-        s2gb_status = ((*buf_read_0) & 0x10) ? 1:0 ;
-        s2ga_status = ((*buf_read_0) & 0x08) ? 1:0 ;
-        otpw_status = ((*buf_read_0) & 0x04) ? 1:0 ;
-        ot_status   = ((*buf_read_0) & 0x02) ? 1:0 ;
-        sg_status   = ((*buf_read_0) & 0x01) ? 1:0 ;
+        stst_status = ((*buf_read[0]) & 0x80) ? 1:0 ;
+        olb_status  = ((*buf_read[0]) & 0x40) ? 1:0 ;
+        ola_status  = ((*buf_read[0]) & 0x20) ? 1:0 ;
+        s2gb_status = ((*buf_read[0]) & 0x10) ? 1:0 ;
+        s2ga_status = ((*buf_read[0]) & 0x08) ? 1:0 ;
+        otpw_status = ((*buf_read[0]) & 0x04) ? 1:0 ;
+        ot_status   = ((*buf_read[0]) & 0x02) ? 1:0 ;
+        sg_status   = ((*buf_read[0]) & 0x01) ? 1:0 ;
         drvctrl_reg = drvctrl;
         chopconf_reg = chopconf;
         smarten_reg = smarten;
@@ -146,7 +168,8 @@ static int read(struct __comp_state *__comp_setst){
         drvconf_reg = drvconf;
 //    }
     // Set write buff
-    *buf_write_0 = sgcsconf;
+    *buf_write[0] = drvctrl;
+    *buf_write[1] = sgcsconf;
 
     return 0;
 }
@@ -190,10 +213,9 @@ EXTRA_SETUP(){
         return -EINVAL;
     }
 
-//    for(i = 0; i < 1; i++) {
-        r += hm2_tram_add_dbspi_frame(name, 0, &buf_write_0,
-                                &buf_read_0);
-//    }
+    for(i = 0; i < 2; i++) {
+        r += hm2_tram_add_dbspi_frame(name, 0, &buf_write[i], &buf_read[i]);
+    }
 
 //    r += hm2_tram_add_dbspi_frame(name, 0, &TMC2660_CHOPCONF,0);
 

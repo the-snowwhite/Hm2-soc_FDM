@@ -44,13 +44,16 @@ ServiceWindow {
     property double gaugeZ0BorderValue: 50.0
 //     property double spinMinimumValue: minTemperaturePin.value
 //     property double spinMaximumValue: maxTemperaturePin.value
-    property double spinMinimumValue: -64
-    property double spinMaximumValue: 63
+//    property double spinMinimumValue: -64
+//    property double spinMaximumValue: 63
 //    property double gaugeMinimumValue: spinMinimumValue
 //    property double gaugeMaximumValue: spinMaximumValue * 1.1
     property double gaugeMinimumValue: -512
     property double gaugeMaximumValue: 512
     property double gaugeZ1BorderValue: gaugeMaximumValue * 0.9
+//    property bool lastIntpolValue
+//    property bool lastDedgeValue
+    property double lastMresValue
     property double lastSgtValue
     property int drvctrlReg:  drvctrlRegPin.value
     property int chopconfReg: chopconfRegPin.value
@@ -58,11 +61,11 @@ ServiceWindow {
     property int sgcsconfReg: sgcsconfRegPin.value
     property int drvconfReg:  drvconfRegPin.value
     property int fullreadresponseVal:  fullreadresponsePin.value
-    property string regValues: "DRVCTRL; \t  0x000" + drvctrlReg.toString(16).toUpperCase() + "\n" +
-                               "CHOPCONF;\t  0x000" + chopconfReg.toString(16).toUpperCase() + "\n" +
-                               "SMARTEN;\t  0x000" + smartenReg.toString(16).toUpperCase() + "\n" +
-                               "SGCSCONF;\t  0x000" + sgcsconfReg.toString(16).toUpperCase() + "\n" +
-                               "DRVCONF;\t  0x000" + drvconfReg.toString(16).toUpperCase()
+    property string regValues: "DRVCTRL; \t  0x" + drvctrlReg.toString(16).toUpperCase() + "\n" +
+                               "CHOPCONF;\t  0x" + chopconfReg.toString(16).toUpperCase() + "\n" +
+                               "SMARTEN;\t  0x" + smartenReg.toString(16).toUpperCase() + "\n" +
+                               "SGCSCONF;\t  0x" + sgcsconfReg.toString(16).toUpperCase() + "\n" +
+                               "DRVCONF;\t  0x" + drvconfReg.toString(16).toUpperCase()
     property string fullreadresponseValue: "Read Response; \t  0x" + fullreadresponseVal.toString(16).toUpperCase()
 // + string( " %1" ).arg( 15, 1, 16 ).toUpper()
 //    name: "TrinamicSPI"
@@ -411,56 +414,188 @@ ServiceWindow {
                             }
                         }
 
-                    RowLayout {// set values
+                        RowLayout {// set intpol values
 
-                        id: control
-                        visible: true
-                        Label {
-                            id: sgtValsetLabel
-                            font.bold: true
-                            text: "sgt set"
-                        }
-
-                        HalSpinBox {
-                            Layout.preferredWidth: regTxt.width - sgtValsetLabel.width - onOffSwitch.width -window.anchors.margins
-                            id: sgtSetSpin
-                            enabled: true
-                            name: "sgt.set"
-                            halPin.direction: HalPin.IO
-                            minimumValue: root.spinMinimumValue
-                            maximumValue: root.spinMaximumValue
-                            decimals: 0
-                            suffix: ""
-
-                            onEditingFinished: {            // remove the focus from this control
-                                parent.forceActiveFocus()
-                                parent.focus = true
+                            id: intpolcontrol
+                            visible: true
+                            Label {
+                                id: intpolValsetLabel
+                                font.bold: true
+                                text: "intpol set"
                             }
-                        }
 
-                        Switch {
-                            id: onOffSwitch
-                            enabled: true
-                            onCheckedChanged: {
-                                if (checked) {
-                                    if (sgtSetSpin.value == 0) {
-                                        sgtSetSpin.value = root.lastSgtValue
+                            Item {
+                                Layout.preferredWidth: regTxt.width - intpolValsetLabel.width - intpolonOffSwitch.width + window.anchors.margins
+                            }
+
+                            Switch {
+                                id: intpolonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                            intpolSetPin.value = 1
+                                    }
+                                    else {
+                                        intpolSetPin.value = 0
                                     }
                                 }
-                                else {
-                                    root.lastSgtValue = sgtSetSpin.value
-                                    sgtSetSpin.value = 0
+
+                                Binding {
+                                    target: intpolonOffSwitch
+                                    property: "checked"
+                                    value: intpolSetPin.value  > 0
+                                }
+                            }
+                        }
+
+                        RowLayout {// set dedge values
+
+                            id: dedgecontrol
+                            visible: true
+                            Label {
+                                id: dedgeValsetLabel
+                                font.bold: true
+                                text: "dedge set"
+                            }
+
+                            Item {
+                                Layout.preferredWidth: regTxt.width - dedgeValsetLabel.width - dedgeonOffSwitch.width + window.anchors.margins
+                            }
+
+                            Switch {
+                                id: dedgeonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                            dedgeSetPin.value = 1
+                                    }
+                                    else {
+                                        dedgeSetPin.value = 0
+                                    }
+                                }
+
+                                Binding {
+                                    target: dedgeonOffSwitch
+                                    property: "checked"
+                                    value: dedgeSetPin.value  > 0
+                                }
+                            }
+                        }
+
+                        RowLayout {// set mres values
+
+                            id: mrescontrol
+                            visible: true
+                            Label {
+                                id: mresValsetLabel
+                                font.bold: true
+                                text: "mres set"
+                            }
+
+                            HalSpinBox {
+                                Layout.preferredWidth: regTxt.width - mresValsetLabel.width - mresonOffSwitch.width + window.anchors.margins
+                                id: mresSetSpin
+                                enabled: true
+                                name: "mres.set"
+                                halPin.direction: HalPin.IO
+                                minimumValue: 0 //root.spinMinimumValue
+                                maximumValue: 8//root.spinMaximumValue
+                                decimals: 0
+                                suffix: ""
+
+                                onEditingFinished: {            // remove the focus from this control
+                                    parent.forceActiveFocus()
+                                    parent.focus = true
                                 }
                             }
 
-                            Binding {
-                                target: onOffSwitch
-                                property: "checked"
-                                value: sgtSetSpin.value  > 0.0
+                            Switch {
+                                id: mresonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (mresSetSpin.value == 0) {
+                                            mresSetSpin.value = root.lastMresValue
+                                        }
+                                    }
+                                    else {
+                                        root.lastMresValue = mresSetSpin.value
+                                        mresSetSpin.value = 0
+                                    }
+                                }
+
+                                Binding {
+                                    target: mresonOffSwitch
+                                    property: "checked"
+                                    value: mresSetSpin.value  > 0
+                                }
                             }
                         }
+
+                        RowLayout {// set sgt values
+
+                            id: sgtcontrol
+                            visible: true
+                            Label {
+                                id: sgtValsetLabel
+                                font.bold: true
+                                text: "sgt set"
+                            }
+
+                            HalSpinBox {
+                                Layout.preferredWidth: regTxt.width - sgtValsetLabel.width - sgtonOffSwitch.width + window.anchors.margins
+                                id: sgtSetSpin
+                                enabled: true
+                                name: "sgt.set"
+                                halPin.direction: HalPin.IO
+                                minimumValue: -64//root.spinMinimumValue
+                                maximumValue: 63//root.spinMaximumValue
+                                decimals: 0
+                                suffix: ""
+
+                                onEditingFinished: {            // remove the focus from this control
+                                    parent.forceActiveFocus()
+                                    parent.focus = true
+                                }
+                            }
+
+                            Switch {
+                                id: sgtonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (sgtSetSpin.value == 0) {
+                                            sgtSetSpin.value = root.lastSgtValue
+                                        }
+                                    }
+                                    else {
+                                        root.lastSgtValue = sgtSetSpin.value
+                                        sgtSetSpin.value = 0
+                                    }
+                                }
+
+                                Binding {
+                                    target: sgtonOffSwitch
+                                    property: "checked"
+                                    value: sgtSetSpin.value  > 0
+                                }
+                            }
+                        }
+
                     }
 
+                    HalPin {
+                        id: intpolSetPin
+                        name: "intpol.set"
+                        direction: HalPin.IO
+                        type: HalPin.Bit
+                    }
+
+                    HalPin {
+                        id: dedgeSetPin
+                        name: "dedge.set"
+                        direction: HalPin.IO
+                        type: HalPin.Bit
                     }
 
                     HalPin {

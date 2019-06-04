@@ -66,6 +66,9 @@ otpwstatus = hal.newsig('otpw-status-bit',   hal.HAL_BIT)
 otstatus   = hal.newsig('ot-status-bit',     hal.HAL_BIT)
 sgstatus   = hal.newsig('sg-status-bit',     hal.HAL_BIT)
 
+intpol = hal.newsig('intpol-set-bit', hal.HAL_BIT)
+dedge  = hal.newsig('dedge-set-bit', hal.HAL_BIT)
+mres = hal.newsig('mres-set-signed', hal.HAL_FLOAT)
 sgtset = hal.newsig('sgt-set-signed', hal.HAL_FLOAT)
 error = hal.newsig('error-signal', hal.HAL_BIT)
 
@@ -86,6 +89,9 @@ trinamicdbspi.pin('otpw.status').link(otpwstatus)
 trinamicdbspi.pin('ot.status').link(otstatus)
 trinamicdbspi.pin('sg.status').link(sgstatus)
 
+trinamicdbspi.pin('intpol.set').link(intpol)
+trinamicdbspi.pin('dedge.set').link(dedge)
+trinamicdbspi.pin('mres.set').link(mres)
 trinamicdbspi.pin('sgt.set').link(sgtset)
 
 #input0 = hal.newsig('input0', hal.HAL_BIT)
@@ -101,6 +107,7 @@ trinamicdbspi.pin('sgt.set').link(sgtset)
 
 # create remote component
 rcomp = hal.RemoteComponent('TrinamicSPI', timer=100)
+rcomp.newpin('drvctrl.reg', hal.HAL_U32, hal.HAL_IN)
 rcomp.newpin('chopconf.reg', hal.HAL_U32, hal.HAL_IN)
 rcomp.newpin('smarten.reg', hal.HAL_U32, hal.HAL_IN)
 rcomp.newpin('sgcsconf.reg', hal.HAL_U32, hal.HAL_IN)
@@ -120,9 +127,11 @@ rcomp.newpin('sg.status', hal.HAL_BIT, hal.HAL_IN)
 #rcomp.newpin('button1', hal.HAL_BIT, hal.HAL_OUT)
 #rcomp.newpin('led', hal.HAL_BIT, hal.HAL_IN)
 
+rcomp.newpin('intpol.set', hal.HAL_BIT, hal.HAL_IO)
+rcomp.newpin('dedge.set', hal.HAL_BIT, hal.HAL_IO)
+rcomp.newpin('mres.set', hal.HAL_FLOAT, hal.HAL_IO, eps=1)
 rcomp.newpin('sgt.set', hal.HAL_FLOAT, hal.HAL_IO, eps=1)
 #rcomp.newpin('error', hal.HAL_BIT, hal.HAL_IN)
-rcomp.newpin('drvctrl.reg', hal.HAL_U32, hal.HAL_IN)
 rcomp.ready()
 
 # link remote component pins
@@ -147,7 +156,9 @@ rcomp.pin('sg.status').link(sgstatus)
 #rcomp.pin('button1').link(input1)
 #rcomp.pin('led').link(output)
 
-
+rcomp.pin('intpol.set').link(intpol)
+rcomp.pin('dedge.set').link(dedge)
+rcomp.pin('mres.set').link(mres)
 rcomp.pin('sgt.set').link(sgtset)
 #rcomp.pin('error').link(error)
 
