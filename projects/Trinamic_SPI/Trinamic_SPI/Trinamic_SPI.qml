@@ -76,6 +76,7 @@ ServiceWindow {
 
 
     ColumnLayout {
+        id: window
         anchors.fill: parent
         anchors.margins: 10
 
@@ -117,538 +118,517 @@ ServiceWindow {
             onErrorStringChanged: console.log(errorString)
             onConnectedChanged: root.wasConnected = true
         }
-
         RowLayout {
             ColumnLayout {
-                Label {
-                    id: ststLabel
-                    font.bold: true
-                    text: "stst"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                HalLed {
-                    id: ststLed
-                    name: "stst.status"
-                    onColor: "yellow"
-                    Layout.preferredHeight: ststLabel.height * 0.9
-                    Layout.preferredWidth: ststLabel.height * 0.9
-                }
-            }
-
-            ColumnLayout {
-                Label {
-                    id: olbLabel
-                    font.bold: true
-                    text: "olb"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                HalLed {
-                    id: olbLed
-                    name: "olb.status"
-                    onColor: "red"
-                    Layout.preferredHeight: olbLabel.height * 0.9
-                    Layout.preferredWidth: olbLabel.height * 0.9
-                }
-            }
-
-            ColumnLayout {
-                Label {
-                    id: olaLabel
-                    font.bold: true
-                    text: "ola"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                HalLed {
-                    id: olaLed
-                    name: "ola.status"
-                    onColor: "red"
-                    Layout.preferredHeight: olaLabel.height * 0.9
-                    Layout.preferredWidth: olaLabel.height * 0.9
-                }
-            }
-
-            ColumnLayout {
-                Label {
-                    id: s2gbLabel
-                    font.bold: true
-                    text: "s2gb"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                HalLed {
-                    id: s2gbLed
-                    name: "s2gb.status"
-                    onColor: "red"
-                    Layout.preferredHeight: s2gbLabel.height * 0.9
-                    Layout.preferredWidth: s2gbLabel.height * 0.9
-                }
-            }
-
-            ColumnLayout {
-                Label {
-                    id: s2gaLabel
-                    font.bold: true
-                    text:" s2ga"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                HalLed {
-                    id: s2gaLed
-                    name: "s2ga.status"
-                    onColor: "red"
-                    Layout.preferredHeight: s2gaLabel.height * 0.9
-                    Layout.preferredWidth: s2gaLabel.height * 0.9
-                }
-            }
-
-            ColumnLayout {
-                Label {
-                    id: otpwLabel
-                    font.bold: true
-                    text: "otpw"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                HalLed {
-                    id: otpwLed
-                    name: "otpw.status"
-                    onColor: "red"
-                    Layout.preferredHeight: otpwLabel.height * 0.9
-                    Layout.preferredWidth: otpwLabel.height * 0.9
-                }
-            }
-
-            ColumnLayout {
-                Label {
-                    id: otLabel
-                    font.bold: true
-                    text: "ot"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                HalLed {
-                    id: otLed
-                    name: "ot.status"
-                    onColor: "red"
-                    Layout.preferredHeight: otLabel.height * 0.9
-                    Layout.preferredWidth: otLabel.height * 0.9
-                }
-            }
-
-            ColumnLayout {
-                Label {
-                    id: sgLabel
-                    font.bold: true
-                    text: "sg"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                HalLed {
-                    id: sgLed
-                    name: "sg.status"
-                    onColor: "red"
-                    Layout.preferredHeight: sgLabel.height * 0.9
-                    Layout.preferredWidth: sgLabel.height * 0.9
-                }
-            }
-        }
-
-        ColumnLayout {
-            id: transport
-            ApplicationStatusBar { id: applicationStatusBar }
-                //       ApplicationMenuBar { id: applicationMenuBar }
-
-            RowLayout {
-                Layout.fillWidth: true
-
-
-                Label {
-                    text: qsTr("Axis")
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                AxisRadioGroup {
-                    id: axisRadioGroup
-                    Layout.fillWidth: false
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-
-                JogButton {
-                    id: decrementButton
-                    Layout.fillWidth: false
-                    direction: -1
-                    distance: jogCombo.distance
-                    axis: axisRadioGroup.axis
-                    checkable: true
-                }
-
-                JogButton {
-                    id: incrementButton
-                    Layout.fillWidth: false
-                    direction: 1
-                    distance: jogCombo.distance
-                    axis: axisRadioGroup.axis
-                    checkable: true
-                }
-
-                JogDistanceComboBox {
-                    id: jogCombo
-                    Layout.fillWidth: true
-                    axis: axisRadioGroup.axis
-                }
-
-                KeyboardJogControl {
-                    id: keyboardJogControl
-                    enabled: jogCombo.distance !== 0.0
-                    onSelectAxis: axisRadioGroup.axis = axis
-                    onIncrement: incrementButton._toggle(enabled)
-                    onDecrement: decrementButton._toggle(enabled)
-                    onSelectIncrement: {
-                        if (jogCombo.currentIndex == 0) {
-                            jogCombo.currentIndex = index;
-                        }
+                Layout.preferredWidth: 20
+                ColumnLayout {
+                    Label {
+                        id: ststLabel
+                        font.bold: true
+                        text: "stst"
                     }
-                }
-            }
 
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: false
+                    Item {
+                        Layout.fillWidth: true
+                    }
 
-                Label {
-                    text: qsTr("Jog Velocity")
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                Label {
-//                        text: jogVelocitySlider.displayValue.toFixed(1) + " " + jogVelocitySlider.units
-                    text: jogVelocitySlider.displayValue.toFixed(1) + " " + "rev/min"
-                }
-            }
-
-            JogVelocitySlider {
-                id: jogVelocitySlider
-                Layout.fillWidth: true
-                axis: axisRadioGroup.axis
-                proportional: false
-            }
-        }
-
-        RowLayout {
-//            anchors.fill: parent
-            anchors.margins: 10
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-
-            Column {
-                spacing: 10
-//                Layout.fillWidth: true
-//                 Label {
-//
-//                     text: "This is for showing the Trinamic SPI registers\n" +
-//                         "The Chart represents the output of SG threshold"
-//                     horizontalAlignment: Text.AlignHCenter
-//                     wrapMode: Text.WordWrap
-//                 }
-
-                Text {
-                    text: "This shows the Trinamic SPI registers"
-                    // color can be set on the entire element with this property
-                    color: "black"
-
-                }
-
-                Rectangle {
-                    // button
-                    height: 120; width: parent.width
-                    color: mouseArea2.pressed ? "black" : "gray"
-                    Text {
-                        id: regTxt
-                         text: root.regValues
-//                         text: "This is for showing the Trinamic SPI registers\n" +
-//                               'I am the very model of a modern major general!'
-
-                        // color can be set on the entire element with this property
-                        color: "black"
-
+                    HalLed {
+                        id: ststLed
+                        name: "stst.status"
+                        onColor: "yellow"
+                        Layout.preferredHeight: ststLabel.height * 0.9
+                        Layout.preferredWidth: ststLabel.height * 0.9
                     }
                 }
 
-                Rectangle {
-                    // button
-                    height: 30; width: parent.width
-//                    color: mouseArea2.pressed ? "black" : "gray"
-                    color: "light green"
-                    Text {
-                        id: readresponseTxt
-                         text: root.fullreadresponseValue
-//                         text: "This is for showing the Trinamic SPI registers\n" +
-//                               'I am the very model of a modern major general!'
+                ColumnLayout {
+                    Label {
+                        id: olbLabel
+                        font.bold: true
+                        text: "olb"
+                    }
 
-                        // color can be set on the entire element with this property
-                        color: "black"
+                    Item {
+                        Layout.fillWidth: true
+                    }
 
+                    HalLed {
+                        id: olbLed
+                        name: "olb.status"
+                        onColor: "red"
+                        Layout.preferredHeight: olbLabel.height * 0.9
+                        Layout.preferredWidth: olbLabel.height * 0.9
                     }
                 }
 
+                ColumnLayout {
+                    Label {
+                        id: olaLabel
+                        font.bold: true
+                        text: "ola"
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    HalLed {
+                        id: olaLed
+                        name: "ola.status"
+                        onColor: "red"
+                        Layout.preferredHeight: olaLabel.height * 0.9
+                        Layout.preferredWidth: olaLabel.height * 0.9
+                    }
+                }
+
+                ColumnLayout {
+                    Label {
+                        id: s2gbLabel
+                        font.bold: true
+                        text: "s2gb"
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    HalLed {
+                        id: s2gbLed
+                        name: "s2gb.status"
+                        onColor: "red"
+                        Layout.preferredHeight: s2gbLabel.height * 0.9
+                        Layout.preferredWidth: s2gbLabel.height * 0.9
+                    }
+                }
+
+                ColumnLayout {
+                    Label {
+                        id: s2gaLabel
+                        font.bold: true
+                        text:" s2ga"
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    HalLed {
+                        id: s2gaLed
+                        name: "s2ga.status"
+                        onColor: "red"
+                        Layout.preferredHeight: s2gaLabel.height * 0.9
+                        Layout.preferredWidth: s2gaLabel.height * 0.9
+                    }
+                }
+
+                ColumnLayout {
+                    Label {
+                        id: otpwLabel
+                        font.bold: true
+                        text: "otpw"
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    HalLed {
+                        id: otpwLed
+                        name: "otpw.status"
+                        onColor: "red"
+                        Layout.preferredHeight: otpwLabel.height * 0.9
+                        Layout.preferredWidth: otpwLabel.height * 0.9
+                    }
+                }
+
+                ColumnLayout {
+                    Label {
+                        id: otLabel
+                        font.bold: true
+                        text: "ot"
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    HalLed {
+                        id: otLed
+                        name: "ot.status"
+                        onColor: "red"
+                        Layout.preferredHeight: otLabel.height * 0.9
+                        Layout.preferredWidth: otLabel.height * 0.9
+                    }
+                }
+
+                ColumnLayout {
+                    Label {
+                        id: sgLabel
+                        font.bold: true
+                        text: "sg"
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    HalLed {
+                        id: sgLed
+                        name: "sg.status"
+                        onColor: "red"
+                        Layout.preferredHeight: sgLabel.height * 0.9
+                        Layout.preferredWidth: sgLabel.height * 0.9
+                    }
+                }
 
                 Item {
                     Layout.fillHeight: true
-                    height: 20; width: parent.width
                 }
-
-            }
-
-            HalPin {
-                id: drvctrlRegPin
-                name: "drvctrl.reg"
-                direction: HalPin.In
-                type: HalPin.U32
-            }
-
-            HalPin {
-                id: chopconfRegPin
-                name: "chopconf.reg"
-                direction: HalPin.In
-                type: HalPin.U32
-            }
-
-            HalPin {
-                id: smartenRegPin
-                name: "smarten.reg"
-                direction: HalPin.In
-                type: HalPin.U32
-            }
-
-            HalPin {
-                id: sgcsconfRegPin
-                name: "sgcsconf.reg"
-                direction: HalPin.In
-                type: HalPin.U32
-            }
-
-            HalPin {
-                id: drvconfRegPin
-                name: "drvconf.reg"
-                direction: HalPin.In
-                type: HalPin.U32
-            }
-
-            HalPin {
-                id: fullreadresponsePin
-                name: "full.val"
-                direction: HalPin.In
-                type: HalPin.U32
             }
 
             ColumnLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: false
-            Label {
+                id: transport
+                ApplicationStatusBar { id: applicationStatusBar }
+
+                RowLayout {
                     Layout.fillWidth: true
-                    text: "This is for setting up Trinamic SPI parameters\n" +
-                        "The Chart represents the output of SG threshold"
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.WordWrap
+
+
+                    Label {
+                        text: qsTr("Axis")
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    AxisRadioGroup {
+                        id: axisRadioGroup
+                        Layout.fillWidth: false
+                    }
                 }
 
-                HalButton {
-                    Layout.alignment: Layout.Center
-                    name: "button0"
-                    text: "Button 0"
-                    checkable: true
-                }
-
-                HalButton {
-                    Layout.alignment: Layout.Center
-                    name: "button1"
-                    text: qsTr("Button 1")
-                }
-
-                HalLed {
-                    Layout.alignment: Layout.Center
-                    name: "led"
-                }
-
-                Label {
+                RowLayout {
                     Layout.fillWidth: true
-                    text: "The buttons are connected using the 'and2' component in HAL.\n" +
-                        "The LED represents the output of the 'and2' component."
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.WordWrap
-                }
-            }
 
-            Label {
-                Layout.fillWidth: true
-                text: "This is for setting up Trinamic SPI parameters\n" +
-                    "The Chart represents the output of SG threshold"
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
-        }
+                    JogButton {
+                        id: decrementButton
+                        Layout.fillWidth: false
+                        direction: -1
+                        distance: jogCombo.distance
+                        axis: axisRadioGroup.axis
+                        checkable: true
+                    }
 
-        RowLayout {
-            Layout.fillWidth: true
-            id: control
-            visible: true
-            Label {
-                id: sgtValsetLabel
-                font.bold: true
-                text: "sgt set"
-            }
+                    JogButton {
+                        id: incrementButton
+                        Layout.fillWidth: false
+                        direction: 1
+                        distance: jogCombo.distance
+                        axis: axisRadioGroup.axis
+                        checkable: true
+                    }
 
-            HalSpinBox {
-                Layout.fillWidth: true
-                id: sgtSetSpin
-//                enabled: errorLed.value === false
-                enabled: true
-                name: "sgt.set"
-                halPin.direction: HalPin.IO
-                minimumValue: root.spinMinimumValue
-                maximumValue: root.spinMaximumValue
-                decimals: 0
-                suffix: ""
+                    JogDistanceComboBox {
+                        id: jogCombo
+                        Layout.fillWidth: true
+                        axis: axisRadioGroup.axis
+                    }
 
-                onEditingFinished: {            // remove the focus from this control
-                    parent.forceActiveFocus()
-                    parent.focus = true
-                }
-            }
-
-            Switch {
-                id: onOffSwitch
-//                enabled: errorLed.value === false
-                enabled: true
-                onCheckedChanged: {
-                    if (checked) {
-                        if (sgtSetSpin.value == 0) {
-                            sgtSetSpin.value = root.lastSgtValue
+                    KeyboardJogControl {
+                        id: keyboardJogControl
+                        enabled: jogCombo.distance !== 0.0
+                        onSelectAxis: axisRadioGroup.axis = axis
+                        onIncrement: incrementButton._toggle(enabled)
+                        onDecrement: decrementButton._toggle(enabled)
+                        onSelectIncrement: {
+                            if (jogCombo.currentIndex == 0) {
+                                jogCombo.currentIndex = index;
+                            }
                         }
                     }
-                    else {
-                        root.lastSgtValue = sgtSetSpin.value
-                        sgtSetSpin.value = 0
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: false
+
+                    Label {
+                        text: qsTr("Jog Velocity")
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    Label {
+                        text: jogVelocitySlider.displayValue.toFixed(1) + " " + "rev/min"
                     }
                 }
 
-                Binding {
-                    target: onOffSwitch
-                    property: "checked"
-                    value: sgtSetSpin.value  > 0.0
+                JogVelocitySlider {
+                    id: jogVelocitySlider
+                    Layout.fillWidth: true
+                    axis: axisRadioGroup.axis
+                    proportional: false
+                }
+                RowLayout {
+                RowLayout {
+                    id: readout
+                    anchors.margins: 10
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+
+                    Column {
+                        spacing: 10// Layout.fillWidth: true
+
+                        Text {
+                            text: "This shows the Trinamic SPI registers"
+                            color: "black"// color can be set on the entire element with this property
+
+                        }
+
+                        Rectangle { // button
+                            height: 120; width: parent.width
+                            color: "white"//mouseArea2.pressed ? "black" : "gray"
+                            Text {
+                                id: regTxt
+                                text: root.regValues
+
+
+                                color: "black"// color can be set on the entire element with this property
+
+                            }
+                        }
+
+                        Rectangle {
+                            height: 30; width: parent.width// color: mouseArea2.pressed ? "black" : "gray"
+                            color: "light green"
+                            Text {
+                                id: readresponseTxt
+                                text: root.fullreadresponseValue
+                                color: "black"// color can be set on the entire element with this property
+                            }
+                        }
+
+                    RowLayout {// set values
+
+                        id: control
+                        visible: true
+                        Label {
+                            id: sgtValsetLabel
+                            font.bold: true
+                            text: "sgt set"
+                        }
+
+                        HalSpinBox {
+                            Layout.preferredWidth: regTxt.width - sgtValsetLabel.width - onOffSwitch.width -window.anchors.margins
+                            id: sgtSetSpin
+                            enabled: true
+                            name: "sgt.set"
+                            halPin.direction: HalPin.IO
+                            minimumValue: root.spinMinimumValue
+                            maximumValue: root.spinMaximumValue
+                            decimals: 0
+                            suffix: ""
+
+                            onEditingFinished: {            // remove the focus from this control
+                                parent.forceActiveFocus()
+                                parent.focus = true
+                            }
+                        }
+
+                        Switch {
+                            id: onOffSwitch
+                            enabled: true
+                            onCheckedChanged: {
+                                if (checked) {
+                                    if (sgtSetSpin.value == 0) {
+                                        sgtSetSpin.value = root.lastSgtValue
+                                    }
+                                }
+                                else {
+                                    root.lastSgtValue = sgtSetSpin.value
+                                    sgtSetSpin.value = 0
+                                }
+                            }
+
+                            Binding {
+                                target: onOffSwitch
+                                property: "checked"
+                                value: sgtSetSpin.value  > 0.0
+                            }
+                        }
+                    }
+
+                    }
+
+                    HalPin {
+                        id: drvctrlRegPin
+                        name: "drvctrl.reg"
+                        direction: HalPin.In
+                        type: HalPin.U32
+                    }
+
+                    HalPin {
+                        id: chopconfRegPin
+                        name: "chopconf.reg"
+                        direction: HalPin.In
+                        type: HalPin.U32
+                    }
+
+                    HalPin {
+                        id: smartenRegPin
+                        name: "smarten.reg"
+                        direction: HalPin.In
+                        type: HalPin.U32
+                    }
+
+                    HalPin {
+                        id: sgcsconfRegPin
+                        name: "sgcsconf.reg"
+                        direction: HalPin.In
+                        type: HalPin.U32
+                    }
+
+                    HalPin {
+                        id: drvconfRegPin
+                        name: "drvconf.reg"
+                        direction: HalPin.In
+                        type: HalPin.U32
+                    }
+
+                    HalPin {
+                        id: fullreadresponsePin
+                        name: "full.val"
+                        direction: HalPin.In
+                        type: HalPin.U32
+                    }
+        /*
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: false
+                    Label {
+                            Layout.fillWidth: true
+                            text: "This is for setting up Trinamic SPI parameters\n" +
+                                "The Chart represents the output of SG threshold"
+                            horizontalAlignment: Text.AlignHCenter
+                            wrapMode: Text.WordWrap
+                        }
+
+                        HalButton {
+                            Layout.alignment: Layout.Center
+                            name: "button0"
+                            text: "Button 0"
+                            checkable: true
+                        }
+
+                        HalButton {
+                            Layout.alignment: Layout.Center
+                            name: "button1"
+                            text: qsTr("Button 1")
+                        }
+
+                        HalLed {
+                            Layout.alignment: Layout.Center
+                            name: "led"
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: "The buttons are connected using the 'and2' component in HAL.\n" +
+                                "The LED represents the output of the 'and2' component."
+                            horizontalAlignment: Text.AlignHCenter
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    Label {
+                        Layout.fillWidth: true
+                        text: "This is for setting up Trinamic SPI parameters\n" +
+                            "The Chart represents the output of SG threshold"
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                    }
+        */
+                }
+
+                    LogChart {
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                        id: sgChart
+                        Layout.fillHeight: true
+                        visible: false
+                        value: sgGauge.value
+                        minimumValue: sgGauge.minimumValue
+                        maximumValue: sgGauge.maximumValue
+                        leftTextVisible: false
+                        rightTextVisible: false
+                        autoSampling: (sgGauge.halPin.synced) && visible
+                        autoUpdate: autoSampling
+                        updateInterval: 500
+                        timeSpan: 120000
+                        Layout.maximumHeight: 256
+                        Layout.maximumWidth: 256
+                        gridColor: qsTr("#eeeeee")
+                        backgroundColor: qsTr("#ffffff")
+                    }
+                }
+
+//                RowLayout { // set values
+
+//                    Item {
+//                        Layout.fillWidth: true
+//                    }
+//                }
+
+//                         Item {
+//                             Layout.fillHeight: true
+//                             height: 20; width: parent.width
+//                         }
+
+                HalGauge {
+                    id: sgGauge
+                    Layout.fillWidth: true
+                    name: "sg.val"
+                    suffix: ""
+                    decimals: 0
+                    valueVisible: true
+                    minimumValueVisible: false
+                    maximumValueVisible: false
+                    minimumValue: root.gaugeMinimumValue
+                    maximumValue: root.gaugeMaximumValue
+                    z0BorderValue: root.gaugeZ0BorderValue
+                    z1BorderValue: root.gaugeZ1BorderValue
+                    z0Color: valueVisible ? "green" : "white"
+                    z1Color: valueVisible ? "yellow" : "white"
+                    z2Color: valueVisible ? "red" : "white"
+
+                    Label {
+                        anchors.centerIn: parent
+                        text: qsTr("N/A")
+                        visible: !sgGauge.valueVisible
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onDoubleClicked: control.visible = !control.visible
+                        onClicked: sgChart.visible = !sgChart.visible
+                        cursorShape: "PointingHandCursor"
+                    }
+                }
+
+                Item {
+                    Layout.fillHeight: true
                 }
             }
         }
 
-        HalGauge {
-            id: sgGauge
-            Layout.fillWidth: true
-            name: "sg.val"
-            suffix: ""
-            decimals: 0
-//            valueVisible: !errorLed.value
-            valueVisible: true
-            minimumValueVisible: false
-            maximumValueVisible: false
-            minimumValue: root.gaugeMinimumValue
-            maximumValue: root.gaugeMaximumValue
-            z0BorderValue: root.gaugeZ0BorderValue
-            z1BorderValue: root.gaugeZ1BorderValue
-            z0Color: valueVisible ? "green" : "white"
-            z1Color: valueVisible ? "yellow" : "white"
-            z2Color: valueVisible ? "red" : "white"
-
-            Label {
-                anchors.centerIn: parent
-                text: qsTr("N/A")
-                visible: !sgGauge.valueVisible
-            }
-
-            MouseArea {
-                anchors.fill: parent
-//                 onDoubleClicked: sgChart.visible = !sgChart.visible
-//                 onClicked: control.visible = !control.visible
-                onDoubleClicked: control.visible = !control.visible
-                onClicked: sgChart.visible = !sgChart.visible
-                cursorShape: "PointingHandCursor"
-            }
-        }
-
-        LogChart {
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            id: sgChart
-            Layout.fillHeight: true
-            visible: false
-            value: sgGauge.value
-            minimumValue: sgGauge.minimumValue
-            maximumValue: sgGauge.maximumValue
-            leftTextVisible: false
-            rightTextVisible: false
-            autoSampling: (sgGauge.halPin.synced) && visible
-            autoUpdate: autoSampling
-            updateInterval: 500
-            timeSpan: 120000
-//            changeGraphScale: 1
-//            scrollZoomFactor: 1
-//            sampleInterval: 1
-//            minimumValue: -100
-            Layout.maximumHeight: 256
-            Layout.maximumWidth: 256
-            gridColor: qsTr("#eeeeee")
-            backgroundColor: qsTr("#ffffff")
-//            maximumValue: 100
-//            targetValue: 0
-        }
 
         Item {
             Layout.fillHeight: true
         }
     }
 
-//     DisplayPanel {
-//         id: displayPanel
-//         anchors.right: parent.right
-//         anchors.top: parent.top
-//         anchors.bottom: applicationProgressBar.top
-//         width: parent.width * 0.20
-//         anchors.margins: Screen.pixelDensity
-//     }
 
     ApplicationNotifications {
         id: applicationNotifications

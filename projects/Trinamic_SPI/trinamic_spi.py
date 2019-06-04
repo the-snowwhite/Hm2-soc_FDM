@@ -88,16 +88,16 @@ trinamicdbspi.pin('sg.status').link(sgstatus)
 
 trinamicdbspi.pin('sgt.set').link(sgtset)
 
-input0 = hal.newsig('input0', hal.HAL_BIT)
-input1 = hal.newsig('input1', hal.HAL_BIT)
-output = hal.newsig('output', hal.HAL_BIT)
+#input0 = hal.newsig('input0', hal.HAL_BIT)
+#input1 = hal.newsig('input1', hal.HAL_BIT)
+#output = hal.newsig('output', hal.HAL_BIT)
 
 # and2 component
-and2 = rt.newinst('and2', 'and2.demo')
-and2.pin('in0').link(input0)
-and2.pin('in1').link(input1)
-and2.pin('out').link(output)
-hal.addf(and2.name, 'servo-thread')
+#and2 = rt.newinst('and2', 'and2.demo')
+#and2.pin('in0').link(input0)
+#and2.pin('in1').link(input1)
+#and2.pin('out').link(output)
+#hal.addf(and2.name, 'servo-thread')
 
 # create remote component
 rcomp = hal.RemoteComponent('TrinamicSPI', timer=100)
@@ -116,9 +116,9 @@ rcomp.newpin('otpw.status', hal.HAL_BIT, hal.HAL_IN)
 rcomp.newpin('ot.status', hal.HAL_BIT, hal.HAL_IN)
 rcomp.newpin('sg.status', hal.HAL_BIT, hal.HAL_IN)
 
-rcomp.newpin('button0', hal.HAL_BIT, hal.HAL_OUT)
-rcomp.newpin('button1', hal.HAL_BIT, hal.HAL_OUT)
-rcomp.newpin('led', hal.HAL_BIT, hal.HAL_IN)
+#rcomp.newpin('button0', hal.HAL_BIT, hal.HAL_OUT)
+#rcomp.newpin('button1', hal.HAL_BIT, hal.HAL_OUT)
+#rcomp.newpin('led', hal.HAL_BIT, hal.HAL_IN)
 
 rcomp.newpin('sgt.set', hal.HAL_FLOAT, hal.HAL_IO, eps=1)
 #rcomp.newpin('error', hal.HAL_BIT, hal.HAL_IN)
@@ -143,9 +143,9 @@ rcomp.pin('otpw.status').link(otpwstatus)
 rcomp.pin('ot.status').link(otstatus)
 rcomp.pin('sg.status').link(sgstatus)
 
-rcomp.pin('button0').link(input0)
-rcomp.pin('button1').link(input1)
-rcomp.pin('led').link(output)
+#rcomp.pin('button0').link(input0)
+#rcomp.pin('button1').link(input1)
+#rcomp.pin('led').link(output)
 
 
 rcomp.pin('sgt.set').link(sgtset)
