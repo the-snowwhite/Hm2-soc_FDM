@@ -9,21 +9,14 @@ The DBSPI instances are printed to the dmesg buffer during the Hostmot2 setup
 sequence, one for each dbspi instance included in the bitfile loaded to each
 installed card during the Hostmot2 setup sequence. Type "dmesg" at the terminal
 prompt to view the output.""";
+
 // current register values:
 pin out u32 drvctrl.reg "DRVCTRL register";
 pin out u32 chopconf.reg "CHOPCONF register";
 pin out u32 smarten.reg "SMARTEN register";
 pin out u32 sgcsconf.reg "SGCSCONF register";
 pin out u32 drvconf.reg "DRVCONF register";
-// settings:
-pin in bit  seimin.in "Minimum coolStep current: 0: 1⁄2 CS current setting 1: 1⁄4 CS current setting";
-pin in u32  sedn.in "Current decrement speed";
-pin in u32  semax.in "Upper coolStep threshold as an offset from the lower threshold";
-pin in u32  seup.in "Current increment size";
-pin in u32  semin.in "Lower coolStep threshold/coolStep disable";
-pin in bit  sfilt.in "stallGuard2 filter enable";
-pin io float sgt.set "stallGuard2 threshold value(7-bit signed)";
-pin in u32  cs.in "Current scale value (5-bit unsigned)";
+
 // read response values:
 pin out u32 full.val "Full response data";
 pin out float sg.val "Stall gaurd value";
@@ -35,6 +28,16 @@ pin out bit s2ga.status "Short to GND detection bits on high-side transistors";
 pin out bit otpw.status "Overtemperature warning";
 pin out bit ot.status "Overtemperature shutdown";
 pin out bit sg.status "stallGuard2 status";
+
+// settings:
+pin in bit  seimin.set "Minimum coolStep current: 0: 1⁄2 CS current setting 1: 1⁄4 CS current setting";
+pin in u32  sedn.set "Current decrement speed";
+pin in u32  semax.set "Upper coolStep threshold as an offset from the lower threshold";
+pin in u32  seup.set "Current increment size";
+pin in u32  semin.set "Lower coolStep threshold/coolStep disable";
+pin in bit  sfilt.set "stallGuard2 filter enable";
+pin io float sgt.set "stallGuard2 threshold value(7-bit signed)";
+pin in u32  cs.set "Current scale value (5-bit unsigned)";
 
 option extra_setup yes;
 variable u32 drvctrl;
@@ -78,7 +81,7 @@ include "TMC2660_Fields.h";
 char *dbspi_chans[16] = {0,};
 RTAPI_MP_ARRAY_STRING(dbspi_chans, 16, "DBSPI Channel names");
 
-static int read(struct __comp_state *__comp_inst){
+static int read(struct __comp_state *__comp_setst){
     int i;
 
     // Setup DAC, watchdog will have reset it if done in setup
@@ -94,29 +97,29 @@ static int read(struct __comp_state *__comp_inst){
 
         firstrun = false;
     } else {
-        if (seimin_in) {
-            seimin = seimin_in;
+        if (seimin_set) {
+            seimin = seimin_set;
         }
-        if (sedn_in) {
-            sedn = sedn_in;
+        if (sedn_set) {
+            sedn = sedn_set;
         }
-        if (semax_in) {
-            semax = semax_in;
+        if (semax_set) {
+            semax = semax_set;
         }
-        if (seup_in) {
-            seup = seup_in;
+        if (seup_set) {
+            seup = seup_set;
         }
-        if (semin_in) {
-            semin = semin_in;
+        if (semin_set) {
+            semin = semin_set;
         }
-        if (sfilt_in) {
-            sfilt = sfilt_in;
+        if (sfilt_set) {
+            sfilt = sfilt_set;
         }
 //        if (sgt_set != 0) {
             sgt = (s8)(sgt_set);
 //        }
-        if (cs_in) {
-            cs = cs_in;
+        if (cs_set) {
+            cs = cs_set;
         }
     }
 

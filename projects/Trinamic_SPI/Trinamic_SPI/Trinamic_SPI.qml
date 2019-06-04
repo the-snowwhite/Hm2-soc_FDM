@@ -40,7 +40,7 @@ ServiceWindow {
     id: root
 
     property bool wasConnected: false
-    property string labelName: "SG"
+//    property string labelName: "SG"
     property double gaugeZ0BorderValue: 50.0
 //     property double spinMinimumValue: minTemperaturePin.value
 //     property double spinMaximumValue: maxTemperaturePin.value
@@ -57,11 +57,13 @@ ServiceWindow {
     property int smartenReg:  smartenRegPin.value
     property int sgcsconfReg: sgcsconfRegPin.value
     property int drvconfReg:  drvconfRegPin.value
+    property int fullreadresponseVal:  fullreadresponsePin.value
     property string regValues: "DRVCTRL; \t  0x000" + drvctrlReg.toString(16).toUpperCase() + "\n" +
                                "CHOPCONF;\t  0x000" + chopconfReg.toString(16).toUpperCase() + "\n" +
                                "SMARTEN;\t  0x000" + smartenReg.toString(16).toUpperCase() + "\n" +
                                "SGCSCONF;\t  0x000" + sgcsconfReg.toString(16).toUpperCase() + "\n" +
                                "DRVCONF;\t  0x000" + drvconfReg.toString(16).toUpperCase()
+    property string fullreadresponseValue: "Read Response; \t  0x" + fullreadresponseVal.toString(16).toUpperCase()
 // + string( " %1" ).arg( 15, 1, 16 ).toUpper()
 //    name: "TrinamicSPI"
 //    title: qsTr("Trinamic SPI Test")
@@ -117,13 +119,11 @@ ServiceWindow {
         }
 
         RowLayout {
-                ColumnLayout {
-//                    anchors.fill: parent
-//                    anchors.margins: 10
+            ColumnLayout {
                 Label {
-                    id: sgtSetLabel
+                    id: ststLabel
                     font.bold: true
-                    text: root.labelName
+                    text: "stst"
                 }
 
                 Item {
@@ -131,11 +131,151 @@ ServiceWindow {
                 }
 
                 HalLed {
-                    id: errorLed
-                    name: "error"
+                    id: ststLed
+                    name: "stst.status"
+                    onColor: "yellow"
+                    Layout.preferredHeight: ststLabel.height * 0.9
+                    Layout.preferredWidth: ststLabel.height * 0.9
+                }
+            }
+
+            ColumnLayout {
+                Label {
+                    id: olbLabel
+                    font.bold: true
+                    text: "olb"
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                HalLed {
+                    id: olbLed
+                    name: "olb.status"
                     onColor: "red"
-                    Layout.preferredHeight: sgtSetLabel.height * 0.9
-                    Layout.preferredWidth: sgtSetLabel.height * 0.9
+                    Layout.preferredHeight: olbLabel.height * 0.9
+                    Layout.preferredWidth: olbLabel.height * 0.9
+                }
+            }
+
+            ColumnLayout {
+                Label {
+                    id: olaLabel
+                    font.bold: true
+                    text: "ola"
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                HalLed {
+                    id: olaLed
+                    name: "ola.status"
+                    onColor: "red"
+                    Layout.preferredHeight: olaLabel.height * 0.9
+                    Layout.preferredWidth: olaLabel.height * 0.9
+                }
+            }
+
+            ColumnLayout {
+                Label {
+                    id: s2gbLabel
+                    font.bold: true
+                    text: "s2gb"
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                HalLed {
+                    id: s2gbLed
+                    name: "s2gb.status"
+                    onColor: "red"
+                    Layout.preferredHeight: s2gbLabel.height * 0.9
+                    Layout.preferredWidth: s2gbLabel.height * 0.9
+                }
+            }
+
+            ColumnLayout {
+                Label {
+                    id: s2gaLabel
+                    font.bold: true
+                    text:" s2ga"
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                HalLed {
+                    id: s2gaLed
+                    name: "s2ga.status"
+                    onColor: "red"
+                    Layout.preferredHeight: s2gaLabel.height * 0.9
+                    Layout.preferredWidth: s2gaLabel.height * 0.9
+                }
+            }
+
+            ColumnLayout {
+                Label {
+                    id: otpwLabel
+                    font.bold: true
+                    text: "otpw"
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                HalLed {
+                    id: otpwLed
+                    name: "otpw.status"
+                    onColor: "red"
+                    Layout.preferredHeight: otpwLabel.height * 0.9
+                    Layout.preferredWidth: otpwLabel.height * 0.9
+                }
+            }
+
+            ColumnLayout {
+                Label {
+                    id: otLabel
+                    font.bold: true
+                    text: "ot"
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                HalLed {
+                    id: otLed
+                    name: "ot.status"
+                    onColor: "red"
+                    Layout.preferredHeight: otLabel.height * 0.9
+                    Layout.preferredWidth: otLabel.height * 0.9
+                }
+            }
+
+            ColumnLayout {
+                Label {
+                    id: sgLabel
+                    font.bold: true
+                    text: "sg"
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                HalLed {
+                    id: sgLed
+                    name: "sg.status"
+                    onColor: "red"
+                    Layout.preferredHeight: sgLabel.height * 0.9
+                    Layout.preferredWidth: sgLabel.height * 0.9
                 }
             }
         }
@@ -270,10 +410,27 @@ ServiceWindow {
                     }
                 }
 
+                Rectangle {
+                    // button
+                    height: 30; width: parent.width
+//                    color: mouseArea2.pressed ? "black" : "gray"
+                    color: "light green"
+                    Text {
+                        id: readresponseTxt
+                         text: root.fullreadresponseValue
+//                         text: "This is for showing the Trinamic SPI registers\n" +
+//                               'I am the very model of a modern major general!'
+
+                        // color can be set on the entire element with this property
+                        color: "black"
+
+                    }
+                }
+
 
                 Item {
                     Layout.fillHeight: true
-                    height: 50; width: parent.width
+                    height: 20; width: parent.width
                 }
 
             }
@@ -309,6 +466,13 @@ ServiceWindow {
             HalPin {
                 id: drvconfRegPin
                 name: "drvconf.reg"
+                direction: HalPin.In
+                type: HalPin.U32
+            }
+
+            HalPin {
+                id: fullreadresponsePin
+                name: "full.val"
                 direction: HalPin.In
                 type: HalPin.U32
             }
@@ -367,13 +531,14 @@ ServiceWindow {
             Label {
                 id: sgtValsetLabel
                 font.bold: true
-                text: "sgt set:"
+                text: "sgt set"
             }
 
             HalSpinBox {
                 Layout.fillWidth: true
                 id: sgtSetSpin
-                enabled: errorLed.value === false
+//                enabled: errorLed.value === false
+                enabled: true
                 name: "sgt.set"
                 halPin.direction: HalPin.IO
                 minimumValue: root.spinMinimumValue
@@ -389,7 +554,8 @@ ServiceWindow {
 
             Switch {
                 id: onOffSwitch
-                enabled: errorLed.value === false
+//                enabled: errorLed.value === false
+                enabled: true
                 onCheckedChanged: {
                     if (checked) {
                         if (sgtSetSpin.value == 0) {
@@ -413,10 +579,11 @@ ServiceWindow {
         HalGauge {
             id: sgGauge
             Layout.fillWidth: true
-            name: "sg.meas"
+            name: "sg.val"
             suffix: ""
             decimals: 0
-            valueVisible: !errorLed.value
+//            valueVisible: !errorLed.value
+            valueVisible: true
             minimumValueVisible: false
             maximumValueVisible: false
             minimumValue: root.gaugeMinimumValue
