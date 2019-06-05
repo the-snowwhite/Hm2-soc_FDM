@@ -18,7 +18,7 @@ pin out u32 sgcsconf.reg "SGCSCONF register";
 pin out u32 drvconf.reg "DRVCONF register";
 
 // read response values:
-pin out u32 full.val "Full response data";
+pin out u32 full.#.val [2] "Full response data";
 pin out float sg.val "Stall gaurd value";
 pin out bit stst.status "Standstill indicator";
 pin out bit olb.status "Open load indicator";
@@ -53,7 +53,6 @@ variable u32 *buf_read[2];
 variable bool intpol;
 variable bool dedge;
 variable u8 mres;
-variable s32 sg_meas;
 variable u32 seimin;
 variable u32 sedn;
 variable u32 semax;
@@ -148,28 +147,33 @@ static int read(struct __comp_state *__comp_setst){
     sgcsconf  = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) |
                 (sgt & 0x3F)) << TMC2660_SGT_SHIFT) | ((cs & 0x1F) << TMC2660_CS_SHIFT ));
 
-    // Read read response Values's into Pins
-//    for(i=0; i < 1; i++) {
-        full_val = (u32)(*buf_read[0]);
-        sg_meas = (s32)(((*buf_read[0]) & 0xFF300) >> 10);
-        sg_val = (float)(sg_meas);
-        stst_status = ((*buf_read[0]) & 0x80) ? 1:0 ;
-        olb_status  = ((*buf_read[0]) & 0x40) ? 1:0 ;
-        ola_status  = ((*buf_read[0]) & 0x20) ? 1:0 ;
-        s2gb_status = ((*buf_read[0]) & 0x10) ? 1:0 ;
-        s2ga_status = ((*buf_read[0]) & 0x08) ? 1:0 ;
-        otpw_status = ((*buf_read[0]) & 0x04) ? 1:0 ;
-        ot_status   = ((*buf_read[0]) & 0x02) ? 1:0 ;
-        sg_status   = ((*buf_read[0]) & 0x01) ? 1:0 ;
-        drvctrl_reg = drvctrl;
-        chopconf_reg = chopconf;
-        smarten_reg = smarten;
-        sgcsconf_reg = sgcsconf;
-        drvconf_reg = drvconf;
-//    }
     // Set write buff
     *buf_write[0] = drvctrl;
     *buf_write[1] = sgcsconf;
+
+    // Read Reg Values's onto Pins
+
+    drvctrl_reg = drvctrl;
+    chopconf_reg = chopconf;
+    smarten_reg = smarten;
+    sgcsconf_reg = sgcsconf;
+    drvconf_reg = drvconf;
+
+    // Read read response Values's into Pins
+
+    for(i=0; i < 2; i++) {
+        full_val(i) = (u32)(*buf_read[i]);
+    }
+
+    sg_val = (float)(s32)(((*buf_read[0]) & 0xFF300) >> 10);
+    stst_status = ((*buf_read[0]) & 0x80) ? 1:0 ;
+    olb_status  = ((*buf_read[0]) & 0x40) ? 1:0 ;
+    ola_status  = ((*buf_read[0]) & 0x20) ? 1:0 ;
+    s2gb_status = ((*buf_read[0]) & 0x10) ? 1:0 ;
+    s2ga_status = ((*buf_read[0]) & 0x08) ? 1:0 ;
+    otpw_status = ((*buf_read[0]) & 0x04) ? 1:0 ;
+    ot_status   = ((*buf_read[0]) & 0x02) ? 1:0 ;
+    sg_status   = ((*buf_read[0]) & 0x01) ? 1:0 ;
 
     return 0;
 }

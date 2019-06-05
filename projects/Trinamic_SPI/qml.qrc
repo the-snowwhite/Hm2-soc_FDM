@@ -6,6 +6,7 @@
         <file>trinamic_spi/ApplicationToolBar.qml</file>
         <file>trinamic_spi/ToggleSettingAction.qml</file>
         <file>trinamic_spi/Controls/Spacer.qml</file>
+        <file>trinamic_spi/Controls/HalSpinBox2.qml</file>
         <file>trinamic_spi/ManualTab/AxisControls.qml</file>
         <file>trinamic_spi/ManualTab/KeyboardJogControl.qml</file>
         <file>trinamic_spi/ManualTab/ManualTab.qml</file>
