@@ -57,7 +57,18 @@ ServiceWindow {
 //    property bool lastIntpolValue
 //    property bool lastDedgeValue
     property double lastMresValue
+    property double lastTblValue
+    property double lastHendValue
+    property double lastHstrtValue
+    property double lastToffValue
     property double lastSgtValue
+     property double defMresValue: mresSetSpin.value
+//     property double defTblValue: tblSetSpin.value
+//     property double defHendValue: hendSetSpin.value
+//     property double defHstrtValue: hstrtSetSpin.value
+//     property double defToffValue: toffSetSpin.value
+//     property double defSgtValue: sgtSetSpin.value
+
     property int drvctrlReg:  drvctrlRegPin.value
     property int chopconfReg: chopconfRegPin.value
     property int smartenReg:  smartenRegPin.value
@@ -71,6 +82,7 @@ ServiceWindow {
                                "DRVCONF;\t  0x" + drvconfReg.toString(16).toUpperCase()
     property string fullreadresponseValue_0: "Read Response 0: \t  0x" + fullreadresponsePin_0.value.toString(16).toUpperCase()
     property string fullreadresponseValue_1: "Read Response 1: \t  0x" + fullreadresponsePin_1.value.toString(16).toUpperCase()
+    property string fullreadresponseValue_2: "Read Response 2: \t  0x" + fullreadresponsePin_2.value.toString(16).toUpperCase()
 // + string( " %1" ).arg( 15, 1, 16 ).toUpper()
 //    name: "TrinamicSPI"
 //    title: qsTr("Trinamic SPI Test")
@@ -411,20 +423,30 @@ ServiceWindow {
                             }
 
                             Rectangle {
-                                height: 48; width: parent.width// color: mouseArea2.pressed ? "black" : "gray"
+                                height: 72; width: parent.width// color: mouseArea2.pressed ? "black" : "gray"
                                 color: "light green"
                                 Column {
-                                Text {
-                                    id: readresponseTxt_0
-                                    text: root.fullreadresponseValue_0
-                                    color: "black"// color can be set on the entire element with this property
+                                    Text {
+                                        id: readresponseTxt_0
+                                        text: root.fullreadresponseValue_0
+                                        color: "black"// color can be set on the entire element with this property
+                                    }
+                                    Text {
+                                        id: readresponseTxt_1
+                                        text: root.fullreadresponseValue_1
+                                        color: "black"// color can be set on the entire element with this property
+                                    }
+                                    Text {
+                                        id: readresponseTxt_2
+                                        text: root.fullreadresponseValue_2
+                                        color: "black"// color can be set on the entire element with this property
+                                    }
                                 }
-                                Text {
-                                    id: readresponseTxt_1
-                                    text: root.fullreadresponseValue_1
-                                    color: "black"// color can be set on the entire element with this property
-                                }
-                                }
+                            }
+
+                            Label {
+                                font.bold: true
+                                text: qsTr("Drvctrl:")
                             }
 
                             RowLayout {// set intpol values
@@ -463,10 +485,6 @@ ServiceWindow {
                                 id: dedgecontrol
                                 visible: true
 
-    //                             Item {
-    //                                 Layout.preferredWidth: regTxt.width - dedgeValsetLabel.width - dedgeonOffSwitch.width + window.anchors.margins
-    //                             }
-
                                 Switch {
                                     id: dedgeonOffSwitch
                                     enabled: true
@@ -502,7 +520,7 @@ ServiceWindow {
                                     halPin.direction: HalPin.IO
                                     from: items.length - 1
                                     to: 0// items.length - 1
-                                    value: 0
+//                                    value: 0
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
@@ -537,22 +555,394 @@ ServiceWindow {
     //                               background.color: "blue"
                                     onCheckedChanged: {
                                         if (checked) {
-                                            if (mresSetSpin.value == 0) {
+//                                            if (mresSetSpin.value == 0) {
                                                 mresSetSpin.value = root.lastMresValue
-                                            }
+//                                            }
                                         }
                                         else {
                                             root.lastMresValue = mresSetSpin.value
-                                            mresSetSpin.value = 0
+//                                            mresSetSpin.value = 0
                                         }
                                     }
 
                                     Binding {
                                         target: mresonOffSwitch
                                         property: "checked"
-                                        value: mresSetSpin.value  > 0
+                                        value: mresSetSpin.value != root.defMresValue
                                     }
                                 }
+                            }
+
+                            Label {
+                                font.bold: true
+                                text: qsTr("Chopconf:")
+                            }
+
+                            RowLayout {// set tbl values
+
+                                id: tblcontrol
+                                visible: true
+
+                                HalSpinBox2 {
+                                    id: tblSetSpin
+                                    enabled: true
+                                    name: "tbl.set"
+                                    halPin.direction: HalPin.IO
+                                    from: 0//items.length - 1
+                                    to: items.length - 1
+//                                    value: 0
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+
+                                    property var items: ["16", "24", "36", "54"]
+
+                                    validator: RegExpValidator {
+                                        regExp: new RegExp("(16|24|36|54)", "i")
+                                    }
+
+                                    textFromValue: function(value) {
+                                        return items[value];
+                                    }
+
+                                    valueFromText: function(text) {
+                                        for (var i = 0; i < items.length; ++i) {
+                                            if (items[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
+                                                return i
+                                        }
+                                        return tblsb.value
+                                    }
+                                }
+
+                                Label {
+                                    id: tblValsetLabel
+                                    font.bold: true
+                                    text: "Blanking time"
+                                }
+
+                                Switch {
+                                    id: tblonOffSwitch
+                                    enabled: true
+    //                               background.color: "blue"
+                                    onCheckedChanged: {
+                                        if (checked) {
+//                                            if (tblSetSpin.value == 0) {
+                                                tblSetSpin.value = root.lastTblValue
+//                                            }
+                                        }
+                                        else {
+                                            root.lastTblValue = tblSetSpin.value
+//                                            tblSetSpin.value = 0
+                                        }
+                                    }
+
+                                    Binding {
+                                        target: tblonOffSwitch
+                                        property: "checked"
+                                        value: tblSetSpin.value  != root.defTblValue
+                                    }
+                                }
+                            }
+
+                            RowLayout {// set chm values
+
+                                id: chmcontrol
+                                visible: true
+
+                                Switch {
+                                    id: chmonOffSwitch
+                                    enabled: true
+                                    display: AbstractButton.TextBesideIcon
+                                    text: qsTr("Chopper mode")
+                                    font.bold: true
+                                    onCheckedChanged: {
+                                        if (checked) {
+                                                chmSetPin.value = 1
+                                        }
+                                        else {
+                                            chmSetPin.value = 0
+                                        }
+                                    }
+
+                                    Binding {
+                                        target: chmonOffSwitch
+                                        property: "checked"
+                                        value: chmSetPin.value  > 0
+                                    }
+                                }
+                            }
+
+                            RowLayout {// set rndtf values
+
+                                id: rndtfcontrol
+                                visible: true
+
+                                Switch {
+                                    id: rndtfonOffSwitch
+                                    enabled: true
+                                    display: AbstractButton.TextBesideIcon
+                                    text: qsTr("Random TOFF time")
+                                    font.bold: true
+                                    onCheckedChanged: {
+                                        if (checked) {
+                                                rndtfSetPin.value = 1
+                                        }
+                                        else {
+                                            rndtfSetPin.value = 0
+                                        }
+                                    }
+
+                                    Binding {
+                                        target: rndtfonOffSwitch
+                                        property: "checked"
+                                        value: rndtfSetPin.value  > 0
+                                    }
+                                }
+                            }
+
+                            RowLayout {// set hdec1 values
+
+                                id: hdec1control
+                                visible: true
+
+                                Switch {
+                                    id: hdec1onOffSwitch
+                                    enabled: true
+                                    display: AbstractButton.TextBesideIcon
+                                    text: qsTr("Hysteresis decrement period 1")
+//                                    text: qsTr("Fast decay mode")
+                                    font.bold: true
+                                    onCheckedChanged: {
+                                        if (checked) {
+                                                hdec1SetPin.value = 1
+                                        }
+                                        else {
+                                            hdec1SetPin.value = 0
+                                        }
+                                    }
+
+                                    Binding {
+                                        target: hdec1onOffSwitch
+                                        property: "checked"
+                                        value: hdec1SetPin.value  > 0
+                                    }
+                                }
+                            }
+
+                            RowLayout {// set hdec0 values
+
+                                id: hdec0control
+                                visible: true
+
+                                Switch {
+                                    id: hdec0onOffSwitch
+                                    enabled: true
+                                    display: AbstractButton.TextBesideIcon
+                                    text: qsTr("Hysteresis decrement period 0")
+//                                    text: qsTr("Fast decay mode")
+                                    font.bold: true
+                                    onCheckedChanged: {
+                                        if (checked) {
+                                                hdec0SetPin.value = 1
+                                        }
+                                        else {
+                                            hdec0SetPin.value = 0
+                                        }
+                                    }
+
+                                    Binding {
+                                        target: hdec0onOffSwitch
+                                        property: "checked"
+                                        value: hdec0SetPin.value  > 0
+                                    }
+                                }
+                            }
+
+                            RowLayout {// set hend values
+
+                                id: hendcontrol
+                                visible: true
+
+                            HalSpinBox2 {
+                                id: hendSetSpin
+                                enabled: true
+                                name: "hend.set"
+                                halPin.direction: HalPin.IO
+                                from: -3
+                                to: 12
+                                // chm =0
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+
+                                    onValueModified: {            // remove the focus from this control
+                                        parent.forceActiveFocus()
+                                        parent.focus = true
+                                    }
+                                }
+
+                                Label {
+                                    id: hendValsetLabel
+                                    font.bold: true
+                                    text: "Hysteresis end (low)"
+                                }
+
+                                Switch {
+                                    id: hendonOffSwitch
+                                    enabled: true
+                                    onCheckedChanged: {
+                                        if (checked) {
+//                                            if (hendSetSpin.value == 0) {
+                                                hendSetSpin.value = root.lastHendValue
+//                                            }
+                                        }
+                                        else {
+                                            root.lastHendValue = hendSetSpin.value
+//                                            hendSetSpin.value = 0
+                                        }
+                                    }
+
+                                    Binding {
+                                        target: hendonOffSwitch
+                                        property: "checked"
+                                        value: hendSetSpin.value  != root.defHendValue
+                                    }
+                                }
+                            }
+
+                            RowLayout {// set hstrt values
+
+                                id: hstrtcontrol
+                                visible: true
+
+                                HalSpinBox2 {
+                                    id: hstrtSetSpin
+                                    enabled: true
+                                    name: "hstrt.set"
+                                    halPin.direction: HalPin.IO
+                                    from: 0 //items.length - 1
+                                    to: items.length - 1
+//                                    value: 0
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+                                    // if chm = 0
+                                    property var items: ["1", "2", "3", "4", "5", "6", "7", "8"]
+
+                                    validator: RegExpValidator {
+                                        regExp: new RegExp("(1|2|3|4|5|6|7|8)", "i")
+                                    }
+
+                                    textFromValue: function(value) {
+                                        return items[value];
+                                    }
+
+                                    valueFromText: function(text) {
+                                        for (var i = 0; i < items.length; ++i) {
+                                            if (items[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
+                                                return i
+                                        }
+                                        return hstrtsb.value
+                                    }
+                                }
+
+                                Label {
+                                    id: hstrtValsetLabel
+                                    font.bold: true
+                                    text: "Hysteresis start value"
+                                }
+
+                                Switch {
+                                    id: hstrtonOffSwitch
+                                    enabled: true
+    //                               background.color: "blue"
+                                    onCheckedChanged: {
+                                        if (checked) {
+//                                            if (hstrtSetSpin.value == 0) {
+                                                hstrtSetSpin.value = root.lastHstrtValue
+//                                            }
+                                        }
+                                        else {
+                                            root.lastHstrtValue = hstrtSetSpin.value
+                                            hstrtSetSpin.value = 0
+                                        }
+                                    }
+
+                                    Binding {
+                                        target: hstrtonOffSwitch
+                                        property: "checked"
+                                        value: hstrtSetSpin.value  != root.defHstrtValue
+                                    }
+                                }
+                            }
+
+                            RowLayout {// set toff values
+
+                                id: toffcontrol
+                                visible: true
+
+                                HalSpinBox2 {
+                                    id: toffSetSpin
+//                                    hoverEnabled: true
+                                    enabled: true
+                                    name: "toff.set"
+                                    halPin.direction: HalPin.IO
+
+                                    from: 0
+                                    to: 15
+//                                    value: 16
+    //                                ToolTip.visible: down
+                                    ToolTip.delay: 1000
+    //                                ToolTip.timeout: 2000
+                                    hoverEnabled: true
+                                    ToolTip.visible: hovered
+
+                                    ToolTip.text: qsTr("0000: Driver disable, all bridges off\n0001: 1 (use with TBL of minimum 24 clocks)\n0010 ... %1111: 2 ... 15")
+                                    // chm =0
+        //                                 font.pixelSize: 30
+        //                                 scale: 0.5
+
+                                        onValueModified: {            // remove the focus from this control
+                                            parent.forceActiveFocus()
+                                            parent.focus = true
+                                        }
+                                    }
+
+                                Label {
+                                    id: toffdValsetLabel
+                                    font.bold: true
+                                    text: "Off time/MOSFET"
+                                }
+/*
+                                Switch {
+                                    id: toffonOffSwitch
+                                    enabled: true
+                                    onCheckedChanged: {
+                                        if (checked) {
+//                                            if (toffSetSpin.value == 0) {
+                                                toffSetSpin.value = root.lastToffValue
+//                                            }
+                                        }
+                                        else {
+                                            root.lastToffValue = toffSetSpin.value
+//                                            toffSetSpin.value = 0
+                                        }
+                                    }
+
+                                    Binding {
+                                        target: toffonOffSwitch
+                                        property: "checked"
+                                        value: toffSetSpin.value  != root.defToffValue
+                                    }
+                                }
+*/
+                            }
+
+                            Label {
+                                font.bold: true
+                                text: qsTr("Smarten:")
+                            }
+
+                            Label {
+                                font.bold: true
+                                text: qsTr("Sgcsconf:")
                             }
 
                             RowLayout {// set sgt values
@@ -579,7 +969,7 @@ ServiceWindow {
                                 Label {
                                     id: sgtValsetLabel
                                     font.bold: true
-                                    text: "SG threshold"
+                                    text: "SG2 threshold"
                                 }
 
                                 Switch {
@@ -605,20 +995,6 @@ ServiceWindow {
                                 }
                             }
 
-                        }
-
-                        HalPin {
-                            id: intpolSetPin
-                            name: "intpol.set"
-                            direction: HalPin.IO
-                            type: HalPin.Bit
-                        }
-
-                        HalPin {
-                            id: dedgeSetPin
-                            name: "dedge.set"
-                            direction: HalPin.IO
-                            type: HalPin.Bit
                         }
 
                         HalPin {
@@ -669,6 +1045,55 @@ ServiceWindow {
                             direction: HalPin.In
                             type: HalPin.U32
                         }
+
+                        HalPin {
+                            id: fullreadresponsePin_2
+                            name: "full.2.val"
+                            direction: HalPin.In
+                            type: HalPin.U32
+                        }
+
+                        HalPin {
+                            id: intpolSetPin
+                            name: "intpol.set"
+                            direction: HalPin.IO
+                            type: HalPin.Bit
+                        }
+
+                        HalPin {
+                            id: dedgeSetPin
+                            name: "dedge.set"
+                            direction: HalPin.IO
+                            type: HalPin.Bit
+                        }
+
+                        HalPin {
+                            id: chmSetPin
+                            name: "chm.set"
+                            direction: HalPin.IO
+                            type: HalPin.Bit
+                        }
+
+                        HalPin {
+                            id: rndtfSetPin
+                            name: "rndtf.set"
+                            direction: HalPin.IO
+                            type: HalPin.Bit
+                        }
+
+                        HalPin {
+                            id: hdec1SetPin
+                            name: "hdec1.set"
+                            direction: HalPin.IO
+                            type: HalPin.Bit
+                        }
+
+                        HalPin {
+                            id: hdec0SetPin
+                            name: "hdec0.set"
+                            direction: HalPin.IO
+                            type: HalPin.Bit
+                        }
                     }
 
                     LogChart {
@@ -696,7 +1121,7 @@ ServiceWindow {
                 HalGauge {
                     id: sgGauge
                     Layout.fillWidth: true
-                    name: "sg.val"
+                    name: "sg.readout"
                     suffix: ""
                     decimals: 0
                     valueVisible: true

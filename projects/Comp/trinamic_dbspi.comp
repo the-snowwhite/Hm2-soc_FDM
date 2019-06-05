@@ -18,21 +18,31 @@ pin out u32 sgcsconf.reg "SGCSCONF register";
 pin out u32 drvconf.reg "DRVCONF register";
 
 // read response values:
-pin out u32 full.#.val [2] "Full response data";
-pin out float sg.val "Stall gaurd value";
-pin out bit stst.status "Standstill indicator";
-pin out bit olb.status "Open load indicator";
-pin out bit ola.status "Open load indicator";
-pin out bit s2gb.status "Short to GND detection bits on high-side transistors";
-pin out bit s2ga.status "Short to GND detection bits on high-side transistors";
-pin out bit otpw.status "Overtemperature warning";
-pin out bit ot.status "Overtemperature shutdown";
-pin out bit sg.status "stallGuard2 status";
+pin out u32 full.#.val[3] "Full response data";
+pin out float sg.readout  "Stall gaurd value";
+pin out bit stst.status   "Standstill indicator";
+pin out bit olb.status    "Open load indicator";
+pin out bit ola.status    "Open load indicator";
+pin out bit s2gb.status   "Short to GND detection bits on high-side transistors";
+pin out bit s2ga.status   "Short to GND detection bits on high-side transistors";
+pin out bit otpw.status   "Overtemperature warning";
+pin out bit ot.status     "Overtemperature shutdown";
+pin out bit sg.status     "stallGuard2 status";
 
 // settings:
 pin io bit  intpol.set "Enable STEP interpolation";
-pin io bit  dedge.set "Enable double edge STEP pulses";
+pin io bit  dedge.set  "Enable double edge STEP pulses";
 pin io float  mres.set "Microstep resolution for STEP/DIR mode";
+
+pin io float tbl.set   "Blanking time";
+pin io bit chm.set     "Chopper mode";
+pin io bit rndtf.set   "Random TOFF time";
+pin io bit hdec1.set  "Hysteresis decrement interval or Fast decay mode";
+pin io bit hdec0.set  "Hysteresis decrement interval or Fast decay mode";
+pin io float hend.set  "Hysteresis end (low) value or Sine wave offset";
+pin io float hstrt.set "Hysteresis start value or Fast decay time setting";
+pin io float toff.set "Off time/MOSFET disable";
+
 pin in bit  seimin.set "Minimum coolStep current: 0: 1⁄2 CS current setting 1: 1⁄4 CS current setting";
 pin in u32  sedn.set "Current decrement speed";
 pin in u32  semax.set "Upper coolStep threshold as an offset from the lower threshold";
@@ -48,11 +58,22 @@ variable u32 chopconf;
 variable u32 smarten;
 variable u32 sgcsconf;
 variable u32 drvconf;
-variable u32 *buf_write[2];
-variable u32 *buf_read[2];
+variable u32 *buf_write[3];
+variable u32 *buf_read[3];
+
 variable bool intpol;
 variable bool dedge;
 variable u8 mres;
+
+variable u8 tbl;
+variable bool chm;
+variable bool rndtf;
+variable bool hdec1;
+variable bool hdec0;
+variable u8 hend;
+variable u8 hstrt;
+variable u8 toff;
+
 variable u32 seimin;
 variable u32 sedn;
 variable u32 semax;
@@ -91,9 +112,20 @@ static int read(struct __comp_state *__comp_setst){
 
     // Setup DAC, watchdog will have reset it if done in setup
     if(firstrun) {
+        // DRVCTRL:
         intpol =  ((TMC2660_DRVCTRL_CONF & TMC2660_INTPOL_MASK) >> TMC2660_INTPOL_SHIFT);
         dedge  =  ((TMC2660_DRVCTRL_CONF & TMC2660_DEDGE_MASK)  >> TMC2660_DEDGE_SHIFT);
         mres   =  ((TMC2660_DRVCTRL_CONF & TMC2660_MRES_MASK)   >> TMC2660_MRES_SHIFT);
+        // CHOPCONF:
+        tbl   =  ((TMC2660_CHOPCONF_CONF & TMC2660_TBL_MASK)   >> TMC2660_TBL_SHIFT);
+        chm   =  ((TMC2660_CHOPCONF_CONF & TMC2660_CHM_MASK)   >> TMC2660_CHM_SHIFT);
+        rndtf =  ((TMC2660_CHOPCONF_CONF & TMC2660_RNDTF_MASK) >> TMC2660_RNDTF_SHIFT);
+        hdec1 =  ((TMC2660_CHOPCONF_CONF & TMC2660_HDEC1_MASK) >> TMC2660_HDEC1_SHIFT);
+        hdec0 =  ((TMC2660_CHOPCONF_CONF & TMC2660_HDEC0_MASK) >> TMC2660_HDEC0_SHIFT);
+        hend  =  ((TMC2660_CHOPCONF_CONF & TMC2660_HEND_MASK)  >> TMC2660_HEND_SHIFT);
+        hstrt =  ((TMC2660_CHOPCONF_CONF & TMC2660_HSTRT_MASK) >> TMC2660_HSTRT_SHIFT);
+        toff  =  ((TMC2660_CHOPCONF_CONF & TMC2660_TOFF_MASK)  >> TMC2660_TOFF_SHIFT);
+
         seimin =  ((TMC2660_SMARTEN_CONF & TMC2660_SEIMIN_MASK) >> TMC2660_SEIMIN_SHIFT);
         sedn   =  ((TMC2660_SMARTEN_CONF & TMC2660_SEDN_MASK)   >> TMC2660_SEDN_SHIFT);
         semax  =  ((TMC2660_SMARTEN_CONF & TMC2660_SEMAX_MASK)  >> TMC2660_SEMAX_SHIFT);
@@ -108,11 +140,29 @@ static int read(struct __comp_state *__comp_setst){
         dedge_set  = dedge;
         mres_set   = (float)(mres);
 
+        tbl_set   = (float)(tbl);
+        chm_set   = chm;
+        rndtf_set = rndtf;
+        hdec1_set = hdec1;
+        hdec0_set = hdec0;
+        hend_set  = (float)(hend);
+        hstrt_set = (float)(hstrt);
+        toff_set  = (float)(toff);
+
         firstrun = false;
     } else {
         intpol = intpol_set;
         dedge  = dedge_set;
         mres   = (s8)(mres_set);
+
+        tbl   = (u8)(tbl_set);
+        chm   = chm_set;
+        rndtf = rndtf_set;
+        hdec1 = hdec1_set;
+        hdec0 = hdec0_set;
+        hend  = (u8)(hend_set);
+        hstrt = (u8)(hstrt_set);
+        toff  = (u8)(toff_set);
 
         if (seimin_set) {
             seimin = seimin_set;
@@ -144,12 +194,17 @@ static int read(struct __comp_state *__comp_setst){
     drvctrl   = ( TMC2660_DRVCTRL | ( intpol << TMC2660_INTPOL_SHIFT) | ( dedge << TMC2660_DEDGE_SHIFT ) |
                 ( mres & TMC2660_MRES_MASK ) << TMC2660_MRES_SHIFT );
 
+    chopconf  = ( TMC2660_CHOPCONF | ( tbl << TMC2660_TBL_SHIFT) | ( chm_set << TMC2660_CHM_SHIFT ) |
+            ( rndtf << TMC2660_RNDTF_SHIFT ) | ( hdec1 << TMC2660_HDEC1_SHIFT ) | ( hdec0 << TMC2660_HDEC0_SHIFT ) |
+            ( hend << TMC2660_HEND_SHIFT ) | ( hstrt << TMC2660_HSTRT_SHIFT ) | ( toff << TMC2660_TOFF_SHIFT ));
+
     sgcsconf  = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) |
                 (sgt & 0x3F)) << TMC2660_SGT_SHIFT) | ((cs & 0x1F) << TMC2660_CS_SHIFT ));
 
     // Set write buff
     *buf_write[0] = drvctrl;
-    *buf_write[1] = sgcsconf;
+    *buf_write[1] = chopconf;
+    *buf_write[2] = sgcsconf;
 
     // Read Reg Values's onto Pins
 
@@ -159,13 +214,13 @@ static int read(struct __comp_state *__comp_setst){
     sgcsconf_reg = sgcsconf;
     drvconf_reg = drvconf;
 
-    // Read read response Values's into Pins
+    // Copy read response Values's onto Pins
 
-    for(i=0; i < 2; i++) {
+    for(i=0; i < 3; i++) {
         full_val(i) = (u32)(*buf_read[i]);
     }
 
-    sg_val = (float)(s32)(((*buf_read[0]) & 0xFF300) >> 10);
+    sg_readout  = (float)(s32)(((*buf_read[0]) & 0xFF300) >> 10);
     stst_status = ((*buf_read[0]) & 0x80) ? 1:0 ;
     olb_status  = ((*buf_read[0]) & 0x40) ? 1:0 ;
     ola_status  = ((*buf_read[0]) & 0x20) ? 1:0 ;
@@ -195,21 +250,11 @@ EXTRA_SETUP(){
 
     // Setup ADC
         // ADC, chans 0-3 +/-10V
-//    r += hm2_dbspi_write_chan(name, 0, (TMC2660_DRVCTRL | TMC2660_DRVCTRL_CONF));
-    drvctrl = (TMC2660_DRVCTRL | TMC2660_DRVCTRL_CONF);
-    r += hm2_dbspi_write_chan(name, 0, drvctrl);
-//    r += hm2_dbspi_write_chan(name, 0, (TMC2660_CHOPCONF | TMC2660_CHOPCONF_CONF));
-    chopconf = (TMC2660_CHOPCONF | TMC2660_CHOPCONF_CONF);
-    r += hm2_dbspi_write_chan(name, 0, chopconf);
-//    r += hm2_dbspi_write_chan(name, 0, (TMC2660_SMARTEN | TMC2660_SMARTEN_CONF));
-    smarten = (TMC2660_SMARTEN | TMC2660_SMARTEN_CONF);
-    r += hm2_dbspi_write_chan(name, 0, smarten);
-//    r += hm2_dbspi_write_chan(name, 0, (TMC2660_SGCSCONF | TMC2660_SGCSCONF_CONF));
-    sgcsconf = (TMC2660_SGCSCONF | TMC2660_SGCSCONF_CONF);
-    r += hm2_dbspi_write_chan(name, 0, sgcsconf);
-//    r += hm2_dbspi_write_chan(name, 0, (TMC2660_DRVCONF | TMC2660_DRVCONF_CONF));
-    drvconf = (TMC2660_DRVCONF | TMC2660_DRVCONF_CONF);
-    r += hm2_dbspi_write_chan(name, 0, drvconf);
+    drvctrl = (TMC2660_DRVCTRL | TMC2660_DRVCTRL_CONF);    r += hm2_dbspi_write_chan(name, 0, drvctrl);
+    chopconf = (TMC2660_CHOPCONF | TMC2660_CHOPCONF_CONF); r += hm2_dbspi_write_chan(name, 0, chopconf);
+    smarten = (TMC2660_SMARTEN | TMC2660_SMARTEN_CONF);    r += hm2_dbspi_write_chan(name, 0, smarten);
+    sgcsconf = (TMC2660_SGCSCONF | TMC2660_SGCSCONF_CONF); r += hm2_dbspi_write_chan(name, 0, sgcsconf);
+    drvconf = (TMC2660_DRVCONF | TMC2660_DRVCONF_CONF);    r += hm2_dbspi_write_chan(name, 0, drvconf);
 
     if (r < 0) {
         HM2_ERR_NO_LL("There have been %i errors during ADC setup, "
@@ -217,7 +262,7 @@ EXTRA_SETUP(){
         return -EINVAL;
     }
 
-    for(i = 0; i < 2; i++) {
+    for(i = 0; i < 3; i++) {
         r += hm2_tram_add_dbspi_frame(name, 0, &buf_write[i], &buf_read[i]);
     }
 
@@ -237,5 +282,6 @@ EXTRA_SETUP(){
                       "quitting\n", -r);
         return -EINVAL;
     }
+
     return 0;
 }
