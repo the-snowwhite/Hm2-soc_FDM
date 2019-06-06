@@ -32,6 +32,7 @@ import Machinekit.HalRemote 1.0
 import Machinekit.Service 1.0
 import Machinekit.Application.Controls 1.0
 import Qt.labs.settings 1.0
+//import Theme 1.0
 import "./Controls"
 import "./ManualTab"
 import "./StatusBar"
@@ -86,6 +87,15 @@ ServiceWindow {
 // + string( " %1" ).arg( 15, 1, 16 ).toUpper()
 //    name: "TrinamicSPI"
 //    title: qsTr("Trinamic SPI Test")
+    property int themeBaseSize: 10
+    property string lightgrayColour: "light gray"
+    property string darkgrayColour: "gray"
+    property string themeLight: "yellow"
+    property string themeKnob: "white"
+    property string themeLightGray: "light gray"
+    property string themeGray: "gray"
+    property string themeMainColor: "orange"
+    property string themeMainColorDarker: "green"
     title: applicationCore.applicationName + (d.machineName === "" ? "" :" - " +  d.machineName)
 
     statusBar:applicationStatusBar
@@ -620,7 +630,7 @@ ServiceWindow {
                 RowLayout {  // Settings row
                     Column {  // First Column
                         spacing: 10// Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignTop
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         Label {
                             font.bold: true
                             text: qsTr("Drvctrl:")
@@ -631,21 +641,26 @@ ServiceWindow {
                             id: intpolcontrol
                             visible: true
 
-    //                             Item {
-    //                                 Layout.fillWidth: true
-    //                            }
+                            Label {
+                                id: intpolLabel
+//                                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                                font.bold: true
+                                text:"Interpolation"
+                            }
 
                             Switch {
                                 id: intpolonOffSwitch
                                 enabled: true
-                                text: "Interpolation"
+                                text: intpolSetPin.value  > 0 ? "x16" : "Disabled"
                                 font.bold: true
                                 onCheckedChanged: {
                                     if (checked) {
                                             intpolSetPin.value = 1
+                                            intpolonOffSwitch.text = "x16"
                                     }
                                     else {
                                         intpolSetPin.value = 0
+                                        intpolonOffSwitch.text = "Disabled"
                                     }
                                 }
 
@@ -661,19 +676,28 @@ ServiceWindow {
 
                             id: dedgecontrol
                             visible: true
+//                            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                            Label {
+                                id: dedgeLabel
+//                                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                                font.bold: true
+                                text: "Step Edges"
+                            }
 
                             Switch {
                                 id: dedgeonOffSwitch
                                 enabled: true
                                 display: AbstractButton.TextBesideIcon
-                                text: qsTr("Doubleedge")
+                                text: dedgeSetPin.value  > 0 ? "Double Edge" : "Rising Edge"
                                 font.bold: true
                                 onCheckedChanged: {
                                     if (checked) {
                                             dedgeSetPin.value = 1
+                                            dedgeonOffSwitch.text = "Double Edge"
                                     }
                                     else {
                                         dedgeSetPin.value = 0
+                                        dedgeonOffSwitch.text = "Rising Edge"
                                     }
                                 }
 
@@ -690,6 +714,13 @@ ServiceWindow {
                             id: mrescontrol
                             visible: true
 
+                            Label {
+                                id: mresLabel
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                                font.bold: true
+                                text: "Res"
+                            }
+
                             HalSpinBox2 {
                                 id: mresSetSpin
                                 enabled: true
@@ -697,7 +728,6 @@ ServiceWindow {
                                 halPin.direction: HalPin.IO
                                 from: items.length - 1
                                 to: 0// items.length - 1
-    //                                    value: 0
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
@@ -723,21 +753,95 @@ ServiceWindow {
                             Label {
                                 id: mresValsetLabel
                                 font.bold: true
-                                text: "Microsteps   "
+                                text: "uSteps   "
                             }
 
                             Switch {
                                 id: mresonOffSwitch
                                 enabled: true
-    //                               background.color: "blue"
+
+                                indicator: Rectangle {
+                                    id: mresswitchHandle
+                                    implicitWidth: root.themeBaseSize * 4.8
+                                    implicitHeight: root.themeBaseSize * 1.3
+                                    x: mresonOffSwitch.leftPadding
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    radius: root.themeBaseSize * 1.3
+                                    color: root.lightgrayColour
+                                    border.color: root.darkgrayColour
+
+                                    Rectangle {
+                                        id: rectangle
+
+                                        width: root.themeBaseSize * 2.6
+                                        height: root.themeBaseSize * 2.6
+                                        radius: root.themeBaseSize * 1.3
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        color: root.themeKnob
+                                        border.color: root.themeGray
+                                    }
+
+                                    states: [
+                                        State {
+                                            name: "off"
+                                            when: !mresonOffSwitch.checked && !mresonOffSwitch.down
+                                        },
+                                        State {
+                                            name: "on"
+                                            when: mresonOffSwitch.checked && !mresonOffSwitch.down
+
+                                            PropertyChanges {
+                                                target: mresswitchHandle
+                                                color: root.themeMainColor
+                                                border.color: root.themeMainColor
+                                            }
+
+                                            PropertyChanges {
+                                                target: rectangle
+                                                x: parent.width - width
+
+                                            }
+                                        },
+                                        State {
+                                            name: "off_down"
+                                            when: !mresonOffSwitch.checked && mresonOffSwitch.down
+
+                                            PropertyChanges {
+                                                target: rectangle
+                                                color: root.themeLight
+                                            }
+
+                                        },
+                                        State {
+                                            name: "on_down"
+                                            extend: "off_down"
+                                            when: mresonOffSwitch.checked && mresonOffSwitch.down
+
+                                            PropertyChanges {
+                                                target: rectangle
+                                                x: parent.width - width
+                                                color: root.themeLight
+                                            }
+
+                                            PropertyChanges {
+                                                target: mresswitchHandle
+                                                color: root.themeMainColorDarker
+                                                border.color: root.themeMainColorDarker
+                                            }
+                                        }
+                                    ]
+                                }
+
                                 onCheckedChanged: {
                                     if (checked) {
-    //                                            if (mresSetSpin.value == 0) {
-                                            mresSetSpin.value = root.lastMresValue
-    //                                            }
+                                        if (mresSetSpin.value == 0) {
+//                                        color: "white"
+                                            checked = 0//root.lastMresValue
+                                        }
                                     }
                                     else {
-                                        root.lastMresValue = mresSetSpin.value
+//                                        root.lastMresValue = mresSetSpin.value
+//                                        color: "yellow"
     //                                            mresSetSpin.value = 0
                                     }
                                 }
@@ -745,7 +849,7 @@ ServiceWindow {
                                 Binding {
                                     target: mresonOffSwitch
                                     property: "checked"
-                                    value: mresSetSpin.value != root.defMresValue
+                                    value: mresSetSpin.value != 0//root.defMresValue
                                 }
                             }
                         }
