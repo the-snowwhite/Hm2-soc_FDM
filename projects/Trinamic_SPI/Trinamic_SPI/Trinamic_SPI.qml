@@ -34,6 +34,7 @@ import Machinekit.Application.Controls 1.0
 import Qt.labs.settings 1.0
 //import Theme 1.0
 import "./Controls"
+import "./Controls.2"
 import "./ManualTab"
 import "./StatusBar"
 
@@ -648,7 +649,7 @@ ServiceWindow {
                                 text:"Interpolation"
                             }
 
-                            Switch {
+                            Switch2 {
                                 id: intpolonOffSwitch
                                 enabled: true
                                 text: intpolSetPin.value  > 0 ? "x16" : "Disabled"
@@ -684,7 +685,7 @@ ServiceWindow {
                                 text: "Step Edges"
                             }
 
-                            Switch {
+                            Switch2 {
                                 id: dedgeonOffSwitch
                                 enabled: true
                                 display: AbstractButton.TextBesideIcon
@@ -756,10 +757,10 @@ ServiceWindow {
                                 text: "uSteps   "
                             }
 
-                            Switch {
+                            Switch2 {
                                 id: mresonOffSwitch
                                 enabled: true
-
+/*
                                 indicator: Rectangle {
                                     id: mresswitchHandle
                                     implicitWidth: root.themeBaseSize * 4.8
@@ -831,7 +832,7 @@ ServiceWindow {
                                         }
                                     ]
                                 }
-
+*/
                                 onCheckedChanged: {
                                     if (checked) {
                                         if (mresSetSpin.value == 0) {
@@ -881,19 +882,19 @@ ServiceWindow {
                                 text: "SG2 threshold"
                             }
 
-                            Switch {
+                            Switch2 {
                                 id: sgtonOffSwitch
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
                                         if (sgtSetSpin.value == 0) {
-                                            sgtSetSpin.value = root.lastSgtValue
+                                            checked = 0//sgtSetSpin.value = root.lastSgtValue
                                         }
                                     }
-                                    else {
-                                        root.lastSgtValue = sgtSetSpin.value
-                                        sgtSetSpin.value = 0
-                                    }
+//                                     else {
+//                                         root.lastSgtValue = sgtSetSpin.value
+//                                         sgtSetSpin.value = 0
+//                                     }
                                 }
 
                                 Binding {
@@ -957,7 +958,7 @@ ServiceWindow {
                                 text: "Blanking time"
                             }
 
-                            Switch {
+                            Switch2 {
                                 id: tblonOffSwitch
                                 enabled: true
     //                               background.color: "blue"
@@ -986,7 +987,7 @@ ServiceWindow {
                             id: chmcontrol
                             visible: true
 
-                            Switch {
+                            Switch2 {
                                 id: chmonOffSwitch
                                 enabled: true
                                 display: AbstractButton.TextBesideIcon
@@ -1014,7 +1015,7 @@ ServiceWindow {
                             id: rndtfcontrol
                             visible: true
 
-                            Switch {
+                            Switch2 {
                                 id: rndtfonOffSwitch
                                 enabled: true
                                 display: AbstractButton.TextBesideIcon
@@ -1042,7 +1043,7 @@ ServiceWindow {
                             id: hdec1control
                             visible: true
 
-                            Switch {
+                            Switch2 {
                                 id: hdec1onOffSwitch
                                 enabled: true
                                 display: AbstractButton.TextBesideIcon
@@ -1071,7 +1072,7 @@ ServiceWindow {
                             id: hdec0control
                             visible: true
 
-                            Switch {
+                            Switch2 {
                                 id: hdec0onOffSwitch
                                 enabled: true
                                 display: AbstractButton.TextBesideIcon
@@ -1123,7 +1124,7 @@ ServiceWindow {
                                 text: "Hysteresis end (low)"
                             }
 
-                            Switch {
+                            Switch2 {
                                 id: hendonOffSwitch
                                 enabled: true
                                 onCheckedChanged: {
@@ -1187,7 +1188,7 @@ ServiceWindow {
                                 text: "Hysteresis start value"
                             }
 
-                            Switch {
+                            Switch2 {
                                 id: hstrtonOffSwitch
                                 enabled: true
     //                               background.color: "blue"
@@ -1249,7 +1250,7 @@ ServiceWindow {
                                 text: "Off time/MOSFET"
                             }
     /*
-                            Switch {
+                            Switch2 {
                                 id: toffonOffSwitch
                                 enabled: true
                                 onCheckedChanged: {
