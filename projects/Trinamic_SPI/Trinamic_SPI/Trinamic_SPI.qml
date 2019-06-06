@@ -241,12 +241,11 @@ ServiceWindow {
         RowLayout {
             ColumnLayout { // Status leds
                 Layout.preferredWidth: 30
-                anchors.left: parent.left
-
+                Layout.alignment: Qt.AlignLeft
                 ColumnLayout {
                     Label {
                         id: ststLabel
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
                         text: "stst"
                     }
@@ -257,7 +256,7 @@ ServiceWindow {
 
                     HalLed {
                         id: ststLed
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         name: "stst.status"
                         onColor: "yellow"
                         Layout.preferredHeight: ststLabel.height * 0.9
@@ -268,7 +267,7 @@ ServiceWindow {
                 ColumnLayout {
                     Label {
                         id: olbLabel
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
                         text: "olb"
                     }
@@ -279,7 +278,7 @@ ServiceWindow {
 
                     HalLed {
                         id: olbLed
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         name: "olb.status"
                         onColor: "red"
                         Layout.preferredHeight: olbLabel.height * 0.9
@@ -290,7 +289,7 @@ ServiceWindow {
                 ColumnLayout {
                     Label {
                         id: olaLabel
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
                         text: "ola"
                     }
@@ -301,7 +300,7 @@ ServiceWindow {
 
                     HalLed {
                         id: olaLed
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         name: "ola.status"
                         onColor: "red"
                         Layout.preferredHeight: olaLabel.height * 0.9
@@ -312,7 +311,7 @@ ServiceWindow {
                 ColumnLayout {
                     Label {
                         id: s2gbLabel
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
                         text: "s2gb"
 //                        color: "#21be2b"
@@ -325,7 +324,7 @@ ServiceWindow {
 
                     HalLed {
                         id: s2gbLed
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         name: "s2gb.status"
                         onColor: "red"
                         Layout.preferredHeight: s2gbLabel.height * 0.9
@@ -336,7 +335,7 @@ ServiceWindow {
                 ColumnLayout {
                     Label {
                         id: s2gaLabel
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
                         text:" s2ga"
                     }
@@ -347,7 +346,7 @@ ServiceWindow {
 
                     HalLed {
                         id: s2gaLed
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         name: "s2ga.status"
                         onColor: "red"
                         Layout.preferredHeight: s2gaLabel.height * 0.9
@@ -358,7 +357,7 @@ ServiceWindow {
                 ColumnLayout {
                     Label {
                         id: otpwLabel
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
                         text: "otpw"
                     }
@@ -369,7 +368,7 @@ ServiceWindow {
 
                     HalLed {
                         id: otpwLed
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         name: "otpw.status"
                         onColor: "red"
                         Layout.preferredHeight: otpwLabel.height * 0.9
@@ -380,7 +379,7 @@ ServiceWindow {
                 ColumnLayout {
                     Label {
                         id: otLabel
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
                         text: "ot"
                     }
@@ -391,7 +390,7 @@ ServiceWindow {
 
                     HalLed {
                         id: otLed
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         name: "ot.status"
                         onColor: "red"
                         Layout.preferredHeight: otLabel.height * 0.9
@@ -402,7 +401,7 @@ ServiceWindow {
                 ColumnLayout {
                     Label {
                         id: sgLabel
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         font.bold: true
                         text: "sg"
                     }
@@ -413,7 +412,7 @@ ServiceWindow {
 
                     HalLed {
                         id: sgLed
-                        anchors. horizontalCenter: parent.horizontalCenter
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         name: "sg.status"
                         onColor: "red"
                         Layout.preferredHeight: sgLabel.height * 0.9
@@ -531,7 +530,7 @@ ServiceWindow {
                     z2Color: valueVisible ? "red" : "white"
 
                     Label {
-                        anchors.centerIn: parent
+                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         text: qsTr("N/A")
                         visible: !sgGauge.valueVisible
                     }
@@ -553,7 +552,7 @@ ServiceWindow {
 
                         Column {  // First Column (SPI Readout)
                             spacing: 10// Layout.fillWidth: true
-                            anchors.left: parent.left
+                            Layout.alignment: Qt.AlignLeft
                             Text {  // Column header
                                 text: "SPI registers\t Values:              "
                                 color: "black"// color can be set on the entire element with this property
@@ -621,7 +620,7 @@ ServiceWindow {
                 RowLayout {  // Settings row
                     Column {  // First Column
                         spacing: 10// Layout.fillWidth: true
-                        anchors.top: parent.top
+                        Layout.alignment: Qt.AlignTop
                         Label {
                             font.bold: true
                             text: qsTr("Drvctrl:")
