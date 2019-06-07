@@ -11,14 +11,14 @@ installed card during the Hostmot2 setup sequence. Type "dmesg" at the terminal
 prompt to view the output.""";
 
 // current register values:
-pin out u32 drvctrl.reg "DRVCTRL register";
+pin out u32 drvctrl.reg  "DRVCTRL register";
 pin out u32 chopconf.reg "CHOPCONF register";
-pin out u32 smarten.reg "SMARTEN register";
+pin out u32 smarten.reg  "SMARTEN register";
 pin out u32 sgcsconf.reg "SGCSCONF register";
-pin out u32 drvconf.reg "DRVCONF register";
+pin out u32 drvconf.reg  "DRVCONF register";
 
 // read response values:
-pin out u32 full.#.val[3] "Full response data";
+pin out u32 full.#.val[5] "Full response data";
 pin out float sg.readout  "Stall gaurd value";
 pin out bit stst.status   "Standstill indicator";
 pin out bit olb.status    "Open load indicator";
@@ -30,36 +30,51 @@ pin out bit ot.status     "Overtemperature shutdown";
 pin out bit sg.status     "stallGuard2 status";
 
 // settings:
-pin io bit  intpol.set "Enable STEP interpolation";
-pin io bit  dedge.set  "Enable double edge STEP pulses";
-pin io float  mres.set "Microstep resolution for STEP/DIR mode";
+// Drvctrl (step dir mode):
+pin io bit    intpol.set "Enable STEP interpolation";
+pin io bit    dedge.set  "Enable double edge STEP pulses";
+pin io float  mres.set   "Microstep resolution for STEP/DIR mode";
 
-pin io float tbl.set   "Blanking time";
-pin io bit chm.set     "Chopper mode";
-pin io bit rndtf.set   "Random TOFF time";
-pin io bit hdec1.set  "Hysteresis decrement interval or Fast decay mode";
-pin io bit hdec0.set  "Hysteresis decrement interval or Fast decay mode";
-pin io float hend.set  "Hysteresis end (low) value or Sine wave offset";
-pin io float hstrt.set "Hysteresis start value or Fast decay time setting";
-pin io float toff.set "Off time/MOSFET disable";
+// CHOPCONF:
+pin io float tbl.set     "Blanking time";
+pin io bit   chm.set     "Chopper mode";
+pin io bit   rndtf.set   "Random TOFF time";
+pin io bit   hdec1.set   "Hysteresis decrement interval or Fast decay mode";
+pin io bit   hdec0.set   "Hysteresis decrement interval or Fast decay mode";
+pin io float hend.set    "Hysteresis end (low) value or Sine wave offset";
+pin io float hstrt.set   "Hysteresis start value or Fast decay time setting";
+pin io float toff.set    "Off time/MOSFET disable";
 
-pin in bit  seimin.set "Minimum coolStep current: 0: 1⁄2 CS current setting 1: 1⁄4 CS current setting";
-pin in u32  sedn.set "Current decrement speed";
-pin in u32  semax.set "Upper coolStep threshold as an offset from the lower threshold";
-pin in u32  seup.set "Current increment size";
-pin in u32  semin.set "Lower coolStep threshold/coolStep disable";
-pin in bit  sfilt.set "stallGuard2 filter enable";
-pin io float sgt.set "stallGuard2 threshold value(7-bit signed)";
-pin in u32  cs.set "Current scale value (5-bit unsigned)";
+// SMARTEN:
+pin io bit    seimin.set "Minimum coolStep current: 0: 1⁄2 CS current setting 1: 1⁄4 CS current setting";
+pin io float  sedn.set   "Current decrement speed";
+pin io float  semax.set  "Upper coolStep threshold as an offset from the lower threshold";
+pin io float  seup.set   "Current increment size";
+pin io float  semin.set  "Lower coolStep threshold/coolStep disable";
+
+// SGSCONF:
+pin io bit   sfilt.set "stallGuard2 filter enable";
+pin io float sgt.set   "stallGuard2 threshold value(7-bit signed)";
+pin io float cs.set    "Current scale value (5-bit unsigned)";
+
+// DRVCONF:
+pin io bit   tst.set    "Reserved TEST mode";
+pin io float slph.set   "Slope control, high side";
+pin io float slpl.set   "Slope control, low side";
+pin io bit   diss2g.set "Short to GND protection disable";
+pin io float ts2g.set   "Short to GND detection timer";
+pin io bit   sdoff.set  "STEP/DIR interface disable";
+pin io bit   vsense.set "Sense resistor voltage-based current scaling";
+pin io float rdsel.set  "Select value for read out (RD bits)";
 
 option extra_setup yes;
+variable u32 *buf_write[5];
+variable u32 *buf_read[5];
 variable u32 drvctrl;
 variable u32 chopconf;
 variable u32 smarten;
 variable u32 sgcsconf;
 variable u32 drvconf;
-variable u32 *buf_write[3];
-variable u32 *buf_read[3];
 
 variable bool intpol;
 variable bool dedge;
@@ -70,18 +85,29 @@ variable bool chm;
 variable bool rndtf;
 variable bool hdec1;
 variable bool hdec0;
-variable u8 hend;
-variable u8 hstrt;
-variable u8 toff;
+variable u8   hend;
+variable u8   hstrt;
+variable u8   toff;
 
-variable u32 seimin;
-variable u32 sedn;
-variable u32 semax;
-variable u32 seup;
-variable u32 semin;
+variable bool seimin;
+variable u8  sedn;
+variable u8  semax;
+variable u8  seup;
+variable u8  semin;
+
 variable bool sfilt;
-variable s8 sgt;
-variable u8 cs;
+variable s8   sgt;
+variable u8   cs;
+
+variable bool tst;
+variable u8   slph;
+variable u8   slpl;
+variable bool diss2g;
+variable u8   ts2g;
+variable bool sdoff;
+variable bool vsense;
+variable u8   rdsel;
+
 variable u32 firstrun;
 
 
@@ -125,15 +151,26 @@ static int read(struct __comp_state *__comp_setst){
         hend  =  ((TMC2660_CHOPCONF_CONF & TMC2660_HEND_MASK)  >> TMC2660_HEND_SHIFT);
         hstrt =  ((TMC2660_CHOPCONF_CONF & TMC2660_HSTRT_MASK) >> TMC2660_HSTRT_SHIFT);
         toff  =  ((TMC2660_CHOPCONF_CONF & TMC2660_TOFF_MASK)  >> TMC2660_TOFF_SHIFT);
-
+        // SMARTEN:
         seimin =  ((TMC2660_SMARTEN_CONF & TMC2660_SEIMIN_MASK) >> TMC2660_SEIMIN_SHIFT);
         sedn   =  ((TMC2660_SMARTEN_CONF & TMC2660_SEDN_MASK)   >> TMC2660_SEDN_SHIFT);
         semax  =  ((TMC2660_SMARTEN_CONF & TMC2660_SEMAX_MASK)  >> TMC2660_SEMAX_SHIFT);
         seup   =  ((TMC2660_SMARTEN_CONF & TMC2660_SEUP_MASK)   >> TMC2660_SEUP_SHIFT);
         semin  =  ((TMC2660_SMARTEN_CONF & TMC2660_SEMIN_MASK)  >> TMC2660_SEMIN_SHIFT);
+        // SGSCONF:
         sfilt  =  ((TMC2660_SGCSCONF_CONF & TMC2660_SFILT_MASK) >> TMC2660_SFILT_SHIFT);
         sgt    =  ((TMC2660_SGCSCONF_CONF & TMC2660_SGT_MASK)   >> TMC2660_SGT_SHIFT);
         cs     =  ((TMC2660_SGCSCONF_CONF & TMC2660_CS_MASK)    >> TMC2660_CS_SHIFT);
+        // DRVCONF:
+        tst    =  ((TMC2660_DRVCONF_CONF & TMC2660_TST_MASK) >> TMC2660_TST_SHIFT);
+        slph   =  ((TMC2660_DRVCONF_CONF & TMC2660_SLPH_MASK) >> TMC2660_SLPH_SHIFT);
+        slpl   =  ((TMC2660_DRVCONF_CONF & TMC2660_SLPL_MASK) >> TMC2660_SLPL_SHIFT);
+        diss2g =  ((TMC2660_DRVCONF_CONF & TMC2660_DISS2G_MASK) >> TMC2660_DISS2G_SHIFT);
+        ts2g   =  ((TMC2660_DRVCONF_CONF & TMC2660_TS2G_MASK) >> TMC2660_TS2G_SHIFT);
+        sdoff  =  ((TMC2660_DRVCONF_CONF & TMC2660_SDOFF_MASK) >> TMC2660_SDOFF_SHIFT);
+        vsense =  ((TMC2660_DRVCONF_CONF & TMC2660_VSENSE_MASK) >> TMC2660_VSENSE_SHIFT);
+        rdsel  =  ((TMC2660_DRVCONF_CONF & TMC2660_RDSEL_MASK) >> TMC2660_RDSEL_SHIFT);
+
 
         // Read Initial  Values's onto Pins
         intpol_set = intpol;
@@ -148,6 +185,25 @@ static int read(struct __comp_state *__comp_setst){
         hend_set  = (float)(hend);
         hstrt_set = (float)(hstrt);
         toff_set  = (float)(toff);
+
+        seimin_set = seimin_set;
+        sedn_set   = (float)(sedn);
+        semax_set  = (float)(semax);
+        seup_set   = (float)(seup);
+        semin_set  = (float)(semin);
+
+        sfilt_set = sfilt;
+        sgt_set   = (float)(((sgt & 0x80) >> 1) | (sgt & 0x3F));
+        cs_set    = (float)(cs);
+
+        tst_set    = tst;
+        slph_set   = (float)(slph);
+        slpl_set   = (float)(slpl);
+        diss2g_set = diss2g;
+        ts2g_set   = (float)(ts2g);
+        sdoff_set  = sdoff;
+        vsense_set = vsense;
+        rdsel_set  = (float)(rdsel);
 
         firstrun = false;
     } else {
@@ -164,63 +220,66 @@ static int read(struct __comp_state *__comp_setst){
         hstrt = (u8)(hstrt_set);
         toff  = (u8)(toff_set);
 
-        if (seimin_set) {
-            seimin = seimin_set;
-        }
-        if (sedn_set) {
-            sedn = sedn_set;
-        }
-        if (semax_set) {
-            semax = semax_set;
-        }
-        if (seup_set) {
-            seup = seup_set;
-        }
-        if (semin_set) {
-            semin = semin_set;
-        }
-        if (sfilt_set) {
-            sfilt = sfilt_set;
-        }
-//        if (sgt_set != 0) {
-            sgt = (s8)(sgt_set);
-//        }
-        if (cs_set) {
-            cs = cs_set;
-        }
-    }
+        seimin = seimin_set;
+        sedn = (u8)(sedn_set);
+        semax = (u8)(semax_set);
+        seup = (u8)(seup_set);
+        semin = (u8)(semin_set);
+
+        sfilt = sfilt_set;
+        sgt = (s8)(sgt_set);
+        cs = cs_set;
+
+        tst = tst_set;
+        slph = (u8)(slph_set);
+        slpl = (u8)(slpl_set);
+        diss2g = diss2g_set;
+        ts2g = (u8)(ts2g_set);
+        sdoff = sdoff_set;
+        vsense = vsense_set;
+        rdsel = (u8)(rdsel_set);
+   }
 
     // Set write data
-    drvctrl   = ( TMC2660_DRVCTRL | ( intpol << TMC2660_INTPOL_SHIFT) | ( dedge << TMC2660_DEDGE_SHIFT ) |
+    drvctrl  = ( TMC2660_DRVCTRL | ( intpol << TMC2660_INTPOL_SHIFT) | ( dedge << TMC2660_DEDGE_SHIFT ) |
                 ( mres & TMC2660_MRES_MASK ) << TMC2660_MRES_SHIFT );
 
-    chopconf  = ( TMC2660_CHOPCONF | ( tbl << TMC2660_TBL_SHIFT) | ( chm_set << TMC2660_CHM_SHIFT ) |
+    chopconf = ( TMC2660_CHOPCONF | ( tbl << TMC2660_TBL_SHIFT) | ( chm_set << TMC2660_CHM_SHIFT ) |
             ( rndtf << TMC2660_RNDTF_SHIFT ) | ( hdec1 << TMC2660_HDEC1_SHIFT ) | ( hdec0 << TMC2660_HDEC0_SHIFT ) |
             ( hend << TMC2660_HEND_SHIFT ) | ( hstrt << TMC2660_HSTRT_SHIFT ) | ( toff << TMC2660_TOFF_SHIFT ));
 
-    sgcsconf  = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) |
-                (sgt & 0x3F)) << TMC2660_SGT_SHIFT) | ((cs & 0x1F) << TMC2660_CS_SHIFT ));
+    smarten  = ( TMC2660_SMARTEN | ( seimin << TMC2660_SEIMIN_SHIFT) | ( sedn << TMC2660_SEDN_SHIFT ) |
+            ( semax << TMC2660_SEMAX_SHIFT ) | ( seup << TMC2660_SEUP_SHIFT ) | ( semin << TMC2660_SEMIN_SHIFT ));
+
+    sgcsconf = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) | (sgt & 0x3F)) << TMC2660_SGT_SHIFT) | ((cs & 0x1F) << TMC2660_CS_SHIFT ));
+
+
+    drvconf  = ( TMC2660_DRVCONF | ( tst << TMC2660_TST_SHIFT) | ( slph << TMC2660_SLPH_SHIFT ) |
+            ( slpl << TMC2660_SLPL_SHIFT ) | ( diss2g << TMC2660_DISS2G_SHIFT ) | ( ts2g << TMC2660_TS2G_SHIFT ) |
+            ( sdoff << TMC2660_SDOFF_SHIFT ) | ( vsense << TMC2660_VSENSE_SHIFT ) | ( rdsel << TMC2660_RDSEL_SHIFT ));
 
     // Set write buff
     *buf_write[0] = drvctrl;
     *buf_write[1] = chopconf;
-    *buf_write[2] = sgcsconf;
+    *buf_write[2] = smarten;
+    *buf_write[3] = sgcsconf;
+    *buf_write[4] = drvconf;
 
     // Read Reg Values's onto Pins
 
-    drvctrl_reg = drvctrl;
+    drvctrl_reg  = drvctrl;
     chopconf_reg = chopconf;
-    smarten_reg = smarten;
+    smarten_reg  = smarten;
     sgcsconf_reg = sgcsconf;
-    drvconf_reg = drvconf;
+    drvconf_reg  = drvconf;
 
     // Copy read response Values's onto Pins
 
-    for(i=0; i < 3; i++) {
+    for(i=0; i < 5; i++) {
         full_val(i) = (u32)(*buf_read[i]);
     }
 
-    sg_readout  = (float)(s32)(((*buf_read[0]) & 0xFF300) >> 10);
+    sg_readout  = (float)((*buf_read[0] & TMC2660_SG2_MASK) >> TMC2660_SG2_SHIFT);
     stst_status = ((*buf_read[0]) & 0x80) ? 1:0 ;
     olb_status  = ((*buf_read[0]) & 0x40) ? 1:0 ;
     ola_status  = ((*buf_read[0]) & 0x20) ? 1:0 ;
@@ -248,7 +307,7 @@ EXTRA_SETUP(){
         return -EINVAL;
     }
 
-    // Setup ADC
+    // Setup Default register values
         // ADC, chans 0-3 +/-10V
     drvctrl = (TMC2660_DRVCTRL | TMC2660_DRVCTRL_CONF);    r += hm2_dbspi_write_chan(name, 0, drvctrl);
     chopconf = (TMC2660_CHOPCONF | TMC2660_CHOPCONF_CONF); r += hm2_dbspi_write_chan(name, 0, chopconf);
@@ -257,12 +316,12 @@ EXTRA_SETUP(){
     drvconf = (TMC2660_DRVCONF | TMC2660_DRVCONF_CONF);    r += hm2_dbspi_write_chan(name, 0, drvconf);
 
     if (r < 0) {
-        HM2_ERR_NO_LL("There have been %i errors during ADC setup, "
+        HM2_ERR_NO_LL("There have been %i errors during TMC setup, "
                       "quitting\n", -r);
         return -EINVAL;
     }
 
-    for(i = 0; i < 3; i++) {
+    for(i = 0; i < 5; i++) {
         r += hm2_tram_add_dbspi_frame(name, 0, &buf_write[i], &buf_read[i]);
     }
 

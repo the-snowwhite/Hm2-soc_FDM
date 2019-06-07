@@ -45,35 +45,58 @@ ServiceWindow {
     id: root
 
     property bool wasConnected: false
-//    property string labelName: "SG"
     property double gaugeZ0BorderValue: 50.0
-//     property double spinMinimumValue: minTemperaturePin.value
-//     property double spinMaximumValue: maxTemperaturePin.value
-//    property double spinMinimumValue: -64
-//    property double spinMaximumValue: 63
-    property double gaugeMinimumValue: -512
-    property double gaugeMaximumValue: 512
+    property double gaugeMinimumValue: 0
+    property double gaugeMaximumValue: 1024
     property double gaugeZ1BorderValue: gaugeMaximumValue * 0.9
-    property bool savedIntpolValue
-    property bool savedDedgeValue
     property double savedMresValue
     property double savedTblValue
     property double savedHendValue
     property double savedHstrtValue
     property double savedToffValue
+    property double savedSednValue
+    property double savedSemaxValue
+    property double savedSeupValue
+    property double savedSeminValue
     property double savedSgtValue
+    property double savedCsValue
+    property double savedSiphValue
+    property double savedSiplValue
+    property double savedTs2gValue
+    property double savedRdselValue
+
     property bool defIntpolValue
     property bool defDedgeValue
     property double defMresValue
+
     property double defTblValue
+    property bool defChmValue
+    property bool defRndtfValue
+    property bool defHdec1Value
+    property bool defHdec0Value
     property double defHendValue
     property double defHstrtValue
     property double defToffValue
-    property double defSgtValue
 
-    property double myTblValue
-    property double myTblValuedly
-    property bool tblSetSpinLoaded: false
+    property bool defSeiminValue
+    property double defSednValue
+    property double defSemaxValue
+    property double defSeupValue
+    property double defSeminValue
+
+
+    property bool defSfiltValue
+    property double defSgtValue
+    property double defCsValue
+
+    property bool defTstValue
+    property double defSlphValue
+    property double defSlplValue
+    property bool defDiss2gValue
+    property double defTs2gValue
+    property bool defSdoffValue
+    property bool defVsenseValue
+    property double defRdselValue
 
     property int drvctrlReg:  drvctrlRegPin.value
     property int chopconfReg: chopconfRegPin.value
@@ -89,9 +112,8 @@ ServiceWindow {
     property string fullreadresponseValue_0: "Read Response 0: \t  0x" + fullreadresponsePin_0.value.toString(16).toUpperCase()
     property string fullreadresponseValue_1: "Read Response 1: \t  0x" + fullreadresponsePin_1.value.toString(16).toUpperCase()
     property string fullreadresponseValue_2: "Read Response 2: \t  0x" + fullreadresponsePin_2.value.toString(16).toUpperCase()
-// + string( " %1" ).arg( 15, 1, 16 ).toUpper()
-//    name: "TrinamicSPI"
-//    title: qsTr("Trinamic SPI Test")
+    property string fullreadresponseValue_3: "Read Response 3: \t  0x" + fullreadresponsePin_3.value.toString(16).toUpperCase()
+    property string fullreadresponseValue_4: "Read Response 4: \t  0x" + fullreadresponsePin_4.value.toString(16).toUpperCase()
     property int themeBaseSize: 10
     property string lightgrayColour: "light green"
     property string darkgrayColour: "gray"
@@ -103,14 +125,6 @@ ServiceWindow {
     property string themeMainColor: "light green"
     property string themeMainColorDarker: "orange"
     Component.onCompleted: { timer.setTimeout(function(){ g.dlymsg(1); }, 260 + 100); }
-//    Component.onCompleted: { if (tblSetSpin.value )  myTblValue = 15 }//tblSetSpin.value }
-//         defMresValue = mresSetSpin.value
-//         defTblValue:  tblSetSpin.value
-//         defHendValue = hendSetSpin.value
-//         defHstrtValue = hstrtSetSpin.value
-//      property double defToffValue: toffSetSpin.value
-//      property double defSgtValue: sgtSetSpin.value
-//    }
     title: applicationCore.applicationName + (d.machineName === "" ? "" :" - " +  d.machineName)
 
     statusBar:applicationStatusBar
@@ -140,14 +154,29 @@ ServiceWindow {
                 root.defDedgeValue = dedgeSetPin.value
                 root.defMresValue = mresSetSpin.value
                 root.defTblValue = tblSetSpin.value
+                root.defChmValue = chmSetPin.value
+                root.defRndtfValue = rndtfSetPin.value
+                root.defHdec1Value = hdec1SetPin.value
+                root.defHdec0Value = hdec0SetPin.value
                 root.defHendValue = hendSetSpin.value
                 root.defHstrtValue = hstrtSetSpin.value
                 root.defToffValue = toffSetSpin.value
+                root.defSeiminValue = seiminSetPin.value
+                root.defSednValue = sednSetSpin.value
+                root.defSemaxValue = semaxSetSpin.value
+                root.defSeupValue = seupSetSpin.value
+                root.defSeminValue = seminSetSpin.value
+                root.defSfiltValue = sfiltSetPin.value
                 root.defSgtValue = sgtSetSpin.value
-//                root. =
-                root.defTblValue = tblSetSpin.value
-                root.myTblValuedly = 4
-                root.myTblValue = tblSetSpin.value
+                root.defCsValue = csSetSpin.value
+                root.defTstValue = tstSetPin.value
+                root.defSlphValue = slphSetSpin.value
+                root.defSlplValue = slplSetSpin.value
+                root.defDiss2gValue = diss2gSetPin.value
+                root.defTs2gValue = ts2gSetSpin.value
+                root.defSdoffValue = sdoffSetPin.value
+                root.defVsenseValue = vsenseSetPin.value
+                root.defRdselValue = rdselSetSpin.value
             }
         }
     }
@@ -254,6 +283,20 @@ ServiceWindow {
             }
 
             HalPin {
+                id: fullreadresponsePin_3
+                name: "full.3.val"
+                direction: HalPin.In
+                type: HalPin.U32
+            }
+
+            HalPin {
+                id: fullreadresponsePin_4
+                name: "full.4.val"
+                direction: HalPin.In
+                type: HalPin.U32
+            }
+
+            HalPin {
                 id: intpolSetPin
                 name: "intpol.set"
                 direction: HalPin.IO
@@ -294,11 +337,53 @@ ServiceWindow {
                 direction: HalPin.IO
                 type: HalPin.Bit
             }
+
+            HalPin {
+                id: seiminSetPin
+                name: "seimin.set"
+                direction: HalPin.IO
+                type: HalPin.Bit
+            }
+
+            HalPin {
+                id: sfiltSetPin
+                name: "sfilt.set"
+                direction: HalPin.IO
+                type: HalPin.Bit
+            }
+
+            HalPin {
+                id: tstSetPin
+                name: "tst.set"
+                direction: HalPin.IO
+                type: HalPin.Bit
+            }
+
+            HalPin {
+                id: diss2gSetPin
+                name: "diss2g.set"
+                direction: HalPin.IO
+                type: HalPin.Bit
+            }
+
+            HalPin {
+                id: sdoffSetPin
+                name: "sdoff.set"
+                direction: HalPin.IO
+                type: HalPin.Bit
+            }
+
+            HalPin {
+                id: vsenseSetPin
+                name: "vsense.set"
+                direction: HalPin.IO
+                type: HalPin.Bit
+            }
         }
 
         RowLayout {
             ColumnLayout { // Status leds
-                Layout.preferredWidth: 30
+                Layout.preferredWidth: 50
                 Layout.alignment: Qt.AlignLeft
                 ColumnLayout {
                     Label {
@@ -631,7 +716,7 @@ ServiceWindow {
                             }
 
                             Rectangle {  // Read responses
-                                height: 72; width: parent.width// color: mouseArea2.pressed ? "black" : "gray"
+                                height: 120; width: parent.width// color: mouseArea2.pressed ? "black" : "gray"
                                 color: "light green"
                                 Column {
                                     Text {
@@ -649,6 +734,16 @@ ServiceWindow {
                                         text: root.fullreadresponseValue_2
                                         color: "black"// color can be set on the entire element with this property
                                     }
+                                    Text {
+                                        id: readresponseTxt_3
+                                        text: root.fullreadresponseValue_3
+                                        color: "black"// color can be set on the entire element with this property
+                                    }
+                                    Text {
+                                        id: readresponseTxt_4
+                                        text: root.fullreadresponseValue_4
+                                        color: "black"// color can be set on the entire element with this property
+                                    }
                                 }
                             }
                         }
@@ -658,7 +753,7 @@ ServiceWindow {
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         id: sgChart
                         Layout.fillHeight: true
-                        visible: false
+                        visible: true
                         value: sgGauge.value
                         minimumValue: sgGauge.minimumValue
                         maximumValue: sgGauge.maximumValue
@@ -666,17 +761,17 @@ ServiceWindow {
                         rightTextVisible: false
                         autoSampling: (sgGauge.halPin.synced) && visible
                         autoUpdate: autoSampling
-                        updateInterval: 500
+                        updateInterval: 250
                         timeSpan: 120000
                         Layout.maximumHeight: 256
-                        Layout.maximumWidth: 256
+                        Layout.maximumWidth: 1024
                         gridColor: qsTr("#eeeeee")
                         backgroundColor: qsTr("#ffffff")
                     }
                 }
 
                 RowLayout {  // Settings row
-                    Column {  // First Column
+                    Column {  // First Column (Drvctrl)
                         spacing: 10// Layout.fillWidth: true
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         Label {
@@ -684,7 +779,7 @@ ServiceWindow {
                             text: qsTr("Drvctrl:")
                         }
 
-                        RowLayout {// set intpol values
+                        RowLayout {// set intpol bit
 
                             id: intpolcontrol
                             visible: true
@@ -715,12 +810,12 @@ ServiceWindow {
                                 Binding {
                                     target: intpolonOffSwitch
                                     property: "down"
-                                    value: intpolSetPin.value  != defIntpolValue
+                                    value: intpolSetPin.value  != root.defIntpolValue
                                 }
                             }
                         }
 
-                        RowLayout {// set dedge values
+                        RowLayout {// set dedge bit
 
                             id: dedgecontrol
                             visible: true
@@ -752,7 +847,7 @@ ServiceWindow {
                                 Binding {
                                     target: dedgeonOffSwitch
                                     property: "down"
-                                    value: dedgeSetPin.value  > 0
+                                    value: dedgeSetPin.value  != root.defDedgeValue
                                 }
                             }
                         }
@@ -801,7 +896,7 @@ ServiceWindow {
                             Label {
                                 id: mresValsetLabel
                                 font.bold: true
-                                text: "uSteps   "
+                                text: "μSt"
                             }
 
                             Switch2 {
@@ -810,7 +905,6 @@ ServiceWindow {
                                 onCheckedChanged: {
                                     if (checked) {
                                         if (mresSetSpin.value != root.savedMresValue) {
-
                                             root.savedMresValue = mresSetSpin.value
                                         }
                                     }
@@ -832,8 +926,10 @@ ServiceWindow {
 //                     }
 
                     }
-                    Column {  // Second Column (Chopconf)
 
+                    Column {  // Second Column (Chopconf)
+                        spacing: 10// Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         Label {  // Header
                             font.bold: true
                             text: qsTr("Chopconf:")
@@ -846,8 +942,7 @@ ServiceWindow {
 
                             HalSpinBox2 {
                                 id: tblSetSpin
-                                property double defTbl
-//                                Component.onCompleted: root.defTblValue = root.myTblValue
+//                                property double defTbl
 
                                 enabled: true
                                 name: "tbl.set"
@@ -879,7 +974,7 @@ ServiceWindow {
                             Label {
                                 id: tblValsetLabel
                                 font.bold: true
-                                text: "Blanking time"
+                                text: "Blank time"
                             }
 
                             Switch2 {
@@ -904,7 +999,7 @@ ServiceWindow {
 
                         }
 
-                        RowLayout {// set chm values
+                        RowLayout {// set chm bit
 
                             id: chmcontrol
                             visible: true
@@ -927,12 +1022,12 @@ ServiceWindow {
                                 Binding {
                                     target: chmonOffSwitch
                                     property: "down"
-                                    value: chmSetPin.value  > 0
+                                    value: chmSetPin.value  != root.defChmValue
                                 }
                             }
                         }
 
-                        RowLayout {// set rndtf values
+                        RowLayout {// set rndtf bit
 
                             id: rndtfcontrol
                             visible: true
@@ -955,7 +1050,7 @@ ServiceWindow {
                                 Binding {
                                     target: rndtfonOffSwitch
                                     property: "down"
-                                    value: rndtfSetPin.value  > 0
+                                    value: rndtfSetPin.value  != root.defRndtfValue
                                 }
                             }
                         }
@@ -984,7 +1079,7 @@ ServiceWindow {
                                 Binding {
                                     target: hdec1onOffSwitch
                                     property: "down"
-                                    value: hdec1SetPin.value  > 0
+                                    value: hdec1SetPin.value  != root.defHdec1Value
                                 }
                             }
                         }
@@ -1013,7 +1108,7 @@ ServiceWindow {
                                 Binding {
                                     target: hdec0onOffSwitch
                                     property: "down"
-                                    value: hdec0SetPin.value  > 0
+                                    value: hdec0SetPin.value != root.defHdec0Value
                                 }
                             }
                         }
@@ -1043,7 +1138,7 @@ ServiceWindow {
                             Label {
                                 id: hendValsetLabel
                                 font.bold: true
-                                text: "Hysteresis end (low)"
+                                text: "Hys end (lo)"
                             }
 
                             Switch2 {
@@ -1052,7 +1147,7 @@ ServiceWindow {
                                 onCheckedChanged: {
                                     if (checked) {
                                         if (hendSetSpin.value != root.savedHendValue) {
-                                        root.savedHendValue = hendSetSpin.value
+                                            root.savedHendValue = hendSetSpin.value
                                         }
                                     }
                                     else {
@@ -1106,7 +1201,7 @@ ServiceWindow {
                             Label {
                                 id: hstrtValsetLabel
                                 font.bold: true
-                                text: "Hysteresis start value"
+                                text: "Hys start val"
                             }
 
                             Switch2 {
@@ -1165,7 +1260,7 @@ ServiceWindow {
                             Label {
                                 id: toffdValsetLabel
                                 font.bold: true
-                                text: "Off time/MOSFET"
+                                text: "Off t/MFET"
                             }
 
                             Switch2 {
@@ -1173,7 +1268,7 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                                if (toffSetSpin.value != savedToffValue) {
+                                                if (toffSetSpin.value != root.savedToffValue) {
                                             root.savedToffValue = toffSetSpin.value
                                                 }
                                     }
@@ -1192,19 +1287,336 @@ ServiceWindow {
                     }
 
                     Column {  // third Column (Smarten)
-
+                        spacing: 10// Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         Label {
                             font.bold: true
                             text: qsTr("Smarten:")
                         }
 
+                        RowLayout {// set seimin bit
+
+                            id: seimincontrol
+                            visible: true
+
+                            Label {
+                                id: seiminLabel
+//                                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                                font.bold: true
+                                text:"Minimum coolStep curren"
+                            }
+
+                            Switch2 {
+                                id: seiminonOffSwitch
+                                enabled: true
+                                display: AbstractButton.TextBesideIcon
+                                text: seiminSetPin.value  > 0 ? "1⁄4 CS" : "1⁄2 CS"
+    //                                    text: qsTr("Fast decay mode")
+                                font.bold: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                            seiminSetPin.value = 1
+                                            seiminonOffSwitch.text = "1⁄4 CS"
+                                    }
+                                    else {
+                                        seiminSetPin.value = 0
+                                        seiminonOffSwitch.text = "1⁄2 CS"
+                                    }
+                                }
+
+                                Binding {
+                                    target: seiminonOffSwitch
+                                    property: "down"
+                                    value: seiminSetPin.value  != root.defSeiminValue
+                                }
+                            }
+                        }
+
+                        RowLayout {// set sedn values
+
+                            id: sedncontrol
+                            visible: true
+
+                            Label {
+                                id: sednValsetLabel
+                                font.bold: true
+                                text: "Cur dec spd"
+                            }
+
+                            HalSpinBox2 {
+                                 id: sednSetSpin
+//                                property double defSedn
+
+                                enabled: true
+                                name: "sedn.set"
+                                halPin.direction: HalPin.IO
+                                from: 0//items.length - 1
+                                to: items.length - 1
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Number of times that the stallGuard2 value must be\nsampled equal to or above the upper threshold for each\ndecrement of the coil current:")
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+
+                                property var items: ["32", "8", "2", "1"]
+
+                                validator: RegExpValidator {
+                                    regExp: new RegExp("(32|6|2|1)", "i")
+                                }
+
+                                textFromValue: function(value) {
+                                    return items[value];
+                                }
+
+                                valueFromText: function(text) {
+                                    for (var i = 0; i < items.length; ++i) {
+                                        if (items[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
+                                            return i
+                                    }
+                                    return sednSetSpin.value
+                                }
+                            }
+
+                            Switch2 {
+                                id: sednonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (sednSetSpin.value != root.savedSednValue) {
+                                            root.savedSednValue = sednSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        sednSetSpin.value = root.savedSednValue
+                                    }
+                                }
+                                 Binding {
+                                     target: sednonOffSwitch
+                                     property: "down"
+                                     value: sednSetSpin.value  != root.defSednValue
+                                 }
+                            }
+
+                        }
+
+                        RowLayout {// set semax values
+
+                            id: semaxcontrol
+                            visible: true
+
+                            Label {
+                                id: semaxValsetLabel
+                                font.bold: true
+                                text: "Up CS trs offs"
+                            }
+
+                            HalSpinBox2 {
+                                id: semaxSetSpin
+//                                property double defSemax
+
+                                enabled: true
+                                name: "semax.set"
+                                halPin.direction: HalPin.IO
+                                from: 0
+                                to: 15
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("If the stallGuard2 measurement value SG is sampled\nequal to or above (SEMIN+SEMAX+1) x 32 enough times,\nthen the coil current scaling factor is decremented.")
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+
+                                onValueModified: {            // remove the focus from this control
+                                    parent.forceActiveFocus()
+                                    parent.focus = true
+                                }
+
+                            }
+
+                            Switch2 {
+                                id: semaxonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (semaxSetSpin.value != root.savedSemaxValue) {
+                                            root.savedSemaxValue = semaxSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        semaxSetSpin.value = root.savedSemaxValue
+                                    }
+                                }
+                                Binding {
+                                    target: semaxonOffSwitch
+                                    property: "down"
+                                    value: semaxSetSpin.value  != root.defSemaxValue
+                                }
+                            }
+
+                        }
+
+                        RowLayout {// set seup values
+
+                            id: seupcontrol
+                            visible: true
+
+                            Label {
+                                id: seupValsetLabel
+                                font.bold: true
+                                text: "Curr incr size"
+                            }
+
+                            HalSpinBox2 {
+                                id: seupSetSpin
+//                                property double defSeup
+
+                                enabled: true
+                                name: "seup.set"
+                                halPin.direction: HalPin.IO
+                                from: 0//items.length - 1
+                                to: items.length - 1
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Number of current increment steps for each time that\nthe stallGuard2 value SG is sampled below the lower\nthreshold:")
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+
+                                property var items: ["1", "2", "4", "8"]
+
+                                validator: RegExpValidator {
+                                    regExp: new RegExp("(1|2|4|8)", "i")
+                                }
+
+                                textFromValue: function(value) {
+                                    return items[value];
+                                }
+
+                                valueFromText: function(text) {
+                                    for (var i = 0; i < items.length; ++i) {
+                                        if (items[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
+                                            return i
+                                    }
+                                    return seupSetSpin.value
+                                }
+                            }
+
+                            Switch2 {
+                                id: seuponOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (seupSetSpin.value != root.savedSeupValue) {
+                                            root.savedSeupValue = seupSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        seupSetSpin.value = root.savedSeupValue
+                                    }
+                                }
+                                 Binding {
+                                     target: seuponOffSwitch
+                                     property: "down"
+                                     value: seupSetSpin.value  != root.defSeupValue
+                                 }
+                            }
+
+                        }
+
+                        RowLayout {// set semin values
+
+                            id: semincontrol
+                            visible: true
+
+                                Label {
+                                    id: seminValsetLabel
+                                    font.bold: true
+                                    text: "Lo CS trs offs"
+                                }
+
+                            HalSpinBox2 {
+                                id: seminSetSpin
+//                                property double defSemin
+
+                                enabled: true
+                                name: "semin.set"
+                                halPin.direction: HalPin.IO
+                                from: 0
+                                to: 15
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("If SEMIN is 0, coolStep is disabled. If SEMIN is nonzero\nand the stallGuard2 value SG falls below SEMIN x 32,\nthe coolStep current scaling factor is increased.")
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+
+                                onValueModified: {            // remove the focus from this control
+                                    parent.forceActiveFocus()
+                                    parent.focus = true
+                                }
+                            }
+
+                            Switch2 {
+                                id: seminonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (seminSetSpin.value != root.savedSeminValue) {
+                                            root.savedSeminValue = seminSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        seminSetSpin.value = root.savedSeminValue
+                                    }
+                                }
+                                Binding {
+                                    target: seminonOffSwitch
+                                    property: "down"
+                                    value: seminSetSpin.value  != root.defSeminValue
+                                }
+                            }
+
+                        }
                     }
 
                     Column { // Forth Column (Sgsconf)
-
+                        spacing: 10// Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         Label {
                             font.bold: true
                             text: qsTr("Sgcsconf:")
+                        }
+
+                        RowLayout {// set sfilt bit
+
+                            id: sfiltcontrol
+                            visible: true
+
+                            Switch2 {
+                                id: sfiltonOffSwitch
+                                enabled: true
+                                display: AbstractButton.TextBesideIcon
+                                text: sfiltSetPin.value  > 0 ? "SG2 filter enabled" : "SG2 filter disabled"
+    //                                    text: qsTr("Fast decay mode")
+                                font.bold: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                            sfiltSetPin.value = 1
+                                            sfiltonOffSwitch.text = "SG2 filter enabled"
+                                    }
+                                    else {
+                                        sfiltSetPin.value = 0
+                                        sfiltonOffSwitch.text = "SG2 filter disabled"
+                                    }
+                                }
+
+                                Binding {
+                                    target: sfiltonOffSwitch
+                                    property: "down"
+                                    value: sfiltSetPin.value  != root.defSfiltValue
+                                }
+                            }
                         }
 
                         RowLayout {// set sgt values
@@ -1216,7 +1628,7 @@ ServiceWindow {
                                 id: sgtLabel
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                 font.bold: true
-                                text: "SG2 threshold"
+                                text: "SG2 thres"
                             }
 
                             HalSpinBox2 {
@@ -1233,12 +1645,25 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: "The stallGuard2 threshold value controls the optimum\n" +
+                                ToolTip.text: qsTr("The stallGuard2 threshold value controls the optimum\n" +
                                 "measurement range for readout. A lower value results in\n" +
                                 "a higher sensitivity and requires less torque to indicate\n" +
                                 "a stall. The value is a two’s complement signed integer.\n" +
                                 "Values below -10 are not recommended.\n" +
-                                "Range: -64 to +63"
+                                "Range: -64 to +63\n" +
+                                " Tuning the stallGuard2 Threshold\n" +
+                                "Due to the dependency of the stallGuard2 value SG from motor-specific characteristics and application-\n" +
+                                "specific demands on load and velocity the easiest way to tune the stallGuard2 threshold SGT for a\n" +
+                                "specific motor type and operating conditions is interactive tuning in the actual application.\n" +
+                                "The procedure is:\n" +
+                                "1. Operate the motor at a reasonable velocity for your application and monitor SG.\n" +
+                                "2. Apply slowly increasing mechanical load to the motor. If the motor stalls before SG reaches\n" +
+                                "zero, decrease SGT. If SG reaches zero before the motor stalls, increase SGT. A good SGT\n" +
+                                "starting value is zero. SGT is signed, so it can have negative or positive values.\n" +
+                                "3. The optimum setting is reached when SG is between 0 and 400 at increasing load shortly\n" +
+                                "before the motor stalls, and SG increases by 100 or more without load. SGT in most cases can\n" +
+                                "be tuned together with the motion velocity in a way that SG goes to zero when the motor\n" +
+                                "stalls and the stall output SG_TST is asserted. This indicates that a step has been lost.\n")
 
 
 
@@ -1265,11 +1690,497 @@ ServiceWindow {
                                 Binding {
                                     target: sgtonOffSwitch
                                     property: "down"
-                                    value: sgtSetSpin.value  != defSgtValue
+                                    value: sgtSetSpin.value  != root.defSgtValue
                                 }
                             }
                         }
 
+                        RowLayout {// set cs values
+
+                            id: cscontrol
+                            visible: true
+
+                            Label {
+                                id: csLabel
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                                font.bold: true
+                                text: "Curr scale"
+                            }
+
+                            HalSpinBox2 {
+                                id: csSetSpin
+                                enabled: true
+                                name: "cs.set"
+                                halPin.direction: HalPin.IO
+                                from: 0//items.length - 1
+                                to: items.length - 1
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: "Current scaling for SPI and step/direction operation.\n%00000 ... %11111: 1/32, 2/32, 3/32, ... 32/32\nThis value is biased by 1 and divided by 32, so the\nrange is 1/32 to 32/32.\nExample: CS=0 is 1/32 current"
+
+                                property var items: ["1/32", "2/32", "3/32", "4/32", "5/32", "6/32", "7/32", "8/32", "9/32",
+                                    "10/32", "11/32", "12/32", "13/32", "14/32", "15/32", "16/32", "17/32", "18/32", "19/32",
+                                    "20/32", "21/32", "22/32", "23/32", "24/32", "25/32", "26/32", "27/32", "28/32", "29/32",
+                                    "30/32", "31/32", "32/32"]
+
+                                validator: RegExpValidator {
+                                    regExp: new RegExp("(1/32|2/32|3/32|4/32|5/32|6/32|7/32|8/32|9/32|10/32|11/32|12/32|13/32|14/32|15/32|16/32
+                                        17/32|18/32|19/32|20/32|21/32|22/32|23/32|24/32|25/32|26/32|27/32|28/32|29/32|30/32|31/32|32/32)", "i")
+                                }
+
+                                textFromValue: function(value) {
+                                    return items[value];
+                                }
+
+                                valueFromText: function(text) {
+                                    for (var i = 0; i < items.length; ++i) {
+                                        if (items[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
+                                            return i
+                                    }
+                                    return cssb.value
+                                }
+                            }
+
+                            Switch2 {
+                                id: csonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (csSetSpin.value != root.savedCsValue) {
+
+                                            root.savedCsValue = csSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        csSetSpin.value = root.savedCsValue
+                                    }
+                                }
+
+                                Binding {
+                                    target: csonOffSwitch
+                                    property: "down"
+                                    value: csSetSpin.value != root.defCsValue
+                                }
+                            }
+                        }
+                    }
+
+                    Column { // Fith Column (Drvconf)
+                        spacing: 10// Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                        Label {
+                            font.bold: true
+                            text: qsTr("Drvconf:")
+                        }
+
+                        RowLayout {// set tst bit
+
+                            id: tstcontrol
+                            visible: true
+
+                            Switch2 {
+                                id: tstonOffSwitch
+                                enabled: true
+                                display: AbstractButton.TextBesideIcon
+                                text: tstSetPin.value  > 0 ? "Reserved TEST mode enable" : "Reserved TEST mode disabled"
+    //                                    text: qsTr("Fast decay mode")
+                                font.bold: true
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Must be cleared for normal operation. When set, the\nSG_TST output exposes digital test values, and the\nTEST_ANA output exposes analog test values. Test value\nselection is controlled by SGT1 and SGT0:\nTEST_ANA:\n %00: anatest_2vth,\n%01: anatest_dac_out,\n%10: anatest_vdd_half.\nSG_TST:\n%00: comp_A,\n%01: comp_B,\n%10: CLK,\n%11: on_state_xy")
+
+                                onCheckedChanged: {
+                                    if (checked) {
+                                            tstSetPin.value = 1
+                                            tstonOffSwitch.text = "Reserved TEST mode enabled"
+                                    }
+                                    else {
+                                        tstSetPin.value = 0
+                                        tstonOffSwitch.text = "Reserved TEST mode disabled"
+                                    }
+                                }
+
+                                Binding {
+                                    target: tstonOffSwitch
+                                    property: "down"
+                                    value: tstSetPin.value  != root.defTstValue
+                                }
+                            }
+                        }
+
+                        RowLayout {// set slph values
+
+                            id: slphcontrol
+                            visible: true
+
+                            Label {
+                                id: slphLabel
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                                font.bold: true
+                                text: "Slope ctrl, high"
+                            }
+
+                            HalSpinBox2 {
+                                id: slphSetSpin
+                                enabled: true
+                                name: "slph.set"
+                                halPin.direction: HalPin.IO
+                                from: 0
+                                to:3
+        //                                 font.pixelSize: 30
+        //                                 scale: 0.5
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: "%00: Minimum\n%01: Minimum temperature compensation mode.\n%10: Medium temperature compensation mode.\n%11: Maximum\nIn temperature compensated mode (tc), the MOSFET gate\ndriver strength is increased if the overtemperature\nwarning temperature is reached. This compensates for\ntemperature dependency of high-side slope control."
+
+                                    onValueModified: {            // remove the focus from this control
+                                        parent.forceActiveFocus()
+                                        parent.focus = true
+                                    }
+                                }
+
+                            Switch2 {
+                                id: slphonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (slphSetSpin.value != root.savedSlphValue) {
+                                            root.savedSlphValue = slphSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        slphSetSpin.value = root.savedSlphValue
+                                    }
+                                }
+
+                                Binding {
+                                    target: slphonOffSwitch
+                                    property: "down"
+                                    value: slphSetSpin.value  != root.defSlphValue
+                                }
+                            }
+                        }
+
+                        RowLayout {// set slpl values
+
+                            id: slplcontrol
+                            visible: true
+
+                            Label {
+                                id: slplLabel
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                                font.bold: true
+                                text: "Slope ctrl, low"
+                            }
+
+                            HalSpinBox2 {
+                                id: slplSetSpin
+                                enabled: true
+                                name: "slpl.set"
+                                halPin.direction: HalPin.IO
+                                from: 0
+                                to:3
+        //                                 font.pixelSize: 30
+        //                                 scale: 0.5
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: "%00: Minimum.\n%01: Minimum.\n%10: Medium.\n%11: Maximum."
+
+                                    onValueModified: {            // remove the focus from this control
+                                        parent.forceActiveFocus()
+                                        parent.focus = true
+                                    }
+                                }
+
+                            Switch2 {
+                                id: slplonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (slplSetSpin.value != root.savedSlplValue) {
+                                            root.savedSlplValue = slplSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        slplSetSpin.value = root.savedSlplValue
+                                    }
+                                }
+
+                                Binding {
+                                    target: slplonOffSwitch
+                                    property: "down"
+                                    value: slplSetSpin.value  != root.defSlplValue
+                                }
+                            }
+                        }
+
+                        RowLayout {// set diss2g bit
+
+                            id: diss2gcontrol
+                            visible: true
+
+                            Switch2 {
+                                id: diss2gonOffSwitch
+                                enabled: true
+                                display: AbstractButton.TextBesideIcon
+                                text: diss2gSetPin.value  > 0 ? "Short to GND protection disabled" : "Short to GND protection enabled"
+    //                                    text: qsTr("Fast decay mode")
+                                font.bold: true
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("0: Short to GND protection is enabled.\n1: Short to GND protection is disabled.")
+
+                                onCheckedChanged: {
+                                    if (checked) {
+                                            diss2gSetPin.value = 1
+                                            diss2gonOffSwitch.text = "Short to GND protection disabled"
+                                    }
+                                    else {
+                                        diss2gSetPin.value = 0
+                                        diss2gonOffSwitch.text = "Short to GND protection rnabled"
+                                    }
+                                }
+
+                                Binding {
+                                    target: diss2gonOffSwitch
+                                    property: "down"
+                                    value: diss2gSetPin.value != root.defDiss2gValue
+                                }
+                            }
+                        }
+
+                        RowLayout {// set ts2g values
+
+                            id: ts2gcontrol
+                            visible: true
+
+                            Label {
+                                id: ts2gValsetPreLabel
+                                font.bold: true
+                                text: "GND short tmr"
+                            }
+
+                            HalSpinBox2 {
+                                id: ts2gSetSpin
+//                                property double defTs2g
+
+                                enabled: true
+                                name: "ts2g.set"
+                                halPin.direction: HalPin.IO
+                                from: 0//items.length - 1
+                                to: items.length - 1
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Short to GND\ndetection timer:\n%00: 3.2μs.\n%01: 1.6μs.\n%10: 1.2μs.\n%11: 0.8μs.")
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+
+                                property var items: ["3.2", "1.6", "1.2", "0.8"]
+
+                                validator: RegExpValidator {
+                                    regExp: new RegExp("(3.2|1.6|1.2|0.8)")
+                                }
+
+                                textFromValue: function(value) {
+                                    return items[value];
+                                }
+
+                                valueFromText: function(text) {
+                                    for (var i = 0; i < items.length; ++i) {
+                                        if (items[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
+                                            return i
+                                    }
+                                    return ts2gSetSpin.value
+                                }
+                            }
+
+                            Label {
+                                id: ts2gValsetLabel
+                                font.bold: true
+                                text: "μs"
+                            }
+
+                            Switch2 {
+                                id: ts2gonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (ts2gSetSpin.value != root.savedTs2gValue) {
+                                            root.savedTs2gValue = ts2gSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        ts2gSetSpin.value = root.savedTs2gValue
+                                    }
+                                }
+                                 Binding {
+                                     target: ts2gonOffSwitch
+                                     property: "down"
+                                     value: ts2gSetSpin.value  != root.defTs2gValue
+                                 }
+                            }
+
+                        }
+
+                        RowLayout {// set sdoff bit
+
+                            id: sdoffcontrol
+                            visible: true
+
+                            Switch2 {
+                                id: sdoffonOffSwitch
+                                enabled: true
+                                display: AbstractButton.TextBesideIcon
+                                text: sdoffSetPin.value  > 0 ? "STEP/DIR interface disabled" : "STEP/DIR interface enabled"
+    //                                    text: qsTr("Fast decay mode")
+                                font.bold: true
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("0: Enable STEP and DIR interface.\n1: Disable STEP and DIR interface. SPI interface is used\nto move motor.")
+
+                                onCheckedChanged: {
+                                    if (checked) {
+                                            sdoffSetPin.value = 1
+                                            sdoffonOffSwitch.text = "STEP/DIR interface disabled"
+                                    }
+                                    else {
+                                        tstSetPin.value = 0
+                                        sdoffonOffSwitch.text = "STEP/DIR interface enabled"
+                                    }
+                                }
+
+                                Binding {
+                                    target: sdoffonOffSwitch
+                                    property: "down"
+                                    value: sdoffSetPin.value  != root.defSdoffValue
+                                }
+                            }
+                        }
+
+                        RowLayout {// set vsense bit
+
+                            id: vsensecontrol
+                            visible: true
+
+                            Switch2 {
+                                id: vsenseonOffSwitch
+                                enabled: true
+                                display: AbstractButton.TextBesideIcon
+                                text: vsenseSetPin.value  > 0 ? "Sense resistor voltage is 165mV." : "Sense resistor voltage is 305mV."
+    //                                    text: qsTr("Fast decay mode")
+                                font.bold: true
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Sense resistor voltage-based current scaling:\n0: Full-scale sense resistor voltage is 305mV.\n1: Full-scale sense resistor voltage is 165mV.\n(Full-scale refers to a current setting of 31 and a DAC\nvalue of 255.)")
+
+                                onCheckedChanged: {
+                                    if (checked) {
+                                            vsenseSetPin.value = 1
+                                            vsenseonOffSwitch.text = "Sense resistor voltage is 165mV."
+                                    }
+                                    else {
+                                        vsenseSetPin.value = 0
+                                        vsenseonOffSwitch.text = "Sense resistor voltage is 305mV."
+                                    }
+                                }
+
+                                Binding {
+                                    target: vsenseonOffSwitch
+                                    property: "down"
+                                    value: vsenseSetPin.value  != root.defVsenseValue
+                                }
+                            }
+                        }
+
+                        RowLayout {// set rdsel values
+
+                            id: rdselcontrol
+                            visible: true
+
+                            Label {
+                                id: rdselValsetPreLabel
+                                font.bold: true
+                                text: "RD bits"
+                            }
+
+                            HalSpinBox2 {
+                                id: rdselSetSpin
+//                                property double defRdsel
+
+                                enabled: true
+                                name: "rdsel.set"
+                                halPin.direction: HalPin.IO
+                                from: 0//items.length - 1
+                                to: items.length - 2
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("%00 Microstep position read back\n%01 stallGuard2 level read back\n%10\nstallGuard2 and coolStep current level read back\n%11 Reserved, do not use")
+    //                                 font.pixelSize: 30
+    //                                 scale: 0.5
+
+                                property var items: ["Microstep position read back", "SG2 level read back", "SG2 and coolStep current level read back", "Na"]
+
+                                validator: RegExpValidator {
+                                    regExp: new RegExp("(Microstep position read back|SG2 level read back|SG2 and coolStep current level read back|8)|Na")
+                                }
+
+                                textFromValue: function(value) {
+                                    return items[value];
+                                }
+
+                                valueFromText: function(text) {
+                                    for (var i = 0; i < items.length; ++i) {
+                                        if (items[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
+                                            return i
+                                    }
+                                    return rdselSetSpin.value
+                                }
+                            }
+
+                            Switch2 {
+                                id: rdselonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (rdselSetSpin.value != root.savedRdselValue) {
+                                            root.savedRdselValue = rdselSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        rdselSetSpin.value = root.savedRdselValue
+                                    }
+                                }
+                                 Binding {
+                                     target: rdselonOffSwitch
+                                     property: "down"
+                                     value: rdselSetSpin.value  != root.defRdselValue
+                                 }
+                            }
+
+                        }
                     }
                 }
 
