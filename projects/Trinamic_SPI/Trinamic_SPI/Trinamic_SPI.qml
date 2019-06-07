@@ -51,25 +51,29 @@ ServiceWindow {
 //     property double spinMaximumValue: maxTemperaturePin.value
 //    property double spinMinimumValue: -64
 //    property double spinMaximumValue: 63
-//    property double gaugeMinimumValue: spinMinimumValue
-//    property double gaugeMaximumValue: spinMaximumValue * 1.1
     property double gaugeMinimumValue: -512
     property double gaugeMaximumValue: 512
     property double gaugeZ1BorderValue: gaugeMaximumValue * 0.9
-//    property bool lastIntpolValue
-//    property bool lastDedgeValue
-    property double lastMresValue
-    property double lastTblValue
-    property double lastHendValue
-    property double lastHstrtValue
-    property double lastToffValue
-    property double lastSgtValue
-     property double defMresValue: mresSetSpin.value
-//     property double defTblValue: tblSetSpin.value
-//     property double defHendValue: hendSetSpin.value
-//     property double defHstrtValue: hstrtSetSpin.value
-//     property double defToffValue: toffSetSpin.value
-//     property double defSgtValue: sgtSetSpin.value
+    property bool savedIntpolValue
+    property bool savedDedgeValue
+    property double savedMresValue
+    property double savedTblValue
+    property double savedHendValue
+    property double savedHstrtValue
+    property double savedToffValue
+    property double savedSgtValue
+    property bool defIntpolValue
+    property bool defDedgeValue
+    property double defMresValue
+    property double defTblValue
+    property double defHendValue
+    property double defHstrtValue
+    property double defToffValue
+    property double defSgtValue
+
+    property double myTblValue
+    property double myTblValuedly
+    property bool tblSetSpinLoaded: false
 
     property int drvctrlReg:  drvctrlRegPin.value
     property int chopconfReg: chopconfRegPin.value
@@ -89,21 +93,64 @@ ServiceWindow {
 //    name: "TrinamicSPI"
 //    title: qsTr("Trinamic SPI Test")
     property int themeBaseSize: 10
-    property string lightgrayColour: "light gray"
+    property string lightgrayColour: "light green"
     property string darkgrayColour: "gray"
-    property string themeLight: "yellow"
+    property string themeLight: "blue"
     property string themeKnob: "white"
     property string themeLightGray: "light gray"
     property string themeGray: "gray"
-    property string themeMainColor: "orange"
-    property string themeMainColorDarker: "green"
+//    property string themeMainColor: "black"
+    property string themeMainColor: "light green"
+    property string themeMainColorDarker: "orange"
+    Component.onCompleted: { timer.setTimeout(function(){ g.dlymsg(1); }, 260 + 100); }
+//    Component.onCompleted: { if (tblSetSpin.value )  myTblValue = 15 }//tblSetSpin.value }
+//         defMresValue = mresSetSpin.value
+//         defTblValue:  tblSetSpin.value
+//         defHendValue = hendSetSpin.value
+//         defHstrtValue = hstrtSetSpin.value
+//      property double defToffValue: toffSetSpin.value
+//      property double defSgtValue: sgtSetSpin.value
+//    }
     title: applicationCore.applicationName + (d.machineName === "" ? "" :" - " +  d.machineName)
 
     statusBar:applicationStatusBar
     toolBar: applicationToolBar
 //    menuBar: applicationMenuBar
 
+    Timer {
+        id: timer
+        function setTimeout(cb, delayTime) {
+            timer.interval = delayTime;
+            timer.repeat = false;
+            timer.triggered.connect(cb);
+            timer.triggered.connect(function release () {
+                timer.triggered.disconnect(cb); // This is important
+                timer.triggered.disconnect(release); // This is important as well
+            });
+            timer.start();
+        }
+    }
 
+    QtObject {
+        id: g
+
+        function dlymsg(x) {
+            if(x==1) {
+                root.defIntpolValue = intpolSetPin.value
+                root.defDedgeValue = dedgeSetPin.value
+                root.defMresValue = mresSetSpin.value
+                root.defTblValue = tblSetSpin.value
+                root.defHendValue = hendSetSpin.value
+                root.defHstrtValue = hstrtSetSpin.value
+                root.defToffValue = toffSetSpin.value
+                root.defSgtValue = sgtSetSpin.value
+//                root. =
+                root.defTblValue = tblSetSpin.value
+                root.myTblValuedly = 4
+                root.myTblValue = tblSetSpin.value
+            }
+        }
+    }
 
     ColumnLayout {
         id: window
@@ -667,8 +714,8 @@ ServiceWindow {
 
                                 Binding {
                                     target: intpolonOffSwitch
-                                    property: "checked"
-                                    value: intpolSetPin.value  > 0
+                                    property: "down"
+                                    value: intpolSetPin.value  != defIntpolValue
                                 }
                             }
                         }
@@ -704,7 +751,7 @@ ServiceWindow {
 
                                 Binding {
                                     target: dedgeonOffSwitch
-                                    property: "checked"
+                                    property: "down"
                                     value: dedgeSetPin.value  > 0
                                 }
                             }
@@ -760,147 +807,22 @@ ServiceWindow {
                             Switch2 {
                                 id: mresonOffSwitch
                                 enabled: true
-/*
-                                indicator: Rectangle {
-                                    id: mresswitchHandle
-                                    implicitWidth: root.themeBaseSize * 4.8
-                                    implicitHeight: root.themeBaseSize * 1.3
-                                    x: mresonOffSwitch.leftPadding
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    radius: root.themeBaseSize * 1.3
-                                    color: root.lightgrayColour
-                                    border.color: root.darkgrayColour
-
-                                    Rectangle {
-                                        id: rectangle
-
-                                        width: root.themeBaseSize * 2.6
-                                        height: root.themeBaseSize * 2.6
-                                        radius: root.themeBaseSize * 1.3
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        color: root.themeKnob
-                                        border.color: root.themeGray
-                                    }
-
-                                    states: [
-                                        State {
-                                            name: "off"
-                                            when: !mresonOffSwitch.checked && !mresonOffSwitch.down
-                                        },
-                                        State {
-                                            name: "on"
-                                            when: mresonOffSwitch.checked && !mresonOffSwitch.down
-
-                                            PropertyChanges {
-                                                target: mresswitchHandle
-                                                color: root.themeMainColor
-                                                border.color: root.themeMainColor
-                                            }
-
-                                            PropertyChanges {
-                                                target: rectangle
-                                                x: parent.width - width
-
-                                            }
-                                        },
-                                        State {
-                                            name: "off_down"
-                                            when: !mresonOffSwitch.checked && mresonOffSwitch.down
-
-                                            PropertyChanges {
-                                                target: rectangle
-                                                color: root.themeLight
-                                            }
-
-                                        },
-                                        State {
-                                            name: "on_down"
-                                            extend: "off_down"
-                                            when: mresonOffSwitch.checked && mresonOffSwitch.down
-
-                                            PropertyChanges {
-                                                target: rectangle
-                                                x: parent.width - width
-                                                color: root.themeLight
-                                            }
-
-                                            PropertyChanges {
-                                                target: mresswitchHandle
-                                                color: root.themeMainColorDarker
-                                                border.color: root.themeMainColorDarker
-                                            }
-                                        }
-                                    ]
-                                }
-*/
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (mresSetSpin.value == 0) {
-//                                        color: "white"
-                                            checked = 0//root.lastMresValue
+                                        if (mresSetSpin.value != root.savedMresValue) {
+
+                                            root.savedMresValue = mresSetSpin.value
                                         }
                                     }
                                     else {
-//                                        root.lastMresValue = mresSetSpin.value
-//                                        color: "yellow"
-    //                                            mresSetSpin.value = 0
+                                        mresSetSpin.value = root.savedMresValue
                                     }
                                 }
 
                                 Binding {
                                     target: mresonOffSwitch
-                                    property: "checked"
-                                    value: mresSetSpin.value != 0//root.defMresValue
-                                }
-                            }
-                        }
-
-                        RowLayout {// set sgt values
-
-                            id: sgtcontrol
-                            visible: true
-
-                        HalSpinBox2 {
-                            id: sgtSetSpin
-                            enabled: true
-                            name: "sgt.set"
-                            halPin.direction: HalPin.IO
-                            from: -64
-                            to: 63
-    //                                 font.pixelSize: 30
-    //                                 scale: 0.5
-
-                                onValueModified: {            // remove the focus from this control
-                                    parent.forceActiveFocus()
-                                    parent.focus = true
-                                }
-                            }
-
-                            Label {
-                                id: sgtValsetLabel
-                                font.bold: true
-                                text: "SG2 threshold"
-                            }
-
-                            Switch2 {
-                                id: sgtonOffSwitch
-                                enabled: true
-                                onCheckedChanged: {
-                                    if (checked) {
-                                        if (sgtSetSpin.value == 0) {
-                                            checked = 0//sgtSetSpin.value = root.lastSgtValue
-                                        }
-                                    }
-//                                     else {
-//                                         root.lastSgtValue = sgtSetSpin.value
-//                                         sgtSetSpin.value = 0
-//                                     }
-                                }
-
-                                Binding {
-                                    target: sgtonOffSwitch
-                                    property: "checked"
-                                    value: sgtSetSpin.value  != 0
+                                    property: "down"
+                                    value: mresSetSpin.value != root.defMresValue
                                 }
                             }
                         }
@@ -924,12 +846,14 @@ ServiceWindow {
 
                             HalSpinBox2 {
                                 id: tblSetSpin
+                                property double defTbl
+//                                Component.onCompleted: root.defTblValue = root.myTblValue
+
                                 enabled: true
                                 name: "tbl.set"
                                 halPin.direction: HalPin.IO
                                 from: 0//items.length - 1
                                 to: items.length - 1
-    //                                    value: 0
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
@@ -948,7 +872,7 @@ ServiceWindow {
                                         if (items[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
                                             return i
                                     }
-                                    return tblsb.value
+                                    return tblSetSpin.value
                                 }
                             }
 
@@ -961,25 +885,23 @@ ServiceWindow {
                             Switch2 {
                                 id: tblonOffSwitch
                                 enabled: true
-    //                               background.color: "blue"
                                 onCheckedChanged: {
                                     if (checked) {
-    //                                            if (tblSetSpin.value == 0) {
-                                            tblSetSpin.value = root.lastTblValue
-    //                                            }
+                                        if (tblSetSpin.value != root.savedTblValue) {
+                                            root.savedTblValue = tblSetSpin.value
+                                        }
                                     }
                                     else {
-                                        root.lastTblValue = tblSetSpin.value
-    //                                            tblSetSpin.value = 0
+                                        tblSetSpin.value = root.savedTblValue
                                     }
                                 }
-
-                                Binding {
-                                    target: tblonOffSwitch
-                                    property: "checked"
-                                    value: tblSetSpin.value  != root.defTblValue
-                                }
+                                 Binding {
+                                     target: tblonOffSwitch
+                                     property: "down"
+                                     value: tblSetSpin.value  != root.defTblValue
+                                 }
                             }
+
                         }
 
                         RowLayout {// set chm values
@@ -1004,7 +926,7 @@ ServiceWindow {
 
                                 Binding {
                                     target: chmonOffSwitch
-                                    property: "checked"
+                                    property: "down"
                                     value: chmSetPin.value  > 0
                                 }
                             }
@@ -1032,7 +954,7 @@ ServiceWindow {
 
                                 Binding {
                                     target: rndtfonOffSwitch
-                                    property: "checked"
+                                    property: "down"
                                     value: rndtfSetPin.value  > 0
                                 }
                             }
@@ -1061,7 +983,7 @@ ServiceWindow {
 
                                 Binding {
                                     target: hdec1onOffSwitch
-                                    property: "checked"
+                                    property: "down"
                                     value: hdec1SetPin.value  > 0
                                 }
                             }
@@ -1090,7 +1012,7 @@ ServiceWindow {
 
                                 Binding {
                                     target: hdec0onOffSwitch
-                                    property: "checked"
+                                    property: "down"
                                     value: hdec0SetPin.value  > 0
                                 }
                             }
@@ -1129,19 +1051,18 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-    //                                            if (hendSetSpin.value == 0) {
-                                            hendSetSpin.value = root.lastHendValue
-    //                                            }
+                                        if (hendSetSpin.value != root.savedHendValue) {
+                                        root.savedHendValue = hendSetSpin.value
+                                        }
                                     }
                                     else {
-                                        root.lastHendValue = hendSetSpin.value
-    //                                            hendSetSpin.value = 0
+                                        hendSetSpin.value = root.savedHendValue
                                     }
                                 }
 
                                 Binding {
                                     target: hendonOffSwitch
-                                    property: "checked"
+                                    property: "down"
                                     value: hendSetSpin.value  != root.defHendValue
                                 }
                             }
@@ -1194,19 +1115,18 @@ ServiceWindow {
     //                               background.color: "blue"
                                 onCheckedChanged: {
                                     if (checked) {
-    //                                            if (hstrtSetSpin.value == 0) {
-                                            hstrtSetSpin.value = root.lastHstrtValue
-    //                                            }
+                                        if (hstrtSetSpin.value != root.savedHstrtValue) {
+                                            root.savedHstrtValue = hstrtSetSpin.value
+                                        }
                                     }
                                     else {
-                                        root.lastHstrtValue = hstrtSetSpin.value
-                                        hstrtSetSpin.value = 0
+                                        hstrtSetSpin.value = root.savedHstrtValue
                                     }
                                 }
 
                                 Binding {
                                     target: hstrtonOffSwitch
-                                    property: "checked"
+                                    property: "down"
                                     value: hstrtSetSpin.value  != root.defHstrtValue
                                 }
                             }
@@ -1226,10 +1146,8 @@ ServiceWindow {
 
                                 from: 0
                                 to: 15
-    //                                    value: 16
-    //                                ToolTip.visible: down
                                 ToolTip.delay: 1000
-    //                                ToolTip.timeout: 2000
+//                                ToolTip.timeout: 2000
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
@@ -1249,29 +1167,27 @@ ServiceWindow {
                                 font.bold: true
                                 text: "Off time/MOSFET"
                             }
-    /*
+
                             Switch2 {
                                 id: toffonOffSwitch
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-    //                                            if (toffSetSpin.value == 0) {
-                                            toffSetSpin.value = root.lastToffValue
-    //                                            }
+                                                if (toffSetSpin.value != savedToffValue) {
+                                            root.savedToffValue = toffSetSpin.value
+                                                }
                                     }
                                     else {
-                                        root.lastToffValue = toffSetSpin.value
-    //                                            toffSetSpin.value = 0
+                                        toffSetSpin.value = root.savedToffValue
                                     }
                                 }
 
                                 Binding {
                                     target: toffonOffSwitch
-                                    property: "checked"
+                                    property: "down"
                                     value: toffSetSpin.value  != root.defToffValue
                                 }
                             }
-    */
                         }
                     }
 
@@ -1289,6 +1205,69 @@ ServiceWindow {
                         Label {
                             font.bold: true
                             text: qsTr("Sgcsconf:")
+                        }
+
+                        RowLayout {// set sgt values
+
+                            id: sgtcontrol
+                            visible: true
+
+                            Label {
+                                id: sgtLabel
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                                font.bold: true
+                                text: "SG2 threshold"
+                            }
+
+                            HalSpinBox2 {
+                                id: sgtSetSpin
+                                enabled: true
+                                name: "sgt.set"
+                                halPin.direction: HalPin.IO
+                                from: -64
+                                to: 63
+        //                                 font.pixelSize: 30
+        //                                 scale: 0.5
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: "The stallGuard2 threshold value controls the optimum\n" +
+                                "measurement range for readout. A lower value results in\n" +
+                                "a higher sensitivity and requires less torque to indicate\n" +
+                                "a stall. The value is a two’s complement signed integer.\n" +
+                                "Values below -10 are not recommended.\n" +
+                                "Range: -64 to +63"
+
+
+
+                                    onValueModified: {            // remove the focus from this control
+                                        parent.forceActiveFocus()
+                                        parent.focus = true
+                                    }
+                                }
+
+                            Switch2 {
+                                id: sgtonOffSwitch
+                                enabled: true
+                                onCheckedChanged: {
+                                    if (checked) {
+                                        if (sgtSetSpin.value != root.savedSgtValue) {
+                                            root.savedSgtValue = sgtSetSpin.value
+                                        }
+                                    }
+                                    else {
+                                        sgtSetSpin.value = root.savedSgtValue
+                                    }
+                                }
+
+                                Binding {
+                                    target: sgtonOffSwitch
+                                    property: "down"
+                                    value: sgtSetSpin.value  != defSgtValue
+                                }
+                            }
                         }
 
                     }
