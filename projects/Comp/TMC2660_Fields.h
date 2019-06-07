@@ -97,11 +97,11 @@
 #define TMC2660_HEND_SHIFT                   7 // min.: 0, max.: 15, default: 0
 #define TMC2660_HSTRT_MASK                   0x70 // CHOPCONF // Hysteresis start value
 #define TMC2660_HSTRT_SHIFT                  4 // min.: 0, max.: 7, default: 0
-#define TMC2660_HDEC1_MASK                   0x2000 // CHOPCONF // Fast decay mode settings
+#define TMC2660_HDEC1_MASK                   0x1000 // CHOPCONF // Fast decay mode settings
 #define TMC2660_HDEC1_SHIFT                  12 // min.: 0, max.: 1, default: 0
 #define TMC2660_HEND_MASK                    0x0780 // CHOPCONF // Sine wave offset
 #define TMC2660_HEND_SHIFT                   7 // min.: 0, max.: 15, default: 0
-#define TMC2660_HDEC0_MASK                   0x1000 // CHOPCONF // MSB of fast decay time setting
+#define TMC2660_HDEC0_MASK                   0x1080 // CHOPCONF // MSB of fast decay time setting
 #define TMC2660_HDEC0_SHIFT                  11 // min.: 0, max.: 1, default: 0
 // todo: CHECK 3: Redefinition of HSTRT doesn't really make sense here? (LH)
 //#define TMC2660_HSTRT_MASK                   0x70 // CHOPCONF // LSBs of fast decay setting
