@@ -22,7 +22,7 @@
 //import QtQuick 2.0
 import QtQuick 2.7
 //import QtQuick.Controls 2.4
-import QtQuick.Controls 2.1
+import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 import Machinekit.Controls 1.0
@@ -103,17 +103,21 @@ ServiceWindow {
     property int smartenReg:  smartenRegPin.value
     property int sgcsconfReg: sgcsconfRegPin.value
     property int drvconfReg:  drvconfRegPin.value
-//    property int fullreadresponseVal:  fullreadresponsePin.value
-    property string regValues: "DRVCTRL; \t  0x" + drvctrlReg.toString(16).toUpperCase() + "\n" +
-                               "CHOPCONF;\t  0x" + chopconfReg.toString(16).toUpperCase() + "\n" +
-                               "SMARTEN;\t  0x" + smartenReg.toString(16).toUpperCase() + "\n" +
-                               "SGCSCONF;\t  0x" + sgcsconfReg.toString(16).toUpperCase() + "\n" +
-                               "DRVCONF;\t  0x" + drvconfReg.toString(16).toUpperCase()
-    property string fullreadresponseValue_0: "Read Response 0: \t  0x" + fullreadresponsePin_0.value.toString(16).toUpperCase()
-    property string fullreadresponseValue_1: "Read Response 1: \t  0x" + fullreadresponsePin_1.value.toString(16).toUpperCase()
-    property string fullreadresponseValue_2: "Read Response 2: \t  0x" + fullreadresponsePin_2.value.toString(16).toUpperCase()
-    property string fullreadresponseValue_3: "Read Response 3: \t  0x" + fullreadresponsePin_3.value.toString(16).toUpperCase()
-    property string fullreadresponseValue_4: "Read Response 4: \t  0x" + fullreadresponsePin_4.value.toString(16).toUpperCase()
+    property string regValues: "DRVCTRL  \t0x" + zeroPad(drvctrlReg,8) + "\n" +
+                               "CHOPCONF \t0x" + zeroPad(chopconfReg,8) + "\n" +
+                               "SMARTEN  \t0x" + zeroPad(smartenReg,8) + "\n" +
+                               "SGCSCONF \t0x" + zeroPad(sgcsconfReg,8) + "\n" +
+                               "DRVCONF  \t0x" + zeroPad(drvconfReg,8)
+    property string fullreadresponses: "Read Response 0 \t0x" + zeroPad(fullreadresponsePin_0.value, 8) + "\n" +
+                                       "Read Response 1 \t0x" + zeroPad(fullreadresponsePin_1.value,8) + "\n" +
+                                       "Read Response 2 \t0x" + zeroPad(fullreadresponsePin_2.value,8) + "\n" +
+                                       "Read Response 3 \t0x" + zeroPad(fullreadresponsePin_3.value,8) + "\n" +
+                                       "Read Response 4 \t0x" + zeroPad(fullreadresponsePin_4.value,8)
+    property string fullreadresponseValue_0: "Read Response 0:\t  0x" + zeroPad(fullreadresponsePin_0.value, 8)
+    property string fullreadresponseValue_1: "Read Response 1:\t  0x" + zeroPad(fullreadresponsePin_1.value,8)
+    property string fullreadresponseValue_2: "Read Response 2:\t  0x" + zeroPad(fullreadresponsePin_2.value,8)
+    property string fullreadresponseValue_3: "Read Response 3:\t  0x" + zeroPad(fullreadresponsePin_3.value,8)
+    property string fullreadresponseValue_4: "Read Response 4:\t  0x" + zeroPad(fullreadresponsePin_4.value,8)
     property int themeBaseSize: 10
     property string lightgrayColour: "light green"
     property string darkgrayColour: "gray"
@@ -130,6 +134,11 @@ ServiceWindow {
     statusBar:applicationStatusBar
     toolBar: applicationToolBar
 //    menuBar: applicationMenuBar
+
+    function zeroPad(num, places) {
+            num = num.toString(16).toUpperCase();
+            return num.length < places ? zeroPad("0" + num, places) : num;
+        }
 
     Timer {
         id: timer
@@ -149,7 +158,7 @@ ServiceWindow {
         id: g
 
         function dlymsg(x) {
-            if(x==1) {
+            if(x===1) {
                 root.defIntpolValue = intpolSetPin.value
                 root.defDedgeValue = dedgeSetPin.value
                 root.defMresValue = mresSetSpin.value
@@ -694,56 +703,101 @@ ServiceWindow {
                         Layout.fillWidth: true
 
                         Column {  // First Column (SPI Readout)
-                            spacing: 10// Layout.fillWidth: true
+                            spacing: 5// Layout.fillWidth: true
                             Layout.alignment: Qt.AlignLeft
-                            Text {  // Column header
+                            TextArea {  // Column header
+                                height: 32
                                 text: "SPI registers\t Values:              "
                                 color: "black"// color can be set on the entire element with this property
 
                             }
 
                             Rectangle { // Current register values
-                                height: 120; width: parent.width
+                                Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+                                height: 130; width: parent.width -20
                                 color: "white"//mouseArea2.pressed ? "black" : "gray"
-                                Text {
+                                TextArea {
                                     id: regTxt
+                                    Layout.alignment: left
                                     text: root.regValues
-
-
+                                    readOnly: true
+                                    selectByMouse: true
                                     color: "black"// color can be set on the entire element with this property
 
+                                    Popup {
+                                        padding: 10
+                                        id: popup1
+                                        contentItem: Text { text: "Double click to copy register values to Clipboard" }
+                                    }
+
+                                    Popup {
+                                        padding: 10
+                                        id: popup2
+                                        contentItem: Text { text: "Register values copied to Clipboard" }
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onDoubleClicked: { regTxt.selectAll(); regTxt.copy(); popup2.open(); regTxt.deselect()}
+                                        onClicked: popup1.open()
+                                        cursorShape: "PointingHandCursor"
+                                    }
+
+                                    Menu {
+                                        id: contextMenu
+                                        MenuItem {
+                                            text: "Cut"
+                                            onTriggered: {
+                                                regTxt.cut()
+                                            }
+                                        }
+                                        MenuItem {
+                                            text: "Copy"
+                                            onTriggered: {
+                                                regTxt.copy()
+                                            }
+                                        }
+                                        MenuItem {
+                                            text: "Paste"
+                                            onTriggered: {
+                                                regTxt.paste()
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
                             Rectangle {  // Read responses
-                                height: 120; width: parent.width// color: mouseArea2.pressed ? "black" : "gray"
+                                height: 130; width: parent.width -20// color: mouseArea2.pressed ? "black" : "gray"
                                 color: "light green"
                                 Column {
-                                    Text {
-                                        id: readresponseTxt_0
-                                        text: root.fullreadresponseValue_0
+                                    TextArea {
+//                                        id: readresponseTxt_0
+//                                        text: root.fullreadresponseValue_0
+                                        id: readresponsesTxt
+                                        text: root.fullreadresponses
                                         color: "black"// color can be set on the entire element with this property
                                     }
-                                    Text {
-                                        id: readresponseTxt_1
-                                        text: root.fullreadresponseValue_1
-                                        color: "black"// color can be set on the entire element with this property
-                                    }
-                                    Text {
-                                        id: readresponseTxt_2
-                                        text: root.fullreadresponseValue_2
-                                        color: "black"// color can be set on the entire element with this property
-                                    }
-                                    Text {
-                                        id: readresponseTxt_3
-                                        text: root.fullreadresponseValue_3
-                                        color: "black"// color can be set on the entire element with this property
-                                    }
-                                    Text {
-                                        id: readresponseTxt_4
-                                        text: root.fullreadresponseValue_4
-                                        color: "black"// color can be set on the entire element with this property
-                                    }
+//                                    TextArea {
+//                                        id: readresponseTxt_1
+//                                        text: root.fullreadresponseValue_1
+//                                        color: "black"// color can be set on the entire element with this property
+//                                    }
+//                                    TextArea {
+//                                        id: readresponseTxt_2
+//                                        text: root.fullreadresponseValue_2
+//                                        color: "black"// color can be set on the entire element with this property
+//                                    }
+//                                    TextArea {
+//                                        id: readresponseTxt_3
+//                                        text: root.fullreadresponseValue_3
+//                                        color: "black"// color can be set on the entire element with this property
+//                                    }
+//                                    TextArea {
+//                                        id: readresponseTxt_4
+//                                        text: root.fullreadresponseValue_4
+//                                        color: "black"// color can be set on the entire element with this property
+//                                    }
                                 }
                             }
                         }
@@ -1004,18 +1058,26 @@ ServiceWindow {
                             id: chmcontrol
                             visible: true
 
+                            Label {
+                                id: chmValsetLabel
+                                font.bold: true
+                                text: "Chop mode"
+                            }
+
                             Switch2 {
                                 id: chmonOffSwitch
                                 enabled: true
                                 display: AbstractButton.TextBesideIcon
-                                text: qsTr("Chopper mode")
+                                text: chmSetPin.value  > 0 ? "Constant tOFF" : "SpreadCycle"
                                 font.bold: true
                                 onCheckedChanged: {
                                     if (checked) {
                                             chmSetPin.value = 1
+                                            chmonOffSwitch.text = "Constant tOFF"
                                     }
                                     else {
                                         chmSetPin.value = 0
+                                        chmonOffSwitch.text = "SpreadCycle"
                                     }
                                 }
 
@@ -1032,18 +1094,26 @@ ServiceWindow {
                             id: rndtfcontrol
                             visible: true
 
+                            Label {
+                                id: rndtfValsetLabel
+                                font.bold: true
+                                text: "TOFF time"
+                            }
+
                             Switch2 {
                                 id: rndtfonOffSwitch
                                 enabled: true
                                 display: AbstractButton.TextBesideIcon
-                                text: qsTr("Random TOFF time")
+                                text: rndtfSetPin.value  > 0 ? "Random" : "Fixed"
                                 font.bold: true
                                 onCheckedChanged: {
                                     if (checked) {
                                             rndtfSetPin.value = 1
+                                            rndtfonOffSwitch.text = "Random"
                                     }
                                     else {
                                         rndtfSetPin.value = 0
+                                        rndtfonOffSwitch.text = "Fixed"
                                     }
                                 }
 
@@ -1650,20 +1720,7 @@ ServiceWindow {
                                 "a higher sensitivity and requires less torque to indicate\n" +
                                 "a stall. The value is a two’s complement signed integer.\n" +
                                 "Values below -10 are not recommended.\n" +
-                                "Range: -64 to +63\n" +
-                                " Tuning the stallGuard2 Threshold\n" +
-                                "Due to the dependency of the stallGuard2 value SG from motor-specific characteristics and application-\n" +
-                                "specific demands on load and velocity the easiest way to tune the stallGuard2 threshold SGT for a\n" +
-                                "specific motor type and operating conditions is interactive tuning in the actual application.\n" +
-                                "The procedure is:\n" +
-                                "1. Operate the motor at a reasonable velocity for your application and monitor SG.\n" +
-                                "2. Apply slowly increasing mechanical load to the motor. If the motor stalls before SG reaches\n" +
-                                "zero, decrease SGT. If SG reaches zero before the motor stalls, increase SGT. A good SGT\n" +
-                                "starting value is zero. SGT is signed, so it can have negative or positive values.\n" +
-                                "3. The optimum setting is reached when SG is between 0 and 400 at increasing load shortly\n" +
-                                "before the motor stalls, and SG increases by 100 or more without load. SGT in most cases can\n" +
-                                "be tuned together with the motion velocity in a way that SG goes to zero when the motor\n" +
-                                "stalls and the stall output SG_TST is asserted. This indicates that a step has been lost.\n")
+                                "Range: -64 to +63")
 
 
 
@@ -1676,6 +1733,24 @@ ServiceWindow {
                             Switch2 {
                                 id: sgtonOffSwitch
                                 enabled: true
+                                ToolTip.delay: 1000
+//                                ToolTip.timeout: 2000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr(" Tuning the stallGuard2 Threshold\n" +
+                                "Due to the dependency of the stallGuard2 value SG from motor-specific characteristics and application-\n" +
+                                "specific demands on load and velocity the easiest way to tune the stallGuard2 threshold SGT for a\n" +
+                                "specific motor type and operating conditions is interactive tuning in the actual application.\n" +
+                                "The procedure is:\n" +
+                                "1. Operate the motor at a reasonable velocity for your application and monitor SG.\n" +
+                                "2. Apply slowly increasing mechanical load to the motor. If the motor stalls before SG reaches\n" +
+                                "zero, decrease SGT. If SG reaches zero before the motor stalls, increase SGT. A good SGT\n" +
+                                "starting value is zero. SGT is signed, so it can have negative or positive values.\n" +
+                                "3. The optimum setting is reached when SG is between 0 and 400 at increasing load shortly\n" +
+                                "before the motor stalls, and SG increases by 100 or more without load. SGT in most cases can\n" +
+                                "be tuned together with the motion velocity in a way that SG goes to zero when the motor\n" +
+                                "stalls and the stall output SG_TST is asserted. This indicates that a step has been lost.")
                                 onCheckedChanged: {
                                     if (checked) {
                                         if (sgtSetSpin.value != root.savedSgtValue) {
