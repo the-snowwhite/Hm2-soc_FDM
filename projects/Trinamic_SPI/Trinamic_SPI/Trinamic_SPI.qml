@@ -20,9 +20,9 @@
 **
 ****************************************************************************/
 //import QtQuick 2.0
-import QtQuick 2.7
-//import QtQuick.Controls 2.4
-import QtQuick.Controls 2.5
+import QtQuick 2.9
+//import QtQuick.Controls 2.5
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Window 2.0
 import Machinekit.Controls 1.0
@@ -816,7 +816,7 @@ ServiceWindow {
                         autoSampling: (sgGauge.halPin.synced) && visible
                         autoUpdate: autoSampling
                         updateInterval: 250
-                        timeSpan: 120000
+                        timeSpan: 100000
                         Layout.maximumHeight: 256
                         Layout.maximumWidth: 1024
                         gridColor: qsTr("#eeeeee")
@@ -884,7 +884,7 @@ ServiceWindow {
                             Switch2 {
                                 id: dedgeonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: dedgeSetPin.value  > 0 ? "Double Edge" : "Rising Edge"
                                 font.bold: true
                                 onCheckedChanged: {
@@ -1067,7 +1067,7 @@ ServiceWindow {
                             Switch2 {
                                 id: chmonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: chmSetPin.value  > 0 ? "Constant tOFF" : "SpreadCycle"
                                 font.bold: true
                                 onCheckedChanged: {
@@ -1103,7 +1103,7 @@ ServiceWindow {
                             Switch2 {
                                 id: rndtfonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: rndtfSetPin.value  > 0 ? "Random" : "Fixed"
                                 font.bold: true
                                 onCheckedChanged: {
@@ -1133,7 +1133,7 @@ ServiceWindow {
                             Switch2 {
                                 id: hdec1onOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: qsTr("Hysteresis decrement period 1")
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
@@ -1162,7 +1162,7 @@ ServiceWindow {
                             Switch2 {
                                 id: hdec0onOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: qsTr("Hysteresis decrement period 0")
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
@@ -1379,7 +1379,7 @@ ServiceWindow {
                             Switch2 {
                                 id: seiminonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: seiminSetPin.value  > 0 ? "1⁄4 CS" : "1⁄2 CS"
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
@@ -1666,7 +1666,7 @@ ServiceWindow {
                             Switch2 {
                                 id: sfiltonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: sfiltSetPin.value  > 0 ? "SG2 filter enabled" : "SG2 filter disabled"
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
@@ -1859,7 +1859,7 @@ ServiceWindow {
                             Switch2 {
                                 id: tstonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: tstSetPin.value  > 0 ? "Reserved TEST mode enable" : "Reserved TEST mode disabled"
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
@@ -2009,7 +2009,7 @@ ServiceWindow {
                             Switch2 {
                                 id: diss2gonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: diss2gSetPin.value  > 0 ? "Short to GND protection disabled" : "Short to GND protection enabled"
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
@@ -2121,7 +2121,7 @@ ServiceWindow {
                             Switch2 {
                                 id: sdoffonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: sdoffSetPin.value  > 0 ? "STEP/DIR interface disabled" : "STEP/DIR interface enabled"
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
@@ -2159,7 +2159,7 @@ ServiceWindow {
                             Switch2 {
                                 id: vsenseonOffSwitch
                                 enabled: true
-                                display: AbstractButton.TextBesideIcon
+                                // display: AbstractButton.TextBesideIcon
                                 text: vsenseSetPin.value  > 0 ? "Sense resistor voltage is 165mV." : "Sense resistor voltage is 305mV."
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true

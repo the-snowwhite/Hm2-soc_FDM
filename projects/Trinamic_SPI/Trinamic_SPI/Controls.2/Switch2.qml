@@ -34,131 +34,113 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.12
-import QtQuick.Templates 2.12 as T
-import QtQuick.Controls 2.12
-import QtQuick.Controls.impl 2.12
+import QtQuick 2.9
+import QtQuick.Templates 2.2 as T
+import QtQuick.Controls 2.2
+import QtQuick.Controls.impl 2.2
 
 T.Switch {
     id: control
 
-    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
-                            implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
-                             implicitContentHeight + topPadding + bottomPadding,
-                             implicitIndicatorHeight + topPadding + bottomPadding)
+    implicitWidth: Math.max(background ? background.implicitWidth : 0,
+                            contentItem.implicitWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(background ? background.implicitHeight : 0,
+                             Math.max(contentItem.implicitHeight,
+                                      indicator ? indicator.implicitHeight : 0) + topPadding + bottomPadding)
+    baselineOffset: contentItem.y + contentItem.baselineOffset
 
     padding: 6
     spacing: 6
 
-        indicator: Rectangle {
-            id: switchHandle
-            implicitWidth: root.themeBaseSize * 4.8
-            implicitHeight: root.themeBaseSize * 1.3
-            x: control.leftPadding
-            anchors.verticalCenter: parent.verticalCenter
+    indicator: Rectangle {
+        id: switchHandle
+        implicitWidth: root.themeBaseSize * 4.8
+        implicitHeight: root.themeBaseSize * 1.3
+        x: control.leftPadding
+        anchors.verticalCenter: parent.verticalCenter
+        radius: root.themeBaseSize * 1.3
+        color: root.lightgrayColour
+        border.color: root.darkgrayColour
+
+        Rectangle {
+            id: rectangle
+
+            width: root.themeBaseSize * 2.6
+            height: root.themeBaseSize * 2.6
             radius: root.themeBaseSize * 1.3
-            color: root.lightgrayColour
-            border.color: root.darkgrayColour
-
-            Rectangle {
-                id: rectangle
-
-                width: root.themeBaseSize * 2.6
-                height: root.themeBaseSize * 2.6
-                radius: root.themeBaseSize * 1.3
-                anchors.verticalCenter: parent.verticalCenter
-                color: root.themeKnob
-                border.color: root.themeGray
-            }
-
-            states: [
-                State {
-                    name: "off"
-                    when: !control.checked && !control.down
-                },
-                State {
-                    name: "on"
-                    when: control.checked && !control.down
-
-                    PropertyChanges {
-                        target: switchHandle
-                        color: root.themeMainColor
-                        border.color: root.themeMainColor
-                    }
-
-                    PropertyChanges {
-                        target: rectangle
-                        x: parent.width - width
-
-                    }
-                },
-                State {
-                    name: "off_down"
-                    when: !control.checked && control.down
-
-                    PropertyChanges {
-                        target: rectangle
-                        color: root.themeLight
-                    }
-
-                },
-                State {
-                    name: "on_down"
-                    extend: "off_down"
-                    when: control.checked && control.down
-
-                    PropertyChanges {
-                        target: rectangle
-                        x: parent.width - width
-                        color: root.themeLight
-                    }
-
-                    PropertyChanges {
-                        target: switchHandle
-                        color: root.themeMainColorDarker
-                        border.color: root.themeMainColorDarker
-                    }
-                }
-            ]
+            anchors.verticalCenter: parent.verticalCenter
+            color: root.themeKnob
+            border.color: root.themeGray
         }
 
-//     indicator: PaddedRectangle {
-//         implicitWidth: 56
-//         implicitHeight: 28
+        states: [
+            State {
+                name: "off"
+                when: !control.checked && !control.down
+            },
+            State {
+                name: "on"
+                when: control.checked && !control.down
+
+                PropertyChanges {
+                    target: switchHandle
+                    color: root.themeMainColor
+                    border.color: root.themeMainColor
+                }
+
+                PropertyChanges {
+                    target: rectangle
+                    x: parent.width - width
+
+                }
+            },
+            State {
+                name: "off_down"
+                when: !control.checked && control.down
+
+                PropertyChanges {
+                    target: rectangle
+                    color: root.themeLight
+                }
+
+            },
+            State {
+                name: "on_down"
+                extend: "off_down"
+                when: control.checked && control.down
+
+                PropertyChanges {
+                    target: rectangle
+                    x: parent.width - width
+                    color: root.themeLight
+                }
+
+                PropertyChanges {
+                    target: switchHandle
+                    color: root.themeMainColorDarker
+                    border.color: root.themeMainColorDarker
+                }
+            }
+        ]
+    }
+
+//     contentItem: CheckLabel {
+//         leftPadding: control.indicator && !control.mirrored ? control.indicator.width + control.spacing : 0
+//         rightPadding: control.indicator && control.mirrored ? control.indicator.width + control.spacing : 0
 //
-//         x: text ? (control.mirrored ? control.width - width - control.rightPadding : control.leftPadding) : control.leftPadding + (control.availableWidth - width) / 2
-//         y: control.topPadding + (control.availableHeight - height) / 2
-//
-//         radius: 8
-//         leftPadding: 0
-//         rightPadding: 0
-//         padding: (height - 16) / 2
-//         color: control.checked ? control.palette.dark : control.palette.midlight
-//
-//         Rectangle {
-//             x: Math.max(0, Math.min(parent.width - width, control.visualPosition * parent.width - (width / 2)))
-//             y: (parent.height - height) / 2
-//             width: 28
-//             height: 28
-//             radius: 16
-//             color: control.down ? control.palette.light : control.palette.window
-//             border.width: control.visualFocus ? 2 : 1
-//             border.color: control.visualFocus ? control.palette.highlight : control.enabled ? control.palette.mid : control.palette.midlight
-//
-//             Behavior on x {
-//                 enabled: !control.down
-//                 SmoothedAnimation { velocity: 200 }
-//             }
-//         }
+//         text: control.text
+//         font: control.font
+//         color: control.palette.windowText
 //     }
 
-    contentItem: CheckLabel {
+    contentItem: Text {
         leftPadding: control.indicator && !control.mirrored ? control.indicator.width + control.spacing : 0
         rightPadding: control.indicator && control.mirrored ? control.indicator.width + control.spacing : 0
 
         text: control.text
         font: control.font
-        color: control.palette.windowText
+        color: control.enabled ? Default.textDarkColor : Default.textDisabledColor
+        elide: Text.ElideRight
+        verticalAlignment: Text.AlignVCenter
     }
 }
