@@ -6,24 +6,24 @@ import Machinekit.PathView 1.0
 MenuBar {
     Menu {
         title: qsTr("&File")
-        MenuItem { action: OpenAction { fileDialog: applicationFileDialog } }
-        MenuItem {
-            action: OpenAction {
-                fileDialog: remoteFileDialog
-                remote: true
-            }
-        }
+//         MenuItem { action: OpenAction { fileDialog: applicationFileDialog } }
+//         MenuItem {
+//             action: OpenAction {
+//                 fileDialog: remoteFileDialog
+//                 remote: true
+//             }
+//         }
         // Recent files
-        MenuItem { action: EditWithSystemEditorAction {} }
-        MenuItem { action: ReopenAction { } }
+//         MenuItem { action: EditWithSystemEditorAction {} }
+//         MenuItem { action: ReopenAction { } }
         // Save GCode
         // Properties
-        MenuSeparator {}
-        MenuItem {
-            action: EditToolTableAction {
-                editorDialog: toolTableEditorDialog
-            }
-        }
+//         MenuSeparator {}
+//         MenuItem {
+//             action: EditToolTableAction {
+//                 editorDialog: toolTableEditorDialog
+//             }
+//         }
         // Ladder editor
 
         MenuItem {
@@ -45,6 +45,7 @@ MenuBar {
             onTriggered: Qt.quit()
         }
     }
+/*
     Menu {
         title: qsTr("&Machine")
 
@@ -175,4 +176,5 @@ MenuBar {
             onTriggered: aboutDialog.open()
         }
     }
+    */
 }

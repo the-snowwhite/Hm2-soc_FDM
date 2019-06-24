@@ -42,7 +42,7 @@ import "./StatusBar"
 
 
 ServiceWindow {
-    id: root
+    id: window
 
     property bool wasConnected: false
     property double gaugeZ0BorderValue: 50.0
@@ -118,22 +118,12 @@ ServiceWindow {
     property string fullreadresponseValue_2: "Read Response 2:\t  0x" + zeroPad(fullreadresponsePin_2.value,8)
     property string fullreadresponseValue_3: "Read Response 3:\t  0x" + zeroPad(fullreadresponsePin_3.value,8)
     property string fullreadresponseValue_4: "Read Response 4:\t  0x" + zeroPad(fullreadresponsePin_4.value,8)
-    property int themeBaseSize: 10
-    property string lightgrayColour: "light green"
-    property string darkgrayColour: "gray"
-    property string themeLight: "blue"
-    property string themeKnob: "white"
-    property string themeLightGray: "light gray"
-    property string themeGray: "gray"
-//    property string themeMainColor: "black"
-    property string themeMainColor: "light green"
-    property string themeMainColorDarker: "orange"
-    Component.onCompleted: { timer.setTimeout(function(){ g.dlymsg(1); }, 260 + 100); }
+    Component.onCompleted: { timer.setTimeout(function(){ g.dlymsg(1); }, 360 + 100); }
     title: applicationCore.applicationName + (d.machineName === "" ? "" :" - " +  d.machineName)
 
-    statusBar:applicationStatusBar
+    statusBar: applicationStatusBar
     toolBar: applicationToolBar
-//    menuBar: applicationMenuBar
+    menuBar: applicationMenuBar
 
     function zeroPad(num, places) {
             num = num.toString(16).toUpperCase();
@@ -159,42 +149,41 @@ ServiceWindow {
 
         function dlymsg(x) {
             if(x===1) {
-                root.defIntpolValue = intpolSetPin.value
-                root.defDedgeValue = dedgeSetPin.value
-                root.defMresValue = mresSetSpin.value
-                root.defTblValue = tblSetSpin.value
-                root.defChmValue = chmSetPin.value
-                root.defRndtfValue = rndtfSetPin.value
-                root.defHdec1Value = hdec1SetPin.value
-                root.defHdec0Value = hdec0SetPin.value
-                root.defHendValue = hendSetSpin.value
-                root.defHstrtValue = hstrtSetSpin.value
-                root.defToffValue = toffSetSpin.value
-                root.defSeiminValue = seiminSetPin.value
-                root.defSednValue = sednSetSpin.value
-                root.defSemaxValue = semaxSetSpin.value
-                root.defSeupValue = seupSetSpin.value
-                root.defSeminValue = seminSetSpin.value
-                root.defSfiltValue = sfiltSetPin.value
-                root.defSgtValue = sgtSetSpin.value
-                root.defCsValue = csSetSpin.value
-                root.defTstValue = tstSetPin.value
-                root.defSlphValue = slphSetSpin.value
-                root.defSlplValue = slplSetSpin.value
-                root.defDiss2gValue = diss2gSetPin.value
-                root.defTs2gValue = ts2gSetSpin.value
-                root.defSdoffValue = sdoffSetPin.value
-                root.defVsenseValue = vsenseSetPin.value
-                root.defRdselValue = rdselSetSpin.value
+                window.defIntpolValue = intpolSetPin.value
+                window.defDedgeValue = dedgeSetPin.value
+                window.defMresValue = mresSetSpin.value
+                window.defTblValue = tblSetSpin.value
+                window.defChmValue = chmSetPin.value
+                window.defRndtfValue = rndtfSetPin.value
+                window.defHdec1Value = hdec1SetPin.value
+                window.defHdec0Value = hdec0SetPin.value
+                window.defHendValue = hendSetSpin.value
+                window.defHstrtValue = hstrtSetSpin.value
+                window.defToffValue = toffSetSpin.value
+                window.defSeiminValue = seiminSetPin.value
+                window.defSednValue = sednSetSpin.value
+                window.defSemaxValue = semaxSetSpin.value
+                window.defSeupValue = seupSetSpin.value
+                window.defSeminValue = seminSetSpin.value
+                window.defSfiltValue = sfiltSetPin.value
+                window.defSgtValue = sgtSetSpin.value
+                window.defCsValue = csSetSpin.value
+                window.defTstValue = tstSetPin.value
+                window.defSlphValue = slphSetSpin.value
+                window.defSlplValue = slplSetSpin.value
+                window.defDiss2gValue = diss2gSetPin.value
+                window.defTs2gValue = ts2gSetSpin.value
+                window.defSdoffValue = sdoffSetPin.value
+                window.defVsenseValue = vsenseSetPin.value
+                window.defRdselValue = rdselSetSpin.value
             }
         }
     }
 
     ColumnLayout {
-        id: window
+        id: columnwindow
         anchors.fill: parent
         anchors.margins: 10
-
 
         Loader {
                 id: applicationToolBar
@@ -228,10 +217,10 @@ ServiceWindow {
             halrcompUri: halrcompService.uri
             ready: (halrcmdService.ready && halrcompService.ready) || connected
             name: "TrinamicSPI"
-            containerItem: root
+            containerItem: window
             create: false
             onErrorStringChanged: console.log(errorString)
-            onConnectedChanged: root.wasConnected = true
+            onConnectedChanged: window.wasConnected = true
         }
 
         Item {  // Hal Pins
@@ -580,6 +569,7 @@ ServiceWindow {
             ColumnLayout {  // Main window
                 id: transport
                 ApplicationStatusBar { id: applicationStatusBar }
+                ApplicationMenuBar { id: applicationMenuBar }
 
                 RowLayout {  // Velocity labels
                     Layout.fillWidth: true
@@ -673,10 +663,10 @@ ServiceWindow {
                     valueVisible: true
                     minimumValueVisible: false
                     maximumValueVisible: false
-                    minimumValue: root.gaugeMinimumValue
-                    maximumValue: root.gaugeMaximumValue
-                    z0BorderValue: root.gaugeZ0BorderValue
-                    z1BorderValue: root.gaugeZ1BorderValue
+                    minimumValue: window.gaugeMinimumValue
+                    maximumValue: window.gaugeMaximumValue
+                    z0BorderValue: window.gaugeZ0BorderValue
+                    z1BorderValue: window.gaugeZ1BorderValue
                     z0Color: valueVisible ? "green" : "white"
                     z1Color: valueVisible ? "yellow" : "white"
                     z2Color: valueVisible ? "red" : "white"
@@ -718,8 +708,8 @@ ServiceWindow {
                                 color: "white"//mouseArea2.pressed ? "black" : "gray"
                                 TextArea {
                                     id: regTxt
-                                    Layout.alignment: left
-                                    text: root.regValues
+//                                    Layout.alignment: left
+                                    text: window.regValues
                                     readOnly: true
                                     selectByMouse: true
                                     color: "black"// color can be set on the entire element with this property
@@ -773,29 +763,29 @@ ServiceWindow {
                                 Column {
                                     TextArea {
 //                                        id: readresponseTxt_0
-//                                        text: root.fullreadresponseValue_0
+//                                        text: window.fullreadresponseValue_0
                                         id: readresponsesTxt
-                                        text: root.fullreadresponses
+                                        text: window.fullreadresponses
                                         color: "black"// color can be set on the entire element with this property
                                     }
 //                                    TextArea {
 //                                        id: readresponseTxt_1
-//                                        text: root.fullreadresponseValue_1
+//                                        text: window.fullreadresponseValue_1
 //                                        color: "black"// color can be set on the entire element with this property
 //                                    }
 //                                    TextArea {
 //                                        id: readresponseTxt_2
-//                                        text: root.fullreadresponseValue_2
+//                                        text: window.fullreadresponseValue_2
 //                                        color: "black"// color can be set on the entire element with this property
 //                                    }
 //                                    TextArea {
 //                                        id: readresponseTxt_3
-//                                        text: root.fullreadresponseValue_3
+//                                        text: window.fullreadresponseValue_3
 //                                        color: "black"// color can be set on the entire element with this property
 //                                    }
 //                                    TextArea {
 //                                        id: readresponseTxt_4
-//                                        text: root.fullreadresponseValue_4
+//                                        text: window.fullreadresponseValue_4
 //                                        color: "black"// color can be set on the entire element with this property
 //                                    }
                                 }
@@ -850,6 +840,7 @@ ServiceWindow {
                                 enabled: true
                                 text: intpolSetPin.value  > 0 ? "x16" : "Disabled"
                                 font.bold: true
+
                                 onCheckedChanged: {
                                     if (checked) {
                                             intpolSetPin.value = 1
@@ -859,12 +850,14 @@ ServiceWindow {
                                         intpolSetPin.value = 0
                                         intpolonOffSwitch.text = "Disabled"
                                     }
+                                    transport.forceActiveFocus()
+                                    transport.focus = true
                                 }
 
                                 Binding {
                                     target: intpolonOffSwitch
                                     property: "down"
-                                    value: intpolSetPin.value  != root.defIntpolValue
+                                    value: intpolSetPin.value  != window.defIntpolValue
                                 }
                             }
                         }
@@ -901,7 +894,7 @@ ServiceWindow {
                                 Binding {
                                     target: dedgeonOffSwitch
                                     property: "down"
-                                    value: dedgeSetPin.value  != root.defDedgeValue
+                                    value: dedgeSetPin.value  != window.defDedgeValue
                                 }
                             }
                         }
@@ -927,6 +920,10 @@ ServiceWindow {
                                 to: 0// items.length - 1
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
+//                                  onValueModified: {            // remove the focus from this control
+//                                      applicationNotifications.forceActiveFocus()
+//                                      applicationNotifications.focus = true
+//                                  }
 
                                 property var items: ["256", "128", "64", "32", "16", "8", "4", "2", "1"]
 
@@ -958,19 +955,19 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (mresSetSpin.value != root.savedMresValue) {
-                                            root.savedMresValue = mresSetSpin.value
+                                        if (mresSetSpin.value != window.savedMresValue) {
+                                            window.savedMresValue = mresSetSpin.value
                                         }
                                     }
                                     else {
-                                        mresSetSpin.value = root.savedMresValue
+                                        mresSetSpin.value = window.savedMresValue
                                     }
                                 }
 
                                 Binding {
                                     target: mresonOffSwitch
                                     property: "down"
-                                    value: mresSetSpin.value != root.defMresValue
+                                    value: mresSetSpin.value != window.defMresValue
                                 }
                             }
                         }
@@ -1036,18 +1033,18 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (tblSetSpin.value != root.savedTblValue) {
-                                            root.savedTblValue = tblSetSpin.value
+                                        if (tblSetSpin.value != window.savedTblValue) {
+                                            window.savedTblValue = tblSetSpin.value
                                         }
                                     }
                                     else {
-                                        tblSetSpin.value = root.savedTblValue
+                                        tblSetSpin.value = window.savedTblValue
                                     }
                                 }
                                  Binding {
                                      target: tblonOffSwitch
                                      property: "down"
-                                     value: tblSetSpin.value  != root.defTblValue
+                                     value: tblSetSpin.value  != window.defTblValue
                                  }
                             }
 
@@ -1084,7 +1081,7 @@ ServiceWindow {
                                 Binding {
                                     target: chmonOffSwitch
                                     property: "down"
-                                    value: chmSetPin.value  != root.defChmValue
+                                    value: chmSetPin.value  != window.defChmValue
                                 }
                             }
                         }
@@ -1120,7 +1117,7 @@ ServiceWindow {
                                 Binding {
                                     target: rndtfonOffSwitch
                                     property: "down"
-                                    value: rndtfSetPin.value  != root.defRndtfValue
+                                    value: rndtfSetPin.value  != window.defRndtfValue
                                 }
                             }
                         }
@@ -1149,7 +1146,7 @@ ServiceWindow {
                                 Binding {
                                     target: hdec1onOffSwitch
                                     property: "down"
-                                    value: hdec1SetPin.value  != root.defHdec1Value
+                                    value: hdec1SetPin.value  != window.defHdec1Value
                                 }
                             }
                         }
@@ -1178,7 +1175,7 @@ ServiceWindow {
                                 Binding {
                                     target: hdec0onOffSwitch
                                     property: "down"
-                                    value: hdec0SetPin.value != root.defHdec0Value
+                                    value: hdec0SetPin.value != window.defHdec0Value
                                 }
                             }
                         }
@@ -1199,10 +1196,10 @@ ServiceWindow {
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
-                                onValueModified: {            // remove the focus from this control
-                                    parent.forceActiveFocus()
-                                    parent.focus = true
-                                }
+//                                 onValueModified: {            // remove the focus from this control
+//                                     parent.forceActiveFocus()
+//                                     parent.focus = true
+//                                 }
                             }
 
                             Label {
@@ -1216,19 +1213,19 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (hendSetSpin.value != root.savedHendValue) {
-                                            root.savedHendValue = hendSetSpin.value
+                                        if (hendSetSpin.value != window.savedHendValue) {
+                                            window.savedHendValue = hendSetSpin.value
                                         }
                                     }
                                     else {
-                                        hendSetSpin.value = root.savedHendValue
+                                        hendSetSpin.value = window.savedHendValue
                                     }
                                 }
 
                                 Binding {
                                     target: hendonOffSwitch
                                     property: "down"
-                                    value: hendSetSpin.value  != root.defHendValue
+                                    value: hendSetSpin.value  != window.defHendValue
                                 }
                             }
                         }
@@ -1280,19 +1277,19 @@ ServiceWindow {
     //                               background.color: "blue"
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (hstrtSetSpin.value != root.savedHstrtValue) {
-                                            root.savedHstrtValue = hstrtSetSpin.value
+                                        if (hstrtSetSpin.value != window.savedHstrtValue) {
+                                            window.savedHstrtValue = hstrtSetSpin.value
                                         }
                                     }
                                     else {
-                                        hstrtSetSpin.value = root.savedHstrtValue
+                                        hstrtSetSpin.value = window.savedHstrtValue
                                     }
                                 }
 
                                 Binding {
                                     target: hstrtonOffSwitch
                                     property: "down"
-                                    value: hstrtSetSpin.value  != root.defHstrtValue
+                                    value: hstrtSetSpin.value  != window.defHstrtValue
                                 }
                             }
                         }
@@ -1321,10 +1318,10 @@ ServiceWindow {
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
-                                    onValueModified: {            // remove the focus from this control
-                                        parent.forceActiveFocus()
-                                        parent.focus = true
-                                    }
+//                                     onValueModified: {            // remove the focus from this control
+//                                         parent.forceActiveFocus()
+//                                         parent.focus = true
+//                                     }
                                 }
 
                             Label {
@@ -1338,19 +1335,19 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                                if (toffSetSpin.value != root.savedToffValue) {
-                                            root.savedToffValue = toffSetSpin.value
+                                                if (toffSetSpin.value != window.savedToffValue) {
+                                            window.savedToffValue = toffSetSpin.value
                                                 }
                                     }
                                     else {
-                                        toffSetSpin.value = root.savedToffValue
+                                        toffSetSpin.value = window.savedToffValue
                                     }
                                 }
 
                                 Binding {
                                     target: toffonOffSwitch
                                     property: "down"
-                                    value: toffSetSpin.value  != root.defToffValue
+                                    value: toffSetSpin.value  != window.defToffValue
                                 }
                             }
                         }
@@ -1397,7 +1394,7 @@ ServiceWindow {
                                 Binding {
                                     target: seiminonOffSwitch
                                     property: "down"
-                                    value: seiminSetPin.value  != root.defSeiminValue
+                                    value: seiminSetPin.value  != window.defSeiminValue
                                 }
                             }
                         }
@@ -1453,18 +1450,18 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (sednSetSpin.value != root.savedSednValue) {
-                                            root.savedSednValue = sednSetSpin.value
+                                        if (sednSetSpin.value != window.savedSednValue) {
+                                            window.savedSednValue = sednSetSpin.value
                                         }
                                     }
                                     else {
-                                        sednSetSpin.value = root.savedSednValue
+                                        sednSetSpin.value = window.savedSednValue
                                     }
                                 }
                                  Binding {
                                      target: sednonOffSwitch
                                      property: "down"
-                                     value: sednSetSpin.value  != root.defSednValue
+                                     value: sednSetSpin.value  != window.defSednValue
                                  }
                             }
 
@@ -1479,6 +1476,14 @@ ServiceWindow {
                                 id: semaxValsetLabel
                                 font.bold: true
                                 text: "Up CS trs offs"
+                                property string semaxtoolTipText: "If the stallGuard2 measurement value SG is sampled\nequal to or above (SEMIN+SEMAX+1) x 32 enough times,\nthen the coil current scaling factor is decremented."
+                                ToolTip.text: semaxtoolTipText
+                                ToolTip.visible: semaxtoolTipText ? semaxma.containsMouse : false
+                                MouseArea {
+                                    id: semaxma
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -1493,34 +1498,35 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("If the stallGuard2 measurement value SG is sampled\nequal to or above (SEMIN+SEMAX+1) x 32 enough times,\nthen the coil current scaling factor is decremented.")
+                                ToolTip.text: qsTr("SEMAX")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
-                                onValueModified: {            // remove the focus from this control
-                                    parent.forceActiveFocus()
-                                    parent.focus = true
-                                }
+//                                 onValueModified: {            // remove the focus from this control
+//                                     parent.forceActiveFocus()
+//                                     parent.focus = true
+//                                 }
 
                             }
 
                             Switch2 {
                                 id: semaxonOffSwitch
                                 enabled: true
+
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (semaxSetSpin.value != root.savedSemaxValue) {
-                                            root.savedSemaxValue = semaxSetSpin.value
+                                        if (semaxSetSpin.value != window.savedSemaxValue) {
+                                            window.savedSemaxValue = semaxSetSpin.value
                                         }
                                     }
                                     else {
-                                        semaxSetSpin.value = root.savedSemaxValue
+                                        semaxSetSpin.value = window.savedSemaxValue
                                     }
                                 }
                                 Binding {
                                     target: semaxonOffSwitch
                                     property: "down"
-                                    value: semaxSetSpin.value  != root.defSemaxValue
+                                    value: semaxSetSpin.value  != window.defSemaxValue
                                 }
                             }
 
@@ -1577,18 +1583,18 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (seupSetSpin.value != root.savedSeupValue) {
-                                            root.savedSeupValue = seupSetSpin.value
+                                        if (seupSetSpin.value != window.savedSeupValue) {
+                                            window.savedSeupValue = seupSetSpin.value
                                         }
                                     }
                                     else {
-                                        seupSetSpin.value = root.savedSeupValue
+                                        seupSetSpin.value = window.savedSeupValue
                                     }
                                 }
                                  Binding {
                                      target: seuponOffSwitch
                                      property: "down"
-                                     value: seupSetSpin.value  != root.defSeupValue
+                                     value: seupSetSpin.value  != window.defSeupValue
                                  }
                             }
 
@@ -1603,6 +1609,15 @@ ServiceWindow {
                                     id: seminValsetLabel
                                     font.bold: true
                                     text: "Lo CS trs offs"
+                                    property string semintoolTipText: "If SEMIN is 0, coolStep is disabled. If SEMIN is nonzero\nand the stallGuard2 value SG falls below SEMIN x 32,\nthe coolStep current scaling factor is increased."
+                                    ToolTip.text: semintoolTipText
+//                                    ToolTip.text: qsTr("SEMIN")
+                                    ToolTip.visible: semintoolTipText ? seminma.containsMouse : false
+                                    MouseArea {
+                                        id: seminma
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                    }
                                 }
 
                             HalSpinBox2 {
@@ -1617,33 +1632,34 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("If SEMIN is 0, coolStep is disabled. If SEMIN is nonzero\nand the stallGuard2 value SG falls below SEMIN x 32,\nthe coolStep current scaling factor is increased.")
+                                ToolTip.text: qsTr("SEMIN")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
-                                onValueModified: {            // remove the focus from this control
-                                    parent.forceActiveFocus()
-                                    parent.focus = true
-                                }
+//                                 onValueModified: {            // remove the focus from this control
+//                                     parent.forceActiveFocus()
+//                                     parent.focus = true
+//                                 }
                             }
 
                             Switch2 {
                                 id: seminonOffSwitch
                                 enabled: true
+
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (seminSetSpin.value != root.savedSeminValue) {
-                                            root.savedSeminValue = seminSetSpin.value
+                                        if (seminSetSpin.value != window.savedSeminValue) {
+                                            window.savedSeminValue = seminSetSpin.value
                                         }
                                     }
                                     else {
-                                        seminSetSpin.value = root.savedSeminValue
+                                        seminSetSpin.value = window.savedSeminValue
                                     }
                                 }
                                 Binding {
                                     target: seminonOffSwitch
                                     property: "down"
-                                    value: seminSetSpin.value  != root.defSeminValue
+                                    value: seminSetSpin.value  != window.defSeminValue
                                 }
                             }
 
@@ -1684,7 +1700,7 @@ ServiceWindow {
                                 Binding {
                                     target: sfiltonOffSwitch
                                     property: "down"
-                                    value: sfiltSetPin.value  != root.defSfiltValue
+                                    value: sfiltSetPin.value  != window.defSfiltValue
                                 }
                             }
                         }
@@ -1708,10 +1724,7 @@ ServiceWindow {
                                 halPin.direction: HalPin.IO
                                 from: -64
                                 to: 63
-        //                                 font.pixelSize: 30
-        //                                 scale: 0.5
                                 ToolTip.delay: 1000
-//                                ToolTip.timeout: 2000
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
@@ -1722,12 +1735,10 @@ ServiceWindow {
                                 "Values below -10 are not recommended.\n" +
                                 "Range: -64 to +63")
 
-
-
-                                    onValueModified: {            // remove the focus from this control
-                                        parent.forceActiveFocus()
-                                        parent.focus = true
-                                    }
+//                                    onValueModified: {            // remove the focus from this control
+//                                        parent.forceActiveFocus()
+//                                        parent.focus = true
+//                                    }
                                 }
 
                             Switch2 {
@@ -1753,19 +1764,19 @@ ServiceWindow {
                                 "stalls and the stall output SG_TST is asserted. This indicates that a step has been lost.")
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (sgtSetSpin.value != root.savedSgtValue) {
-                                            root.savedSgtValue = sgtSetSpin.value
+                                        if (sgtSetSpin.value != window.savedSgtValue) {
+                                            window.savedSgtValue = sgtSetSpin.value
                                         }
                                     }
                                     else {
-                                        sgtSetSpin.value = root.savedSgtValue
+                                        sgtSetSpin.value = window.savedSgtValue
                                     }
                                 }
 
                                 Binding {
                                     target: sgtonOffSwitch
                                     property: "down"
-                                    value: sgtSetSpin.value  != root.defSgtValue
+                                    value: sgtSetSpin.value  != window.defSgtValue
                                 }
                             }
                         }
@@ -1824,20 +1835,20 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (csSetSpin.value != root.savedCsValue) {
+                                        if (csSetSpin.value != window.savedCsValue) {
 
-                                            root.savedCsValue = csSetSpin.value
+                                            window.savedCsValue = csSetSpin.value
                                         }
                                     }
                                     else {
-                                        csSetSpin.value = root.savedCsValue
+                                        csSetSpin.value = window.savedCsValue
                                     }
                                 }
 
                                 Binding {
                                     target: csonOffSwitch
                                     property: "down"
-                                    value: csSetSpin.value != root.defCsValue
+                                    value: csSetSpin.value != window.defCsValue
                                 }
                             }
                         }
@@ -1884,7 +1895,7 @@ ServiceWindow {
                                 Binding {
                                     target: tstonOffSwitch
                                     property: "down"
-                                    value: tstSetPin.value  != root.defTstValue
+                                    value: tstSetPin.value  != window.defTstValue
                                 }
                             }
                         }
@@ -1917,10 +1928,10 @@ ServiceWindow {
 
                                 ToolTip.text: "%00: Minimum\n%01: Minimum temperature compensation mode.\n%10: Medium temperature compensation mode.\n%11: Maximum\nIn temperature compensated mode (tc), the MOSFET gate\ndriver strength is increased if the overtemperature\nwarning temperature is reached. This compensates for\ntemperature dependency of high-side slope control."
 
-                                    onValueModified: {            // remove the focus from this control
-                                        parent.forceActiveFocus()
-                                        parent.focus = true
-                                    }
+//                                     onValueModified: {            // remove the focus from this control
+//                                         parent.forceActiveFocus()
+//                                         parent.focus = true
+//                                     }
                                 }
 
                             Switch2 {
@@ -1928,19 +1939,19 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (slphSetSpin.value != root.savedSlphValue) {
-                                            root.savedSlphValue = slphSetSpin.value
+                                        if (slphSetSpin.value != window.savedSlphValue) {
+                                            window.savedSlphValue = slphSetSpin.value
                                         }
                                     }
                                     else {
-                                        slphSetSpin.value = root.savedSlphValue
+                                        slphSetSpin.value = window.savedSlphValue
                                     }
                                 }
 
                                 Binding {
                                     target: slphonOffSwitch
                                     property: "down"
-                                    value: slphSetSpin.value  != root.defSlphValue
+                                    value: slphSetSpin.value  != window.defSlphValue
                                 }
                             }
                         }
@@ -1973,10 +1984,10 @@ ServiceWindow {
 
                                 ToolTip.text: "%00: Minimum.\n%01: Minimum.\n%10: Medium.\n%11: Maximum."
 
-                                    onValueModified: {            // remove the focus from this control
-                                        parent.forceActiveFocus()
-                                        parent.focus = true
-                                    }
+//                                     onValueModified: {            // remove the focus from this control
+//                                         parent.forceActiveFocus()
+//                                         parent.focus = true
+//                                     }
                                 }
 
                             Switch2 {
@@ -1984,19 +1995,19 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (slplSetSpin.value != root.savedSlplValue) {
-                                            root.savedSlplValue = slplSetSpin.value
+                                        if (slplSetSpin.value != window.savedSlplValue) {
+                                            window.savedSlplValue = slplSetSpin.value
                                         }
                                     }
                                     else {
-                                        slplSetSpin.value = root.savedSlplValue
+                                        slplSetSpin.value = window.savedSlplValue
                                     }
                                 }
 
                                 Binding {
                                     target: slplonOffSwitch
                                     property: "down"
-                                    value: slplSetSpin.value  != root.defSlplValue
+                                    value: slplSetSpin.value  != window.defSlplValue
                                 }
                             }
                         }
@@ -2034,7 +2045,7 @@ ServiceWindow {
                                 Binding {
                                     target: diss2gonOffSwitch
                                     property: "down"
-                                    value: diss2gSetPin.value != root.defDiss2gValue
+                                    value: diss2gSetPin.value != window.defDiss2gValue
                                 }
                             }
                         }
@@ -2096,18 +2107,18 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (ts2gSetSpin.value != root.savedTs2gValue) {
-                                            root.savedTs2gValue = ts2gSetSpin.value
+                                        if (ts2gSetSpin.value != window.savedTs2gValue) {
+                                            window.savedTs2gValue = ts2gSetSpin.value
                                         }
                                     }
                                     else {
-                                        ts2gSetSpin.value = root.savedTs2gValue
+                                        ts2gSetSpin.value = window.savedTs2gValue
                                     }
                                 }
                                  Binding {
                                      target: ts2gonOffSwitch
                                      property: "down"
-                                     value: ts2gSetSpin.value  != root.defTs2gValue
+                                     value: ts2gSetSpin.value  != window.defTs2gValue
                                  }
                             }
 
@@ -2138,7 +2149,7 @@ ServiceWindow {
                                             sdoffonOffSwitch.text = "STEP/DIR interface disabled"
                                     }
                                     else {
-                                        tstSetPin.value = 0
+                                        sdoffSetPin.value = 0
                                         sdoffonOffSwitch.text = "STEP/DIR interface enabled"
                                     }
                                 }
@@ -2146,7 +2157,7 @@ ServiceWindow {
                                 Binding {
                                     target: sdoffonOffSwitch
                                     property: "down"
-                                    value: sdoffSetPin.value  != root.defSdoffValue
+                                    value: sdoffSetPin.value  != window.defSdoffValue
                                 }
                             }
                         }
@@ -2184,7 +2195,7 @@ ServiceWindow {
                                 Binding {
                                     target: vsenseonOffSwitch
                                     property: "down"
-                                    value: vsenseSetPin.value  != root.defVsenseValue
+                                    value: vsenseSetPin.value  != window.defVsenseValue
                                 }
                             }
                         }
@@ -2240,18 +2251,18 @@ ServiceWindow {
                                 enabled: true
                                 onCheckedChanged: {
                                     if (checked) {
-                                        if (rdselSetSpin.value != root.savedRdselValue) {
-                                            root.savedRdselValue = rdselSetSpin.value
+                                        if (rdselSetSpin.value != window.savedRdselValue) {
+                                            window.savedRdselValue = rdselSetSpin.value
                                         }
                                     }
                                     else {
-                                        rdselSetSpin.value = root.savedRdselValue
+                                        rdselSetSpin.value = window.savedRdselValue
                                     }
                                 }
                                  Binding {
                                      target: rdselonOffSwitch
                                      property: "down"
-                                     value: rdselSetSpin.value  != root.defRdselValue
+                                     value: rdselSetSpin.value  != window.defRdselValue
                                  }
                             }
 

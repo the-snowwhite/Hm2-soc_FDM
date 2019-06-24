@@ -68,6 +68,7 @@ pin io bit   vsense.set "Sense resistor voltage-based current scaling";
 pin io float rdsel.set  "Select value for read out (RD bits)";
 
 option extra_setup yes;
+
 variable u32 *buf_write[5];
 variable u32 *buf_read[5];
 variable u32 drvctrl;
@@ -110,7 +111,6 @@ variable u8   rdsel;
 
 variable u32 firstrun;
 
-
 license "GPL";
 author "Andy Pugh / Cliff Blackburn / Michael Brown";
 
@@ -123,11 +123,12 @@ include "TMC2660_Fields.h";
 #define TMC2660_SMARTEN 	0x000A0000 	// (Address: 2)
 #define TMC2660_SGCSCONF 	0x000D0000 	// (Address: 3)
 #define TMC2660_DRVCONF 	0x000E0000 	// (Address: 4)
-#define TMC2660_DRVCTRL_CONF 	0x00000000
-#define TMC2660_CHOPCONF_CONF 	0x000901B8
-#define TMC2660_SMARTEN_CONF	0x000AC540
-#define TMC2660_SGCSCONF_CONF	0x000D0016
-#define TMC2660_DRVCONF_CONF	0x000E0050
+//  Nema23:                 23HD86001Y-21B // 23HD56001Y-21B
+#define TMC2660_DRVCTRL_CONF 	0x00000000 // 0x00000000
+#define TMC2660_CHOPCONF_CONF 	0x00098471 // 0x000901B8
+#define TMC2660_SMARTEN_CONF	0x000AA924 // 0x000AC540
+#define TMC2660_SGCSCONF_CONF	0x000D1410 // 0x000D000E
+#define TMC2660_DRVCONF_CONF	0x000E4010 // 0x000E0010
 
 // to parse the modparam
 char *dbspi_chans[16] = {0,};
@@ -251,7 +252,8 @@ static int read(struct __comp_state *__comp_setst){
     smarten  = ( TMC2660_SMARTEN | ( seimin << TMC2660_SEIMIN_SHIFT) | ( sedn << TMC2660_SEDN_SHIFT ) |
             ( semax << TMC2660_SEMAX_SHIFT ) | ( seup << TMC2660_SEUP_SHIFT ) | ( semin << TMC2660_SEMIN_SHIFT ));
 
-    sgcsconf = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) | (sgt & 0x3F)) << TMC2660_SGT_SHIFT) | ((cs & 0x1F) << TMC2660_CS_SHIFT ));
+    sgcsconf = ( TMC2660_SGCSCONF | ( sfilt << TMC2660_SFILT_SHIFT) | ((((sgt & 0x80) >> 1) | (sgt & 0x3F)) << TMC2660_SGT_SHIFT) |
+            ((cs & 0x1F) << TMC2660_CS_SHIFT ));
 
 
     drvconf  = ( TMC2660_DRVCONF | ( tst << TMC2660_TST_SHIFT) | ( slph << TMC2660_SLPH_SHIFT ) |
@@ -295,7 +297,6 @@ static int read(struct __comp_state *__comp_setst){
 EXTRA_SETUP(){
     int i, r;
     char *name = dbspi_chans[extra_arg]; // This is the string which identifies board and instance
-
     firstrun = true;
     // Set up channel descriptors
     //hm2_dbspi_setup_chan(name, chan, cs, bits, mhz, delay(ns), cpol, cpha, noclear, noecho, samplelate)

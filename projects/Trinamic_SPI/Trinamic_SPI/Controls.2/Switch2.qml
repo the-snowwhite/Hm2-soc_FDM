@@ -41,6 +41,15 @@ import QtQuick.Controls.impl 2.2
 
 T.Switch {
     id: control
+    property int themeBaseSize: 10
+    property string lightgrayColour: "light green"
+    property string darkgrayColour: "gray"
+    property string themeLight: "blue"
+    property string themeKnob: "white"
+    property string themeLightGray: "light gray"
+    property string themeGray: "gray"
+    property string themeMainColor: "light green"
+    property string themeMainColorDarker: "orange"
 
     implicitWidth: Math.max(background ? background.implicitWidth : 0,
                             contentItem.implicitWidth + leftPadding + rightPadding)
@@ -54,23 +63,23 @@ T.Switch {
 
     indicator: Rectangle {
         id: switchHandle
-        implicitWidth: root.themeBaseSize * 4.8
-        implicitHeight: root.themeBaseSize * 1.3
+        implicitWidth: control.themeBaseSize * 4.8
+        implicitHeight: control.themeBaseSize * 1.3
         x: control.leftPadding
         anchors.verticalCenter: parent.verticalCenter
-        radius: root.themeBaseSize * 1.3
-        color: root.lightgrayColour
-        border.color: root.darkgrayColour
+        radius: control.themeBaseSize * 1.3
+        color: control.lightgrayColour
+        border.color: control.darkgrayColour
 
         Rectangle {
             id: rectangle
 
-            width: root.themeBaseSize * 2.6
-            height: root.themeBaseSize * 2.6
-            radius: root.themeBaseSize * 1.3
+            width: control.themeBaseSize * 2.6
+            height: control.themeBaseSize * 2.6
+            radius: control.themeBaseSize * 1.3
             anchors.verticalCenter: parent.verticalCenter
-            color: root.themeKnob
-            border.color: root.themeGray
+            color: control.themeKnob
+            border.color: control.themeGray
         }
 
         states: [
@@ -84,8 +93,8 @@ T.Switch {
 
                 PropertyChanges {
                     target: switchHandle
-                    color: root.themeMainColor
-                    border.color: root.themeMainColor
+                    color: control.themeMainColor
+                    border.color: control.themeMainColor
                 }
 
                 PropertyChanges {
@@ -100,7 +109,7 @@ T.Switch {
 
                 PropertyChanges {
                     target: rectangle
-                    color: root.themeLight
+                    color: control.themeLight
                 }
 
             },
@@ -112,26 +121,18 @@ T.Switch {
                 PropertyChanges {
                     target: rectangle
                     x: parent.width - width
-                    color: root.themeLight
+                    color: control.themeLight
                 }
 
                 PropertyChanges {
                     target: switchHandle
-                    color: root.themeMainColorDarker
-                    border.color: root.themeMainColorDarker
+                    color: control.themeMainColorDarker
+                    border.color: control.themeMainColorDarker
                 }
             }
         ]
     }
 
-//     contentItem: CheckLabel {
-//         leftPadding: control.indicator && !control.mirrored ? control.indicator.width + control.spacing : 0
-//         rightPadding: control.indicator && control.mirrored ? control.indicator.width + control.spacing : 0
-//
-//         text: control.text
-//         font: control.font
-//         color: control.palette.windowText
-//     }
 
     contentItem: Text {
         leftPadding: control.indicator && !control.mirrored ? control.indicator.width + control.spacing : 0
