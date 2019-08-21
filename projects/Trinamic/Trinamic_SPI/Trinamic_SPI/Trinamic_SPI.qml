@@ -47,7 +47,7 @@ ServiceWindow {
     property bool wasConnected: false
     property double gaugeZ0BorderValue: 50.0
     property double gaugeMinimumValue: 0
-    property double gaugeMaximumValue: 512
+    property double gaugeMaximumValue: 1024
     property double gaugeZ1BorderValue: gaugeMaximumValue * 0.9
     property double savedMresValue
     property double savedTblValue
