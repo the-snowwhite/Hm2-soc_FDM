@@ -47,7 +47,7 @@ ServiceWindow {
     property bool wasConnected: false
     property double gaugeZ0BorderValue: 50.0
     property double gaugeMinimumValue: 0
-    property double gaugeMaximumValue: 1024
+    property double gaugeMaximumValue: 512
     property double gaugeZ1BorderValue: gaugeMaximumValue * 0.9
     property double savedMresValue
     property double savedTblValue
@@ -402,6 +402,14 @@ ServiceWindow {
                         onColor: "yellow"
                         Layout.preferredHeight: ststLabel.height * 0.9
                         Layout.preferredWidth: ststLabel.height * 0.9
+                        property string ststtoolTipText: "STST\ntandstill indicator\n0: No standstill condition detected.\nYellow: No active edge occurred on the STEP\ninput during the last 220 system clock cycles."
+                        ToolTip.text: ststtoolTipText
+                        ToolTip.visible: ststtoolTipText ? ststa.containsMouse : false
+                        MouseArea {
+                            id: ststa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                        }
                     }
                 }
 
@@ -424,6 +432,14 @@ ServiceWindow {
                         onColor: "red"
                         Layout.preferredHeight: olbLabel.height * 0.9
                         Layout.preferredWidth: olbLabel.height * 0.9
+                        property string olbtoolTipText: "OLB\nOpen load indicator\n0: No open load condition detected.\nRed: No chopper event has happened during\nthe last period with constant coil polarity.\nOnly a current above 1/16 of the maximum\nsetting can clear this bit!\nHint: This bit is only a status indicator. The\nchip takes no other action when this bit is\nset. False indications may occur during fast\nmotion and at standstill. Check this bit only\nduring slow motion."
+                        ToolTip.text: olbtoolTipText
+                        ToolTip.visible: olbtoolTipText ? olba.containsMouse : false
+                        MouseArea {
+                            id: olba
+                            anchors.fill: parent
+                            hoverEnabled: true
+                        }
                     }
                 }
 
@@ -446,6 +462,14 @@ ServiceWindow {
                         onColor: "red"
                         Layout.preferredHeight: olaLabel.height * 0.9
                         Layout.preferredWidth: olaLabel.height * 0.9
+                        property string olatoolTipText: "OLA\nOpen load indicator\n0: No open load condition detected.\nRed: No chopper event has happened during\nthe last period with constant coil polarity.\nOnly a current above 1/16 of the maximum\nsetting can clear this bit!\nHint: This bit is only a status indicator. The\nchip takes no other action when this bit is\nset. False indications may occur during fast\nmotion and at standstill. Check this bit only\nduring slow motion."
+                        ToolTip.text: olatoolTipText
+                        ToolTip.visible: olatoolTipText ? olaa.containsMouse : false
+                        MouseArea {
+                            id: olaa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                        }
                     }
                 }
 
@@ -470,6 +494,14 @@ ServiceWindow {
                         onColor: "red"
                         Layout.preferredHeight: s2gbLabel.height * 0.9
                         Layout.preferredWidth: s2gbLabel.height * 0.9
+                        property string s2gbtoolTipText: "S2GB\nShort to GND detection bits on high-side transistors\n0: No short to ground shutdown condition.\nRed: Short to ground shutdown condition.\nThe short counter is incremented by each\nshort circuit and the chopper cycle is\nsuspended. The counter is decremented for\neach phase polarity change. The MOSFETs are\nshut off when the counter reaches 3 and\nremain shut off until the shutdown condition\nis cleared by disabling and re-enabling the\ndriver. The shutdown condition becomes\nreset by deasserting the ENN input or clearing\nthe TOFF parameter."
+                        ToolTip.text: s2gbtoolTipText
+                        ToolTip.visible: s2gbtoolTipText ? s2gba.containsMouse : false
+                        MouseArea {
+                            id: s2gba
+                            anchors.fill: parent
+                            hoverEnabled: true
+                        }
                     }
                 }
 
@@ -492,6 +524,14 @@ ServiceWindow {
                         onColor: "red"
                         Layout.preferredHeight: s2gaLabel.height * 0.9
                         Layout.preferredWidth: s2gaLabel.height * 0.9
+                        property string s2gatoolTipText: "S2GA\nShort to GND detection bits on high-side transistors\n0: No short to ground shutdown condition.\nRed: Short to ground shutdown condition.\nThe short counter is incremented by each\nshort circuit and the chopper cycle is\nsuspended. The counter is decremented for\neach phase polarity change. The MOSFETs are\nshut off when the counter reaches 3 and\nremain shut off until the shutdown condition\nis cleared by disabling and re-enabling the\ndriver. The shutdown condition becomes\nreset by deasserting the ENN input or clearing\nthe TOFF parameter."
+                        ToolTip.text: s2gatoolTipText
+                        ToolTip.visible: s2gatoolTipText ? s2gaa.containsMouse : false
+                        MouseArea {
+                            id: s2gaa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                        }
                     }
                 }
 
@@ -514,6 +554,14 @@ ServiceWindow {
                         onColor: "red"
                         Layout.preferredHeight: otpwLabel.height * 0.9
                         Layout.preferredWidth: otpwLabel.height * 0.9
+                        property string otpwtoolTipText: "OTPW\nOvertemperature warning\n0: No overtemperature warning condition.\nRed: Warning threshold is active."
+                        ToolTip.text: otpwtoolTipText
+                        ToolTip.visible: otpwtoolTipText ? otpwa.containsMouse : false
+                        MouseArea {
+                            id: otpwa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                        }
                     }
                 }
 
@@ -536,6 +584,14 @@ ServiceWindow {
                         onColor: "red"
                         Layout.preferredHeight: otLabel.height * 0.9
                         Layout.preferredWidth: otLabel.height * 0.9
+                        property string ottoolTipText: "OT\nOvertemperature shutdown\n0: No overtemperature shutdown condition.\nRed: Overtemperature shutdown has occurred."
+                        ToolTip.text: ottoolTipText
+                        ToolTip.visible: ottoolTipText ? ota.containsMouse : false
+                        MouseArea {
+                            id: ota
+                            anchors.fill: parent
+                            hoverEnabled: true
+                        }
                     }
                 }
 
@@ -558,6 +614,15 @@ ServiceWindow {
                         onColor: "red"
                         Layout.preferredHeight: sgLabel.height * 0.9
                         Layout.preferredWidth: sgLabel.height * 0.9
+                        property string sgtoolTipText: "SG\nstallGuard2 status\n0: No motor stall detected.\nRed: stallGuard2 threshold has been reached,\nand the SG_TST output is driven high."
+
+                        ToolTip.text: sgtoolTipText
+                        ToolTip.visible: sgtoolTipText ? sga.containsMouse : false
+                        MouseArea {
+                            id: sga
+                            anchors.fill: parent
+                            hoverEnabled: true
+                        }
                     }
                 }
 
@@ -694,7 +759,7 @@ ServiceWindow {
 
                         Column {  // First Column (SPI Readout)
                             spacing: 5// Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignLeft
+                            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
                             TextArea {  // Column header
                                 height: 32
                                 text: "SPI registers\t Values:              "
@@ -791,26 +856,55 @@ ServiceWindow {
                                 }
                             }
                         }
-                    }
 
-                    LogChart {
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                        id: sgChart
-                        Layout.fillHeight: true
-                        visible: true
-                        value: sgGauge.value
-                        minimumValue: sgGauge.minimumValue
-                        maximumValue: sgGauge.maximumValue
-                        leftTextVisible: false
-                        rightTextVisible: false
-                        autoSampling: (sgGauge.halPin.synced) && visible
-                        autoUpdate: autoSampling
-                        updateInterval: 250
-                        timeSpan: 100000
-                        Layout.maximumHeight: 256
-                        Layout.maximumWidth: 1024
-                        gridColor: qsTr("#eeeeee")
-                        backgroundColor: qsTr("#ffffff")
+                        Column {  // First Column (SPI Readout)
+                            TextArea {  // Column header
+                                height: 32
+                                text: "SG Values:              "
+                                color: "black"// color can be set on the entire element with this property
+
+                            }
+
+                            LogChart {
+                                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                                id: sgChart
+                                Layout.fillHeight: true
+                                visible: true
+                                value: sgGauge.value
+                                minimumValue: sgGauge.minimumValue
+                                maximumValue: sgGauge.maximumValue
+                                leftTextVisible: false
+                                rightTextVisible: false
+                                autoSampling: (sgGauge.halPin.synced) && visible
+                                autoUpdate: autoSampling
+                                updateInterval: 250
+                                timeSpan: 100000
+                                Layout.maximumHeight: 256
+                                Layout.maximumWidth: 1024
+                                gridColor: qsTr("#eeeeee")
+                                backgroundColor: qsTr("#ffffff")
+                                property string sgCharttoolTipText: " Tuning the stallGuard2 Threshold\n" +
+                                "Due to the dependency of the stallGuard2 value SG from motor-specific characteristics and application-\n" +
+                                "specific demands on load and velocity the easiest way to tune the stallGuard2 threshold SGT for a\n" +
+                                "specific motor type and operating conditions is interactive tuning in the actual application.\n" +
+                                "The procedure is:\n" +
+                                "1. Operate the motor at a reasonable velocity for your application and monitor SG.\n" +
+                                "2. Apply slowly increasing mechanical load to the motor. If the motor stalls before SG reaches\n" +
+                                "zero, decrease SGT. If SG reaches zero before the motor stalls, increase SGT. A good SGT\n" +
+                                "starting value is zero. SGT is signed, so it can have negative or positive values.\n" +
+                                "3. The optimum setting is reached when SG is between 0 and 400 at increasing load shortly\n" +
+                                "before the motor stalls, and SG increases by 100 or more without load. SGT in most cases can\n" +
+                                "be tuned together with the motion velocity in a way that SG goes to zero when the motor\n" +
+                                "stalls and the stall output SG_TST is asserted. This indicates that a step has been lost."
+                                ToolTip.text: sgCharttoolTipText
+                                ToolTip.visible: sgCharttoolTipText ? sgCharta.containsMouse : false
+                                MouseArea {
+                                    id: sgCharta
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -833,6 +927,14 @@ ServiceWindow {
 //                                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                                 font.bold: true
                                 text:"Interpolation"
+                                property string intpoltoolTipText: "INTPOL"
+                                ToolTip.text: intpoltoolTipText
+                                ToolTip.visible: intpoltoolTipText ? intpola.containsMouse : false
+                                MouseArea {
+                                    id: intpola
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             Switch2 {
@@ -840,6 +942,11 @@ ServiceWindow {
                                 enabled: true
                                 text: intpolSetPin.value  > 0 ? "x16" : "Disabled"
                                 font.bold: true
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("0: Disable STEP pulse interpolation.\n1: Enable STEP pulse multiplication by 16.")
 
                                 onCheckedChanged: {
                                     if (checked) {
@@ -872,6 +979,14 @@ ServiceWindow {
 //                                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                                 font.bold: true
                                 text: "Step Edges"
+                                property string dedgetoolTipText: "DEDGE"
+                                ToolTip.text: dedgetoolTipText
+                                ToolTip.visible: dedgetoolTipText ? dedgea.containsMouse : false
+                                MouseArea {
+                                    id: dedgea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             Switch2 {
@@ -880,6 +995,11 @@ ServiceWindow {
                                 // display: AbstractButton.TextBesideIcon
                                 text: dedgeSetPin.value  > 0 ? "Double Edge" : "Rising Edge"
                                 font.bold: true
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("0: Rising STEP pulse edge is active, falling edge is inactive.\n1: Both rising and falling STEP pulse edges are active.")
                                 onCheckedChanged: {
                                     if (checked) {
                                             dedgeSetPin.value = 1
@@ -909,6 +1029,14 @@ ServiceWindow {
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                 font.bold: true
                                 text: "Res"
+                                property string mrestoolTipText: "MRES"
+                                ToolTip.text: mrestoolTipText
+                                ToolTip.visible: mrestoolTipText ? mresa.containsMouse : false
+                                MouseArea {
+                                    id: mresa
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -918,6 +1046,11 @@ ServiceWindow {
                                 halPin.direction: HalPin.IO
                                 from: items.length - 1
                                 to: 0// items.length - 1
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Microsteps per Fullstep:")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 //                                  onValueModified: {            // remove the focus from this control
@@ -991,6 +1124,20 @@ ServiceWindow {
                             id: tblcontrol
                             visible: true
 
+                            Label {
+                                id: tblValsetLabel
+                                font.bold: true
+                                text: "Blank time"
+                                property string tbltoolTipText: "TBL"
+                                ToolTip.text: tbltoolTipText
+                                ToolTip.visible: tbltoolTipText ? tbla.containsMouse : false
+                                MouseArea {
+                                    id: tbla
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
+                            }
+
                             HalSpinBox2 {
                                 id: tblSetSpin
 //                                property double defTbl
@@ -1002,6 +1149,11 @@ ServiceWindow {
                                 to: items.length - 1
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Blanking time interval, in system clock periods:")
 
                                 property var items: ["16", "24", "36", "54"]
 
@@ -1020,12 +1172,6 @@ ServiceWindow {
                                     }
                                     return tblSetSpin.value
                                 }
-                            }
-
-                            Label {
-                                id: tblValsetLabel
-                                font.bold: true
-                                text: "Blank time"
                             }
 
                             Switch2 {
@@ -1058,7 +1204,15 @@ ServiceWindow {
                             Label {
                                 id: chmValsetLabel
                                 font.bold: true
-                                text: "Chop mode"
+                                text: "CHop Mode"
+                                property string chmtoolTipText: "CHM"
+                                ToolTip.text: chmtoolTipText
+                                ToolTip.visible: chmtoolTipText ? chma.containsMouse : false
+                                MouseArea {
+                                    id: chma
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             Switch2 {
@@ -1067,6 +1221,12 @@ ServiceWindow {
                                 // display: AbstractButton.TextBesideIcon
                                 text: chmSetPin.value  > 0 ? "Constant tOFF" : "SpreadCycle"
                                 font.bold: true
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("This mode bit affects the interpretation of the HDEC,\nHEND, and HSTRT parameters shown below.\n0: Standard mode (spreadCycle)\n1: Constant tOFF with fast decay time.\nFast decay time is also terminated when the\nnegative nominal current is reached. Fast\ndecay is after on time.
+")
                                 onCheckedChanged: {
                                     if (checked) {
                                             chmSetPin.value = 1
@@ -1095,6 +1255,14 @@ ServiceWindow {
                                 id: rndtfValsetLabel
                                 font.bold: true
                                 text: "TOFF time"
+                                property string rndtftoolTipText: "RNDTF"
+                                ToolTip.text: rndtftoolTipText
+                                ToolTip.visible: rndtftoolTipText ? rndtfa.containsMouse : false
+                                MouseArea {
+                                    id: rndtfa
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             Switch2 {
@@ -1103,6 +1271,11 @@ ServiceWindow {
                                 // display: AbstractButton.TextBesideIcon
                                 text: rndtfSetPin.value  > 0 ? "Random" : "Fixed"
                                 font.bold: true
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Enable randomizing the slow decay phase duration:\n0: Chopper off time is fixed as set by bits t OFF\n1:  Random mode, tOFF is random modulated by\ndNCLK= -12 ... +3 clocks.")
                                 onCheckedChanged: {
                                     if (checked) {
                                             rndtfSetPin.value = 1
@@ -1131,9 +1304,14 @@ ServiceWindow {
                                 id: hdec1onOffSwitch
                                 enabled: true
                                 // display: AbstractButton.TextBesideIcon
-                                text: qsTr("Hysteresis decrement period 1")
+                                text: qsTr("Hysteresis DECrement period 1")
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("HCEC1:\nCHopMode=0:\n Hysteresis decrement period setting, in\nsystem clock periods:\n\nCHopMode=1:\nHDEC1=0: current comparator can terminate\nthe fast decay phase before timer expires.\nHDEC1=1: only the timer terminates the fast\ndecay phase.\nHDEC0: MSB of fast decay time setting.")
                                 onCheckedChanged: {
                                     if (checked) {
                                             hdec1SetPin.value = 1
@@ -1160,9 +1338,14 @@ ServiceWindow {
                                 id: hdec0onOffSwitch
                                 enabled: true
                                 // display: AbstractButton.TextBesideIcon
-                                text: qsTr("Hysteresis decrement period 0")
+                                text: qsTr("Hysteresis DECrement period 0")
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("HCEC0:\nCHopMode=0:\n Hysteresis decrement period setting, in\nsystem clock periods:\n\nCHopMode=1:\nHDEC1=0: current comparator can terminate\nthe fast decay phase before timer expires.\nHDEC1=1: only the timer terminates the fast\ndecay phase.\nHDEC0: MSB of fast decay time setting.")
                                 onCheckedChanged: {
                                     if (checked) {
                                             hdec0SetPin.value = 1
@@ -1185,14 +1368,33 @@ ServiceWindow {
                             id: hendcontrol
                             visible: true
 
-                        HalSpinBox2 {
-                            id: hendSetSpin
-                            enabled: true
-                            name: "hend.set"
-                            halPin.direction: HalPin.IO
-                            from: -3
-                            to: 12
-                            // chm =0
+                            Label {
+                                id: hendValsetLabel
+                                font.bold: true
+                                text: "Hys END (lo)  "
+                                property string hendtoolTipText: "HEND"
+                                ToolTip.text: hendtoolTipText
+                                ToolTip.visible: hendtoolTipText ? henda.containsMouse : false
+                                MouseArea {
+                                    id: henda
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
+                            }
+
+                            HalSpinBox2 {
+                                id: hendSetSpin
+                                enabled: true
+                                name: "hend.set"
+                                halPin.direction: HalPin.IO
+                                from: -3
+                                to: 12
+                                // chm =0
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("HEND\nCHopMode=0:\n %0000 ... %1111:\nHysteresis is -3, -2, -1, 0, 1, ..., 12\n(1/512 of this setting adds to current setting)\nThis is the hysteresis value which becomes\nused for the hysteresis chopper.\n\nCHopMode=1:\n%0000 ... %1111:\nOffset is -3, -2, -1, 0, 1, ..., 12\nThis is the sine wave offset and 1/512 of the\nvalue becomes added to the absolute value\nof each sine wave entry.")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
@@ -1200,12 +1402,6 @@ ServiceWindow {
 //                                     parent.forceActiveFocus()
 //                                     parent.focus = true
 //                                 }
-                            }
-
-                            Label {
-                                id: hendValsetLabel
-                                font.bold: true
-                                text: "Hys end (lo)"
                             }
 
                             Switch2 {
@@ -1235,6 +1431,20 @@ ServiceWindow {
                             id: hstrtcontrol
                             visible: true
 
+                            Label {
+                                id: hstrtValsetLabel
+                                font.bold: true
+                                text: "HyS sTaRT val"
+                                property string hstrttoolTipText: "HSTRT"
+                                ToolTip.text: hstrttoolTipText
+                                ToolTip.visible: hstrttoolTipText ? hstrta.containsMouse : false
+                                MouseArea {
+                                    id: hstrta
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
+                            }
+
                             HalSpinBox2 {
                                 id: hstrtSetSpin
                                 enabled: true
@@ -1242,6 +1452,12 @@ ServiceWindow {
                                 halPin.direction: HalPin.IO
                                 from: 0 //items.length - 1
                                 to: items.length - 1
+                            // chm =0
+                                ToolTip.delay: 1000
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("CHopMode=0:\nHysteresis start offset from HEND:\n%000: 1\n %100: 5\n%001: 2\n %101: 6\n%010: 3\n %110: 7\n%011: 4\n %111: 8\nEffective: HEND+HSTRT must be ≤ 15\n\nCHopMode=1:\nThree least-significant bits of the duration of\nthe fast decay phase. The MSB is HDEC0.\nFast decay time is a multiple of system clock\nperiods: NCLK= 32 x (HDEC0+HSTRT)")
     //                                    value: 0
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
@@ -1263,12 +1479,6 @@ ServiceWindow {
                                     }
                                     return hstrtsb.value
                                 }
-                            }
-
-                            Label {
-                                id: hstrtValsetLabel
-                                font.bold: true
-                                text: "Hys start val"
                             }
 
                             Switch2 {
@@ -1299,6 +1509,20 @@ ServiceWindow {
                             id: toffcontrol
                             visible: true
 
+                            Label {
+                                id: toffdValsetLabel
+                                font.bold: true
+                                text: "Off t/MFET"
+                                property string tofftoolTipText: "TOFF"
+                                ToolTip.text: tofftoolTipText
+                                ToolTip.visible: tofftoolTipText ? toffa.containsMouse : false
+                                MouseArea {
+                                    id: toffa
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
+                            }
+
                             HalSpinBox2 {
                                 id: toffSetSpin
     //                                    hoverEnabled: true
@@ -1313,7 +1537,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("0000: Driver disable, all bridges off\n0001: 1 (use with TBL of minimum 24 clocks)\n0010 ... %1111: 2 ... 15")
+                                ToolTip.text: qsTr("Off time/MOSFET\ndisable\n\nDuration of slow decay phase. If TOFF is 0, the\nMOSFETs are shut off. If TOFF is nonzero, slow decay\ntime is a multiple of system clock periods:\nNCLK= 12 + (32 x TOFF) (Minimum time is 64clocks.)\n0000: Driver disable, all bridges off\n0001: 1 (use with TBL of minimum 24 clocks)\n0010 ... %1111: 2 ... 15")
                                 // chm =0
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
@@ -1323,12 +1547,6 @@ ServiceWindow {
 //                                         parent.focus = true
 //                                     }
                                 }
-
-                            Label {
-                                id: toffdValsetLabel
-                                font.bold: true
-                                text: "Off t/MFET"
-                            }
 
                             Switch2 {
                                 id: toffonOffSwitch
@@ -1371,6 +1589,14 @@ ServiceWindow {
 //                                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                                 font.bold: true
                                 text:"Minimum coolStep curren"
+                                property string seimintoolTipText: "SEIMIN"
+                                ToolTip.text: seimintoolTipText
+                                ToolTip.visible: seimintoolTipText ? seimina.containsMouse : false
+                                MouseArea {
+                                    id: seimina
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             Switch2 {
@@ -1380,6 +1606,9 @@ ServiceWindow {
                                 text: seiminSetPin.value  > 0 ? "1⁄4 CS" : "1⁄2 CS"
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("Minimum coolStep\ncurrent\n0: 1⁄2 CS current setting\n1: 1⁄4 CS current setting")
                                 onCheckedChanged: {
                                     if (checked) {
                                             seiminSetPin.value = 1
@@ -1408,6 +1637,14 @@ ServiceWindow {
                                 id: sednValsetLabel
                                 font.bold: true
                                 text: "Cur dec spd"
+                                property string sedntoolTipText: "SEDN"
+                                ToolTip.text: sedntoolTipText
+                                ToolTip.visible: sedntoolTipText ? sedna.containsMouse : false
+                                MouseArea {
+                                    id: sedna
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -1422,7 +1659,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("Number of times that the stallGuard2 value must be\nsampled equal to or above the upper threshold for each\ndecrement of the coil current:")
+                                ToolTip.text: qsTr("Current decrement\nspeed\nNumber of times that the stallGuard2 value must be\nsampled equal to or above the upper threshold for each\ndecrement of the coil current:\n%00: 32\n%01: 8\n%10: 2\n%11: 1")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
@@ -1476,7 +1713,7 @@ ServiceWindow {
                                 id: semaxValsetLabel
                                 font.bold: true
                                 text: "Up CS trs offs"
-                                property string semaxtoolTipText: "If the stallGuard2 measurement value SG is sampled\nequal to or above (SEMIN+SEMAX+1) x 32 enough times,\nthen the coil current scaling factor is decremented."
+                                property string semaxtoolTipText: "SEMAX"
                                 ToolTip.text: semaxtoolTipText
                                 ToolTip.visible: semaxtoolTipText ? semaxma.containsMouse : false
                                 MouseArea {
@@ -1498,7 +1735,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("SEMAX")
+                                ToolTip.text: qsTr("Upper coolStep threshold\n as an offset from the lower\nthreshold\n\nIf the stallGuard2 measurement value SG is sampled\nequal to or above (SEMIN+SEMAX+1) x 32 enough times,\nthen the coil current scaling factor is decremented.")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
@@ -1541,6 +1778,14 @@ ServiceWindow {
                                 id: seupValsetLabel
                                 font.bold: true
                                 text: "Curr incr size"
+                                property string seuptoolTipText: "SEUP"
+                                ToolTip.text: seuptoolTipText
+                                ToolTip.visible: seuptoolTipText ? seupa.containsMouse : false
+                                MouseArea {
+                                    id: seupa
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -1555,7 +1800,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("Number of current increment steps for each time that\nthe stallGuard2 value SG is sampled below the lower\nthreshold:")
+                                ToolTip.text: qsTr("Current increment size\n\nNumber of current increment steps for each time that\nthe stallGuard2 value SG is sampled below the lower\nthreshold:")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
@@ -1609,9 +1854,8 @@ ServiceWindow {
                                     id: seminValsetLabel
                                     font.bold: true
                                     text: "Lo CS trs offs"
-                                    property string semintoolTipText: "If SEMIN is 0, coolStep is disabled. If SEMIN is nonzero\nand the stallGuard2 value SG falls below SEMIN x 32,\nthe coolStep current scaling factor is increased."
+                                    property string semintoolTipText: "SEMIN"
                                     ToolTip.text: semintoolTipText
-//                                    ToolTip.text: qsTr("SEMIN")
                                     ToolTip.visible: semintoolTipText ? seminma.containsMouse : false
                                     MouseArea {
                                         id: seminma
@@ -1632,7 +1876,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("SEMIN")
+                                ToolTip.text: qsTr("Lower coolStep threshold/coolStep disable\n\nIf SEMIN is 0, coolStep is disabled. If SEMIN is nonzero\nand the stallGuard2 value SG falls below SEMIN x 32,\nthe coolStep current scaling factor is increased.")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
@@ -1686,6 +1930,10 @@ ServiceWindow {
                                 text: sfiltSetPin.value  > 0 ? "SG2 filter enabled" : "SG2 filter disabled"
     //                                    text: qsTr("Fast decay mode")
                                 font.bold: true
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+
+                                ToolTip.text: qsTr("stallGuard2 filter enable\n\n0: Standard mode, fastest response time.\n1: Filtered mode, updated once for each four fullsteps to\ncompensate for variation in motor construction, highest\naccuracy.")
                                 onCheckedChanged: {
                                     if (checked) {
                                             sfiltSetPin.value = 1
@@ -1715,6 +1963,14 @@ ServiceWindow {
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                 font.bold: true
                                 text: "SG2 thres"
+                                property string sgttoolTipText: "SGT"
+                                ToolTip.text: sgttoolTipText
+                                ToolTip.visible: sgttoolTipText ? sgta.containsMouse : false
+                                MouseArea {
+                                    id: sgta
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -1728,7 +1984,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("The stallGuard2 threshold value controls the optimum\n" +
+                                ToolTip.text: qsTr("stallGuard2 threshold value\n\nThe stallGuard2 threshold value controls the optimum\n" +
                                 "measurement range for readout. A lower value results in\n" +
                                 "a higher sensitivity and requires less torque to indicate\n" +
                                 "a stall. The value is a two’s complement signed integer.\n" +
@@ -1791,6 +2047,14 @@ ServiceWindow {
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                 font.bold: true
                                 text: "Curr scale"
+                                property string cstoolTipText: "CS"
+                                ToolTip.text: cstoolTipText
+                                ToolTip.visible: cstoolTipText ? csa.containsMouse : false
+                                MouseArea {
+                                    id: csa
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -1879,7 +2143,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("Must be cleared for normal operation. When set, the\nSG_TST output exposes digital test values, and the\nTEST_ANA output exposes analog test values. Test value\nselection is controlled by SGT1 and SGT0:\nTEST_ANA:\n %00: anatest_2vth,\n%01: anatest_dac_out,\n%10: anatest_vdd_half.\nSG_TST:\n%00: comp_A,\n%01: comp_B,\n%10: CLK,\n%11: on_state_xy")
+                                ToolTip.text: qsTr("TST\nMust be cleared for normal operation. When set, the\nSG_TST output exposes digital test values, and the\nTEST_ANA output exposes analog test values. Test value\nselection is controlled by SGT1 and SGT0:\nTEST_ANA:\n %00: anatest_2vth,\n%01: anatest_dac_out,\n%10: anatest_vdd_half.\nSG_TST:\n%00: comp_A,\n%01: comp_B,\n%10: CLK,\n%11: on_state_xy")
 
                                 onCheckedChanged: {
                                     if (checked) {
@@ -1910,6 +2174,14 @@ ServiceWindow {
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                 font.bold: true
                                 text: "Slope ctrl, high"
+                                property string slphtoolTipText: "SLPH"
+                                ToolTip.text: slphtoolTipText
+                                ToolTip.visible: slphtoolTipText ? slpha.containsMouse : false
+                                MouseArea {
+                                    id: slpha
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -1926,7 +2198,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: "%00: Minimum\n%01: Minimum temperature compensation mode.\n%10: Medium temperature compensation mode.\n%11: Maximum\nIn temperature compensated mode (tc), the MOSFET gate\ndriver strength is increased if the overtemperature\nwarning temperature is reached. This compensates for\ntemperature dependency of high-side slope control."
+                                ToolTip.text: "Slope control, high side\n%00: Minimum\n%01: Minimum temperature compensation mode.\n%10: Medium temperature compensation mode.\n%11: Maximum\nIn temperature compensated mode (tc), the MOSFET gate\ndriver strength is increased if the overtemperature\nwarning temperature is reached. This compensates for\ntemperature dependency of high-side slope control."
 
 //                                     onValueModified: {            // remove the focus from this control
 //                                         parent.forceActiveFocus()
@@ -1966,6 +2238,14 @@ ServiceWindow {
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                 font.bold: true
                                 text: "Slope ctrl, low"
+                                property string slpltoolTipText: "SLPL"
+                                ToolTip.text: slpltoolTipText
+                                ToolTip.visible: slpltoolTipText ? slpla.containsMouse : false
+                                MouseArea {
+                                    id: slpla
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -1982,7 +2262,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: "%00: Minimum.\n%01: Minimum.\n%10: Medium.\n%11: Maximum."
+                                ToolTip.text: "Slope control, low side\n%00: Minimum.\n%01: Minimum.\n%10: Medium.\n%11: Maximum."
 
 //                                     onValueModified: {            // remove the focus from this control
 //                                         parent.forceActiveFocus()
@@ -2029,7 +2309,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("0: Short to GND protection is enabled.\n1: Short to GND protection is disabled.")
+                                ToolTip.text: qsTr("DISS2G\n0: Short to GND protection is enabled.\n1: Short to GND protection is disabled.")
 
                                 onCheckedChanged: {
                                     if (checked) {
@@ -2059,6 +2339,14 @@ ServiceWindow {
                                 id: ts2gValsetPreLabel
                                 font.bold: true
                                 text: "GND short tmr"
+                                property string ts2gtoolTipText: "TS2G"
+                                ToolTip.text: ts2gtoolTipText
+                                ToolTip.visible: ts2gtoolTipText ? ts2ga.containsMouse : false
+                                MouseArea {
+                                    id: ts2ga
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -2141,7 +2429,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("0: Enable STEP and DIR interface.\n1: Disable STEP and DIR interface. SPI interface is used\nto move motor.")
+                                ToolTip.text: qsTr("SDOFF\n0: Enable STEP and DIR interface.\n1: Disable STEP and DIR interface. SPI interface is used\nto move motor.")
 
                                 onCheckedChanged: {
                                     if (checked) {
@@ -2179,7 +2467,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("Sense resistor voltage-based current scaling:\n0: Full-scale sense resistor voltage is 305mV.\n1: Full-scale sense resistor voltage is 165mV.\n(Full-scale refers to a current setting of 31 and a DAC\nvalue of 255.)")
+                                ToolTip.text: qsTr("VSENSE\nSense resistor voltage-based current scaling:\n0: Full-scale sense resistor voltage is 305mV.\n1: Full-scale sense resistor voltage is 165mV.\n(Full-scale refers to a current setting of 31 and a DAC\nvalue of 255.)")
 
                                 onCheckedChanged: {
                                     if (checked) {
@@ -2209,6 +2497,14 @@ ServiceWindow {
                                 id: rdselValsetPreLabel
                                 font.bold: true
                                 text: "RD bits"
+                                property string rdseltoolTipText: "RDSEL"
+                                ToolTip.text: rdseltoolTipText
+                                ToolTip.visible: rdseltoolTipText ? rdsela.containsMouse : false
+                                MouseArea {
+                                    id: rdsela
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                }
                             }
 
                             HalSpinBox2 {
@@ -2223,7 +2519,7 @@ ServiceWindow {
                                 hoverEnabled: true
                                 ToolTip.visible: hovered
 
-                                ToolTip.text: qsTr("%00 Microstep position read back\n%01 stallGuard2 level read back\n%10\nstallGuard2 and coolStep current level read back\n%11 Reserved, do not use")
+                                ToolTip.text: qsTr("Select value for read out (RD bits)\n%00 Microstep position read back\n%01 stallGuard2 level read back\n%10\nstallGuard2 and coolStep current level read back\n%11 Reserved, do not use")
     //                                 font.pixelSize: 30
     //                                 scale: 0.5
 
