@@ -50,38 +50,46 @@ def setup_hardware(thread):
     # Spindle
     spindlespeed = hal.newsig('spindle-speed', hal.HAL_FLOAT)
     spindleon = hal.newsig('spindle-on', hal.HAL_BIT)
-    spindlespeed20 = hal.newsig('spindle-speed-20', hal.HAL_FLOAT)
+    spindlespeeddiv = hal.newsig('spindle-speed-20', hal.HAL_FLOAT)
     spindlepwmspeed = hal.newsig('spindle-pwm-speed', hal.HAL_FLOAT)
     spindlepwmspeedlimited = hal.newsig('spindle-pwm-speed-limited', hal.HAL_FLOAT)
 
-    spindlespeed.link('motion.spindle-speed-out-rps')
+#    spindlespeed.link('motion.spindle-speed-out-rps')
+    spindlespeed.link('motion.spindle-speed-out')
     spindleon.link('motion.spindle-on')
-    os.system('halcmd setp hm2_5i25.0.gpio.071.is_output true')
+    os.system('halcmd setp hm2_5i25.0.gpio.070.is_output true')
+#    halold.Param('hm2_5i25.0.gpio.070.is_output').set(true)
 #    os.system('halcmd setp hm2_5i25.0.gpio.071.invert_output true')
-    hal.Pin('hm2_5i25.0.gpio.071.out').link(spindleon)
+    hal.Pin('hm2_5i25.0.gpio.070.out').link(spindleon)
 
-#    hal.Pin('hm2_5i25.0.pwmgen.02.enable').set(True)
+##    hal.Pin('hm2_5i25.0.pwmgen.02.enable').set(True)
     hal.Pin('hm2_5i25.0.pwmgen.00.enable').link(spindleon)
-    sum2 = rt.newinst('sum2', 'sum2.spindle-speed-add20')
-    hal.addf(sum2.name, 'servo-thread')
-    sum2.pin('in0').set(20)
-    sum2.pin('in1').link(spindlespeed)
-    sum2.pin('out').link(spindlespeed20)
 
-    div2 = rt.newinst('div2', 'div2.spindlespeed20-divfac')
+    div2 = rt.newinst('div2', 'div2.spindlespeed-divfac')
     hal.addf(div2.name, 'servo-thread')
-    div2.pin('in0').link(spindlespeed20)
-    div2.pin('in1').set(c.find('SPINDLE', 'FACTOR'))
-    div2.pin('out').link(spindlepwmspeed)
+    div2.pin('in0').link(spindlespeed)
+    div2.pin('in1').set(c.find('SPINDLE', 'DIVFACTOR'))
+    div2.pin('out').link(spindlespeeddiv)
 
-    limit1 = rt.newinst('limit1', 'limit1.spindle-pwm-speed-limited')
-    hal.addf(limit1.name, thread)
-    limit1.pin('in').link(spindlepwmspeed)
-    limit1.pin('out').link(spindlepwmspeedlimited)
-    limit1.pin('min').set(0.05)  # prevent users from setting 0 as jog velocity
-    limit1.pin('max').set(c.find('SPINDLE', 'LIMIT'))
+    sum2 = rt.newinst('sum2', 'sum2.spindle-speed-add')
+    hal.addf(sum2.name, 'servo-thread')
+    sum2.pin('in0').set(c.find('SPINDLE', 'ADDFACTOR'))
+    sum2.pin('in1').link(spindlespeeddiv)
+    sum2.pin('out').link(spindlepwmspeed)
 
-    hal.Pin('hm2_5i25.0.pwmgen.00.value').link(spindlepwmspeedlimited)
+#    limit1 = rt.newinst('limit1', 'limit1.spindle-pwm-speed-limited')
+#    hal.addf(limit1.name, thread)
+#    limit1.pin('in').link(spindlepwmspeed)
+#    limit1.pin('out').link(spindlepwmspeedlimited)
+#    limit1.pin('min').set(0.05)  # prevent users from setting 0 as jog velocity
+#    limit1.pin('max').set(c.find('SPINDLE', 'LIMIT'))
+
+#    hal.Pin('hm2_5i25.0.pwmgen.00.value').link(spindlepwmspeedlimited)
+    hal.Pin('hm2_5i25.0.pwmgen.00.value').link(spindlepwmspeed)
+    os.system('halcmd setp hm2_5i25.0.gpio.018.invert_output true')
+#    hal.Pin('hm2_5i25.0.gpio.018.invert_output').set(true)
+#    hal.Param('hm2_5i25.0.pwmgen.00.scale').set(c.find('SPINDLE', 'MAXRPM'))
+    os.system('halcmd setp hm2_5i25.0.pwmgen.00.scale 12000')
 
     # configure extruders
 #    for n in range(0, 1):
