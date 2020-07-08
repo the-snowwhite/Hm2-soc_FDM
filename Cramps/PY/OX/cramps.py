@@ -89,7 +89,10 @@ def setup_hardware(thread):
     os.system('halcmd setp hm2_5i25.0.gpio.018.invert_output true')
 #    hal.Pin('hm2_5i25.0.gpio.018.invert_output').set(true)
 #    hal.Param('hm2_5i25.0.pwmgen.00.scale').set(c.find('SPINDLE', 'MAXRPM'))
-    os.system('halcmd setp hm2_5i25.0.pwmgen.00.scale 12000')
+#    os.system('halcmd setp hm2_5i25.0.pwmgen.00.scale 12000')
+#    cmd = "halcmd setp hm2_5i25.0.pwmgen.00.scale %s "%(c.find('SPINDLE', 'MAXRPM'))
+#    os.system(cmd)
+    os.system("halcmd setp hm2_5i25.0.pwmgen.00.scale %s "%(c.find('SPINDLE', 'MAXRPM')))
 
     # configure extruders
 #    for n in range(0, 1):
