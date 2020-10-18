@@ -31,7 +31,7 @@ try:
         launcher.start_process('mklauncher ~/Hm2-soc_FDM/Cramps/PY/OX')
 
     launcher.start_process("configserver -n OX Router ~/Cetus/")
-    launcher.start_process('machinekit ox.ini')
+    launcher.start_process('linuxcnc ox.ini')
     while True:
         launcher.check_processes()
         time.sleep(1)

@@ -5,7 +5,7 @@ from machinekit import config as c
 
 def setup_motion(kinematics='trivkins', tp='tp', num_aio=50, num_dio=21):
     rt.loadrt(kinematics)
-#    rt.loadrt(tp)
+    rt.loadrt(tp)
 
 
     # hostmot2 setup  get names and config from ini file
