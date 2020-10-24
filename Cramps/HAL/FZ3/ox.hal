@@ -1,0 +1,427 @@
+# #######################################
+#
+# HAL file for BeagleBone + CRAMPS2 cape with 4 steppers and Z-Gantry
+# Designed for Machineface & Cetus UI's
+#
+# Derived from thecooltool UNIPRINT-3D-stepper config
+#
+# ########################################
+
+# ###################################
+# Core EMC/HAL Loads
+# ###################################
+
+# kinematics
+loadrt trivkins
+
+# motion controller, get name and thread periods from ini file
+# trajectory planner
+#loadrt tp
+
+# motion controller
+#loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS 
+loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS  num_aio=51 num_dio=21
+
+# hostmot2 driver
+loadrt hostmot2
+
+# load low-level driver
+newinst [HOSTMOT2](DRIVER) [HOSTMOT2](DEVNAME) -- config=[HOSTMOT2](CONFIG)
+#newinst hm2_soc_ol hm2-socfpga0 already_programmed=1 -- config=[HOSTMOT2](CONFIG)  debug=1
+# load low-level driver
+#loadrt [HOSTMOT2](DRIVER) config=[HOSTMOT2](CONFIG)
+#loadrt [HOSTMOT2](DRIVER)
+
+
+# Gantry component for Y Axis
+#newinst lgantry gantry.y pincount=2
+newinst gantry gantry.y pincount=2
+
+
+# Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
+# c = analog input channel and thermistor table
+#loadusr -Wn Therm hal_temp_atlas -n Therm -c 00:[HBP]THERMISTOR,01:[EXTRUDER_0]THERMISTOR
+
+
+#addf   hm2_[HOSTMOT2](BOARD).0.capture-position                 servo-thread
+addf   hm2_[HOSTMOT2](BOARD).0.read         servo-thread
+addf   gantry.y.read                        servo-thread
+addf   motion-command-handler               servo-thread
+#addf   f2u.probe-sel                        servo-thread
+#addf   mux-gen.00                           servo-thread
+#addf   and2.probe                           servo-thread
+addf   motion-controller                    servo-thread
+# L0
+#addf   led-dim.l0-r                         servo-thread
+#addf   led-dim.l0-g                         servo-thread
+#addf   led-dim.l0-b                         servo-thread
+#addf   led-dim.l0-w                         servo-thread
+
+# Estop chain
+#addf   watchdog.set-timeouts                servo-thread
+#addf   watchdog.process                     servo-thread
+
+#addf   estopchain                           servo-thread
+
+# Update functions
+addf   gantry.y.write                       servo-thread
+#addf   hm2_[HOSTMOT2](BOARD).0.update                           servo-thread
+addf   hm2_[HOSTMOT2](BOARD).0.write        servo-thread
+#addf   charge-pump                         run-thread
+
+# user components
+#newsig gpio-ok bit
+#newsig pwm-ok bit
+#newsig temp-ok bit
+
+#newsig gpio-watchdog bit
+#newsig pwm-watchdog bit
+#newsig temp-watchdog bit
+
+# Python user-mode HAL module for storing values
+##loadusr -Wn storage hal_storage -n storage -f storage.ini -a
+
+#net gpio-ok <= i2c-gpio.no-error
+#net pwm-ok <= i2c-pwm.no-error
+#net temp-ok <= i2c-temp.no-error
+
+#net gpio-watchdog <= i2c-gpio.watchdog
+#net pwm-watchdog <= i2c-pwm.watchdog
+#net temp-watchdog <= i2c-temp.watchdog
+
+# ###################################
+# UI remote component definition
+# ###################################
+sete 1 0.1
+
+#newcomp gantry-config timer=100
+#newpin gantry-config gantry-config.offset-left  float io
+#newpin gantry-config gantry-config.offset-right float io
+#ready gantry-config
+
+# ######################################################
+# Axis-of-motion Specific Configs (not the GUI)
+# ######################################################
+
+# ################
+# X [0] Axis
+# ################
+
+# axis enable chain
+newsig emcmot.00.enable bit
+sets emcmot.00.enable FALSE
+
+net emcmot.00.enable <= joint.0.amp-enable-out
+net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.00.enable
+
+# position command and feedback
+net emcmot.00.pos-cmd <= joint.0.motor-pos-cmd
+net emcmot.00.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.00.position-cmd
+
+net motor.00.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.00.position-fb
+net motor.00.pos-fb => joint.0.motor-pos-fb
+
+# timing parameters
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.dirsetup        [JOINT_0]DIRSETUP
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.dirhold         [JOINT_0]DIRHOLD
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.steplen         [JOINT_0]STEPLEN
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.stepspace       [JOINT_0]STEPSPACE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.position-scale  [JOINT_0]SCALE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.maxvel          [JOINT_0]STEPGEN_MAX_VEL
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.maxaccel        [JOINT_0]STEPGEN_MAX_ACC
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.step_type       0
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.00.control-type    0
+
+
+# ################
+# Y [1] Axis Right - Gantry
+# ################
+
+# axis enable chain
+newsig emcmot.01.enable bit
+sets emcmot.01.enable FALSE
+
+net emcmot.01.enable <= joint.1.amp-enable-out
+net emcmot.01.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.01.enable
+
+setp gantry.y.search-vel            [JOINT_1]HOME_SEARCH_VEL
+
+# position command and feedback
+net emcmot.01.pos-cmd <= joint.1.motor-pos-cmd
+net emcmot.01.pos-cmd => gantry.y.position-cmd
+net motor.01.pos-cmd <= gantry.y.joint.00.pos-cmd
+net motor.01.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-cmd
+
+net emcmot.01.pos-fb <= gantry.y.position-fb
+net emcmot.01.pos-fb => joint.1.motor-pos-fb
+net motor.01.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-fb
+net motor.01.pos-fb => gantry.y.joint.00.pos-fb
+
+
+# timing parameters
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.dirsetup        [JOINT_1]DIRSETUP
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.dirhold         [JOINT_1]DIRHOLD
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.steplen         [JOINT_1]STEPLEN
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.stepspace       [JOINT_1]STEPSPACE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.position-scale  [JOINT_1]SCALE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.maxvel          [JOINT_1]STEPGEN_MAX_VEL
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.maxaccel        [JOINT_1]STEPGEN_MAX_ACC
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.01.step_type       0
+
+# ################
+# Y [2] Axis Left - Gantry
+# ################
+
+# axis enable chain
+
+net emcmot.01.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.02.enable
+
+# position command and feedback
+net motor.02.pos-cmd <= gantry.y.joint.01.pos-cmd
+net motor.02.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-cmd
+
+net motor.02.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-fb
+net motor.02.pos-fb => gantry.y.joint.01.pos-fb
+
+
+# timing parameters
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.dirsetup        [JOINT_1]DIRSETUP
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.dirhold         [JOINT_1]DIRHOLD
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.steplen         [JOINT_1]STEPLEN
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.stepspace       [JOINT_1]STEPSPACE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.position-scale  [JOINT_1]SCALE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.maxvel          [JOINT_1]STEPGEN_MAX_VEL
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.maxaccel        [JOINT_1]STEPGEN_MAX_ACC
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.02.step_type       0
+
+# ################
+# z [2] Axis
+# ################
+
+# axis enable chain
+newsig emcmot.02.enable bit
+sets emcmot.02.enable FALSE
+
+net emcmot.02.enable <= joint.2.amp-enable-out
+net emcmot.02.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.03.enable
+
+
+# position command and feedback
+net emcmot.02.pos-cmd <= joint.2.motor-pos-cmd
+net emcmot.02.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.03.position-cmd
+
+net motor.03.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.03.position-fb
+net motor.03.pos-fb => joint.2.motor-pos-fb
+
+
+# timing parameters
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.03.dirsetup        [JOINT_2]DIRSETUP
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.03.dirhold         [JOINT_2]DIRHOLD
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.03.steplen         [JOINT_2]STEPLEN
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.03.stepspace       [JOINT_2]STEPSPACE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.03.position-scale  [JOINT_2]SCALE
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.03.maxvel          [JOINT_2]STEPGEN_MAX_VEL
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.03.maxaccel        [JOINT_2]STEPGEN_MAX_ACC
+
+setp hm2_[HOSTMOT2](BOARD).0.stepgen.03.step_type       0
+
+
+# axis enable chain
+#newsig emcmot.03.enable bit
+#net emcmot.03.enable => hm2_[HOSTMOT2](BOARD).0.stepgen.03.enable
+#sets emcmot.02.enable TRUE
+
+# position command and feedback
+#net emcmot.03.pos-cmd <= joint.3.motor-pos-cmd
+#net emcmot.03.pos-cmd => hm2_[HOSTMOT2](BOARD).0.stepgen.03.position-cmd
+
+#net motor.04.pos-fb <= hm2_[HOSTMOT2](BOARD).0.stepgen.03.position-fb
+#net motor.04.pos-fb => joint.3.motor-pos-fb
+
+# ##################################################
+# Standard I/O - EStop, Enables, Limit Switches, Etc
+# ##################################################
+
+# Create estop signal chain
+# Drive software estop to hardware
+newsig estop-user bit
+newsig estop-out bit
+
+net estop-user <= iocontrol.0.user-enable-out
+
+# Monitor estop input from hardware
+#net estop-loop hm2_[HOSTMOT2](BOARD).0.gpio.021.in_not => iocontrol.0.emc-enable-in
+net estop-loop hm2_[HOSTMOT2](BOARD).0.gpio.021.in => iocontrol.0.emc-enable-in
+
+# create signals for tool loading loopback
+net tool-prep-loop iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
+net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
+
+# Axis enable signal (active low)
+setp hm2_[HOSTMOT2](BOARD).0.gpio.019.is_output true
+net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.gpio.019.out
+setp hm2_[HOSTMOT2](BOARD).0.gpio.019.invert_output 1
+
+# Machine power
+# Use halui.machine.is-on instead?
+setp hm2_[HOSTMOT2](BOARD).0.gpio.020.is_output true
+net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.gpio.020.out
+
+# Tie machine power signal to the CRAMPS LED
+# Feel free to tie any other signal you like to the LED
+setp hm2_[HOSTMOT2](BOARD).0.gpio.018.is_output true
+net emcmot.00.enable => hm2_[HOSTMOT2](BOARD).0.gpio.018.out
+
+# ################
+# Limit Switches
+# ################
+newsig limit-x-home bit
+newsig limit-yl-home bit
+newsig limit-yr-home bit
+newsig limit-z-home bit
+newsig home-offset-zr   float
+newsig home-offset-zl   float
+
+
+# Adjust as needed for your switch polarity
+
+net limit-x-home <= hm2_[HOSTMOT2](BOARD).0.gpio.024.in_not
+net limit-yl-home <= hm2_[HOSTMOT2](BOARD).0.gpio.025.in
+net limit-yr-home <= hm2_[HOSTMOT2](BOARD).0.gpio.026.in
+net limit-z-home <= hm2_[HOSTMOT2](BOARD).0.gpio.027.in_not
+
+
+# Uncomment if you actually have limit switches setup
+# You probably want to setup homing in the INI file, as well
+net limit-x-home => joint.0.home-sw-in
+net limit-yl-home => gantry.y.joint.00.home
+net limit-yr-home => gantry.y.joint.01.home
+net limit-z-home => joint.2.home-sw-in
+net home-y	<= gantry.y.home
+net home-y	=> joint.1.home-sw-in
+
+#net homing <= joint.1.homing
+#net homing => gantry.y.homing
+
+#net home-offset-zr => gantry.y.joint.00.home-offset
+#net home-offset-zl => gantry.y.joint.01.home-offset
+
+# ################
+# Probe
+# ################
+#newsig probe.input              bit
+#newsig probe.enable             bit
+#newsig probe.signal             bit
+#newsig probe.muxed              bit
+#newsig probe.sel                u32
+#newsig probe.sel-f              float
+
+#net probe.sel-f => f2u.probe-sel.in
+#net probe.sel  <= f2u.probe-sel.out
+
+#net probe.sel    => mux-gen.00.sel-int
+#net probe.muxed  <= mux-gen.00.out-bit
+#net probe.signal => mux-gen.00.in-bit-00
+#net limit-x-home => mux-gen.00.in-bit-01
+#net limit-y-home => mux-gen.00.in-bit-02
+
+#net probe.muxed  => and2.probe.in0
+#net probe.enable => and2.probe.in1
+#net probe.input  <= and2.probe.out
+#net probe.input  => motion.probe-input
+
+
+# ##################################################
+# HB LED
+# ##################################################
+#newsig l0.hbp-info bit
+#newsig l0.hbp-hot bit
+
+#setp comp.hbp-hot.in0 50.0
+#setp comp.hbp-hot.hyst 2.0
+#net hbp.temp.meas => comp.hbp-hot.in1
+#net l0.hbp-hot <= comp.hbp-hot.out
+
+
+# ##################################################
+# Motion AIO and DIO
+# ##################################################
+
+#net probe.sel-f         <= motion.analog-out-38
+
+#net probe.enable        <= motion.digital-out-00
+
+#net l0.r                => motion.analog-in-26
+#net l0.g                => motion.analog-in-27
+#net l0.b                => motion.analog-in-28
+#net l0.w                => motion.analog-in-29
+
+# ##################################################
+# Estop chain #, watchdog and charge-pump
+# ##################################################
+#net estop-user          => estopchain.in-00
+#net estop-out           <= estopchain.and
+
+# TODO watchdog
+
+#net gpio-watchdog => watchdog.input-0
+#setp watchdog.timeout-0 0.1
+#net pwm-watchdog => watchdog.input-1
+#setp watchdog.timeout-1 0.2
+#net temp-watchdog => watchdog.input-2
+#setp watchdog.timeout-2 0.1
+#net estop-out => watchdog.enable-in
+
+# drive estop-sw
+#net estop-out => hm2_[HOSTMOT2](BOARD).0.gpio.035.out
+#setp hm2_[HOSTMOT2](BOARD).0.gpio.035.invert_output 1
+
+# ##################################################
+# UI linking
+# ##################################################
+
+#net l0.r               <=> fdm-l0.r
+#net l0.g               <=> fdm-l0.g
+#net l0.b               <=> fdm-l0.b
+#net l0.w               <=> fdm-l0.w
+
+#net home-offset-zr      <=> gantry-config.offset-right
+#net home-offset-zl      <=> gantry-config.offset-left
+
+# monitor the estop error sources
+newg error-sources 100
+newm error-sources estop-user
+#newm error-sources gpio-ok
+#newm error-sources pwm-ok
+
+# ##################################################
+# Storage
+# ##################################################
+
+#net l0.r               <=> storage.l0.r
+#net l0.g               <=> storage.l0.g
+#net l0.b               <=> storage.l0.b
+#net l0.w               <=> storage.l0.w
+##net home-offset-zr     <=> storage.gantry.home-offset-zr
+##net home-offset-zl     <=> storage.gantry.home-offset-zl
+##setp storage.read-trigger 1 # trigger read
+
+# start haltalk server after everything is initialized
+# else binding the remote components on the UI might fail
+#loadusr -W haltalk
+loadusr -W haltalk -d 5
