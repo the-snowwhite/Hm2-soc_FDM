@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python2
 
 import sys
 import os
@@ -31,9 +31,9 @@ try:
         os.mkdir(nc_path)
 
     if not check_mklaucher():  # start mklauncher if not running to make things easier
-        launcher.start_process('mklauncher ~/Hm2-soc_FDM/Cramps/PY/OX')
+        launcher.start_process('mklauncher ~/Hm2-soc_FDM/Cramps/PY/FZ3')
 
-    launcher.start_process("configserver -n OX Router ~/Cetus/")
+    launcher.start_process("configserver -n OX_Router ~/Cetus/")
     launcher.start_process('linuxcnc ox.ini')
     while True:
         launcher.check_processes()

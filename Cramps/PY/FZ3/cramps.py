@@ -93,6 +93,7 @@ def setup_hardware(thread):
 
     # Monitor estop input from hardware
     hal.Pin('hm2_fz3_.0.gpio.021.in_not').link('estop-in')
+#    hal.Pin('hm2_fz3_.0.gpio.021.in').link('estop-in')
     # drive estop-sw
     os.system('halcmd setp hm2_fz3_.0.gpio.022.is_output true')
     os.system('halcmd setp hm2_fz3_.0.gpio.022.invert_output true')
