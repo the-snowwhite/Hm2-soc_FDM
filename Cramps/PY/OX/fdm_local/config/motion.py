@@ -17,7 +17,6 @@ def setup_motion(kinematics='trivkins', tp='tp', num_aio=50, num_dio=21):
             "-- ",
             c.find('HOSTMOT2', 'CONFIG'))
 
-
     # motion controller, get name and thread periods from ini file
     rt.loadrt(c.find('EMCMOT', 'EMCMOT'),
               servo_period_nsec=c.find('EMCMOT', 'SERVO_PERIOD'),
