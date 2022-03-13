@@ -1,21 +1,25 @@
 from machinekit import hal
 from machinekit import rtapi as rt
 from machinekit import config as c
+import os
 
 
 def setup_motion(kinematics='trivkins', tp='tp', num_aio=50, num_dio=21):
     rt.loadrt(kinematics)
-#    rt.loadrt(tp)
+    rt.loadrt(tp)
 
 
     # hostmot2 setup  get names and config from ini file
     hostmot2 = bool(c.find('HOSTMOT2', 'DRIVER'))
     if hostmot2:
         rt.loadrt('hostmot2')
-        rt.newinst(c.find('HOSTMOT2', 'DRIVER'),
-            c.find('HOSTMOT2', 'DEVNAME'),
-            "-- ",
-            c.find('HOSTMOT2', 'CONFIG'))
+        os.system('halcmd newinst hm2_soc_ol hm2-socfpga0 already_programmed=1 -- config="num_pwmgens=1 num_stepgens=1 num_bspis=1 enable_adc=0"')
+
+#        rt.newinst(c.find('HOSTMOT2', 'DRIVER'),
+#            c.find('HOSTMOT2', 'DEVNAME'),
+#            "-- ",
+#            c.find('HOSTMOT2', 'CONFIG'))
+
 
     # motion controller, get name and thread periods from ini file
     rt.loadrt(c.find('EMCMOT', 'EMCMOT'),

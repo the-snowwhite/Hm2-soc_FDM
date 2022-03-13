@@ -5,7 +5,7 @@ from machinekit import config as c
 
 def setup_motion(kinematics='trivkins', tp='tp', num_aio=50, num_dio=21):
     rt.loadrt(kinematics)
-#    rt.loadrt(tp)
+    rt.loadrt(tp)
 
 
     # hostmot2 setup  get names and config from ini file
@@ -16,6 +16,7 @@ def setup_motion(kinematics='trivkins', tp='tp', num_aio=50, num_dio=21):
             c.find('HOSTMOT2', 'DEVNAME'),
             "-- ",
             c.find('HOSTMOT2', 'CONFIG'))
+
 
     # motion controller, get name and thread periods from ini file
     rt.loadrt(c.find('EMCMOT', 'EMCMOT'),

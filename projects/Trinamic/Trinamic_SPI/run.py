@@ -5,12 +5,9 @@ import os
 import subprocess
 import time
 from machinekit import launcher
-from machinekit import config
 
 
-if 'MACHINEKIT_INI' not in os.environ:  # export for package installs
-    mkconfig = config.Config()
-    os.environ['MACHINEKIT_INI'] = mkconfig.MACHINEKIT_INI
+#launcher.register_exit_handler()
 
 def check_mklaucher():
     try:
@@ -31,10 +28,10 @@ try:
         os.mkdir(nc_path)
 
     if not check_mklaucher():  # start mklauncher if not running to make things easier
-        launcher.start_process('mklauncher ~/Hm2-soc_FDM/Cramps/PY/OX')
+        launcher.start_process('mklauncher .')
 
-    launcher.start_process("configserver -n OX Router ~/Cetus/")
-    launcher.start_process('linuxcnc ox.ini')
+    launcher.start_process("configserver -n Trinamic Spi configurator .")
+    launcher.start_process('machinekit trinamic_spi.ini')
     while True:
         launcher.check_processes()
         time.sleep(1)
